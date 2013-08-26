@@ -57,6 +57,28 @@ class rocketDivePlayer(pygame.sprite.Sprite):
         self.rect.x += self.velocity[0]
         self.rect.y += self.velocity[1]
 
+class Meter():
+    def __init__(self,dimensions,barColor,frameColor,startingAmount, maxAmount):
+        self.frame = pygame.Surface((dimensions[2],dimensions[3]))
+        self.frame.fill(frameColor)
+        self.barHeight = dimensions[3] *0.8
+        self.barColor = barColor
+        self.bar = pygame.Surface((dimensions[2] * 0.95, self.barHeight))
+        self.bar.fill(barColor)
+        self.perPixel = self.bar.get_width() / (maxAmount + 0.0)
+        self.update(startingAmount)
+        self.x = dimensions[0]
+        self.y = dimensions[1]
+
+    def update(self,amount):
+        if amount > 0:
+            self.bar = pygame.Surface((self.perPixel * amount, self.barHeight))
+        else:
+            self.bar = pygame.Surface((0,0))
+
+    def draw(self,screen):
+        screen.blit(self.frame, (self.x, self.y))
+        screen.blit(self.bar, (self.frame.get_width() * 0.025 + self.x, self.frame.get_height() * 0.1))
 
 def main():
     
@@ -78,6 +100,7 @@ def main():
     #Prepare Game Objects
     clock = pygame.time.Clock()
     player1 = rocketDivePlayer()
+    player1LifeMeter = Meter((800,0,200,60), (0,022,0),(200,200,200), 100, 100)
     allsprites = pygame.sprite.Group(player1)
 
     going = True
@@ -91,6 +114,7 @@ def main():
                 pygame.quit()
 
         screen.blit(background, (0,0))
+        player1LifeMeter.draw(screen)
         allsprites.update()
         allsprites.draw(screen)
         pygame.display.flip()
