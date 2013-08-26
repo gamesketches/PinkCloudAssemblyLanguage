@@ -38,25 +38,38 @@ class rocketDivePlayer(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.image, self.rect = load_image('hideRocketDive.png', -1)
-        
+        self.velocity = [0,0]
+
+    def update(self):
+        keys = pygame.key.get_pressed()
+        if keys[K_LEFT]:
+            self.velocity[0] = -3
+        elif keys[K_RIGHT]:
+            self.velocity[0] = 3
+        else:
+            self.velocity[0] = 0
+        if keys[K_DOWN]:
+            self.velocity[1] = 3
+        elif keys[K_UP]:
+            self.velocity[1] = -3
+        else:
+            self.velocity[1] = 0
+        self.rect.x += self.velocity[0]
+        self.rect.y += self.velocity[1]
+
 
 def main():
     
     #Initialize Everything
     pygame.init()
-    screen = pygame.display.set_mode((468, 100))
-    pygame.display.set_caption('Monkey Fever')
+    screen = pygame.display.set_mode((1000, 600))
+    pygame.display.set_caption('Pink Cloud Assembly Language')
     pygame.mouse.set_visible(0)
 
     #Create the background
     background = pygame.Surface(screen.get_size())
     background = background.convert()
-    background.fill((250, 250, 250))
-
-    #Create the background
-    background = pygame.Surface(screen.get_size())
-    backgtround = background.convert()
-    background.fill((250, 250, 250))
+    background.fill((0,0,0))
 
     #Display The Background
     screen.blit(background, (0,0))
