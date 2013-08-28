@@ -40,6 +40,7 @@ class rocketDivePlayer(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.image, self.rect = load_image('hideRocketDive.png', -1)
         self.velocity = [0,0]
+        self.life = 100
 
     def update(self):
         keys = pygame.key.get_pressed()
@@ -65,8 +66,10 @@ class rocketDiveMeteor(pygame.sprite.Sprite):
         self.rect.x = loc[0]
         self.rect.y = loc[1]
 
-    def update(self):
-        self.rect.y -= 5
+    def update(self,speed):
+        self.rect.y -= speed
+        if self.rect.bottom < 0:
+            self.kill()
 
 class Meter():
     def __init__(self,dimensions,barColor,frameColor,startingAmount, maxAmount):
@@ -113,10 +116,10 @@ def main():
     clock = pygame.time.Clock()
     player1 = rocketDivePlayer()
     player1LifeMeter = Meter((800,0,200,60), (0,255,0),(200,200,200), 100, 100)
-    meteor = rocketDiveMeteor((300,600))
-    meteors = pygame.sprite.Group(meteor)
-    allsprites = pygame.sprite.Group(player1, meteor)
+    meteors = pygame.sprite.Group(rocketDiveMeteor((300,600)))
+    allsprites = pygame.sprite.Group(player1)
     meteorTimer = 30
+    speed = 5
 
     going = True
     while going:
@@ -130,17 +133,21 @@ def main():
 
         screen.blit(background, (0,0))
         meteorTimer -= 1
+
+        speed += 0.005
         if meteorTimer == 0:
             meteors.add(rocketDiveMeteor((randint(0,1000),600)))
             meteorTimer = 30 + randint(-3,20)
         for i in meteors.sprites():
             if player1.rect.colliderect(i.rect):
-                player1LifeMeter.update(50)
+                player1.life -= 10
+                player1LifeMeter.update(player1.life)
+                i.kill()
+        meteors.update(speed)
+        meteors.draw(screen)
         player1LifeMeter.draw(screen)
         allsprites.update()
         allsprites.draw(screen)
-        meteors.update()
-        meteors.draw(screen)
         pygame.display.flip()
 
 if __name__ == '__main__':
