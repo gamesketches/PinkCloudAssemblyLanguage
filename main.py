@@ -1,5 +1,6 @@
 import pygame, sys, os
 from pygame.locals import *
+from random import randint
 
 if not pygame.font: print 'Warning, fonts disabled'
 if not pygame.mixer: print 'Warning, sound disabled'
@@ -113,8 +114,9 @@ def main():
     player1 = rocketDivePlayer()
     player1LifeMeter = Meter((800,0,200,60), (0,255,0),(200,200,200), 100, 100)
     meteor = rocketDiveMeteor((300,600))
-    meteors = [meteor]
+    meteors = pygame.sprite.Group(meteor)
     allsprites = pygame.sprite.Group(player1, meteor)
+    meteorTimer = 30
 
     going = True
     while going:
@@ -127,12 +129,18 @@ def main():
                 pygame.quit()
 
         screen.blit(background, (0,0))
-        for i in meteors:
+        meteorTimer -= 1
+        if meteorTimer == 0:
+            meteors.add(rocketDiveMeteor((randint(0,1000),600)))
+            meteorTimer = 30 + randint(-3,20)
+        for i in meteors.sprites():
             if player1.rect.colliderect(i.rect):
                 player1LifeMeter.update(50)
         player1LifeMeter.draw(screen)
         allsprites.update()
         allsprites.draw(screen)
+        meteors.update()
+        meteors.draw(screen)
         pygame.display.flip()
 
 if __name__ == '__main__':
