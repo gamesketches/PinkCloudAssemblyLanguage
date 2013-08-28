@@ -112,7 +112,8 @@ def main():
     clock = pygame.time.Clock()
     player1 = rocketDivePlayer()
     player1LifeMeter = Meter((800,0,200,60), (0,255,0),(200,200,200), 100, 100)
-    meteor = rocketDiveMeteor((500,600))
+    meteor = rocketDiveMeteor((300,600))
+    meteors = [meteor]
     allsprites = pygame.sprite.Group(player1, meteor)
 
     going = True
@@ -126,6 +127,9 @@ def main():
                 pygame.quit()
 
         screen.blit(background, (0,0))
+        for i in meteors:
+            if player1.rect.colliderect(i.rect):
+                player1LifeMeter.update(50)
         player1LifeMeter.draw(screen)
         allsprites.update()
         allsprites.draw(screen)
