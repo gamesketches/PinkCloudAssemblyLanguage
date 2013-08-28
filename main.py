@@ -57,6 +57,16 @@ class rocketDivePlayer(pygame.sprite.Sprite):
         self.rect.x += self.velocity[0]
         self.rect.y += self.velocity[1]
 
+class rocketDiveMeteor(pygame.sprite.Sprite):
+    def __init__(self, loc):
+        pygame.sprite.Sprite.__init__(self)
+        self.image, self.rect = load_image('magmaBall.png')
+        self.rect.x = loc[0]
+        self.rect.y = loc[1]
+
+    def update(self):
+        self.rect.y -= 5
+
 class Meter():
     def __init__(self,dimensions,barColor,frameColor,startingAmount, maxAmount):
         self.frame = pygame.Surface((dimensions[2],dimensions[3]))
@@ -75,6 +85,7 @@ class Meter():
             self.bar = pygame.Surface((self.perPixel * amount, self.barHeight))
         else:
             self.bar = pygame.Surface((0,0))
+        self.bar.fill(self.barColor)
 
     def draw(self,screen):
         screen.blit(self.frame, (self.x, self.y))
@@ -100,8 +111,9 @@ def main():
     #Prepare Game Objects
     clock = pygame.time.Clock()
     player1 = rocketDivePlayer()
-    player1LifeMeter = Meter((800,0,200,60), (0,022,0),(200,200,200), 100, 100)
-    allsprites = pygame.sprite.Group(player1)
+    player1LifeMeter = Meter((800,0,200,60), (0,255,0),(200,200,200), 100, 100)
+    meteor = rocketDiveMeteor((500,600))
+    allsprites = pygame.sprite.Group(player1, meteor)
 
     going = True
     while going:
