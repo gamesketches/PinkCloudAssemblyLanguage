@@ -62,9 +62,11 @@ class rocketDivePlayer(pygame.sprite.Sprite):
 class rocketDiveMeteor(pygame.sprite.Sprite):
     def __init__(self, loc):
         pygame.sprite.Sprite.__init__(self)
-        self.image, self.rect = load_image('magmaBall.png')
+        self.image, self.rect = load_image('asteroid.png')
         self.rect.x = loc[0]
         self.rect.y = loc[1]
+        self.image = pygame.transform.rotate(self.image, randint(0,360))
+        self.image = pygame.transform.scale(self.image, (self.image.get_width() + randint(-100, 100), self.image.get_height() + randint(-100,100)))
 
     def update(self,speed):
         self.rect.y -= speed
