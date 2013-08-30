@@ -40,17 +40,44 @@ class leatherFacePlayer(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.image, self.rect = load_image('hideRocketDive.png', -1)
         self.velocity = 0
+        self.rect.y = 400
+        self.rect.x = 100
         self.visible = True
 
-        def update(self):
-            keys = pygame.key.get_pressed()
-            if keys[K_LEFT]:
-                self.velocity = -3
-            elif keys[K_RIGHT]:
-                self.velocity = 3
-            else:
-                self.velocity = 0
-            self.rect.x += self.velocity
+    def update(self):
+        keys = pygame.key.get_pressed()
+        if keys[K_LEFT]:
+            self.velocity = -3
+        elif keys[K_RIGHT]:
+            self.velocity = 3
+        elif keys[K_DOWN]:
+            self.visible = False
+        else:
+            self.velocity = 0
+            self.visible = True
+        self.rect.x += self.velocity
+
+class leatherFaceTarget(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image, self.rect = load_image('hideRocketDive.png', -1)
+        self.velocity = 0
+        self.rect.y = 400
+        self.rect.x = 900
+        self.facingRight = True
+        self.switchTimer = 0
+
+    def update(self):
+        if self.facingRight:
+            self.switchTimer += 1
+            if self.switchTimer == 60:
+                self.facingRight = False
+                self.switchTimer = 0
+        else:
+            self.switchTimer += 1
+            if self.switchTimer == 10:
+                self.facingRight = True
+                self.switchTimer = 0
 
 class rocketDivePlayer(pygame.sprite.Sprite):
     def __init__(self):
@@ -165,13 +192,21 @@ def main():
                     player1LifeMeter.update(player1.life)
                     i.kill()
                     if player1.life == 0:
+                        #transition to track 3
                         trackNumber = 3
                         allsprites.empty()
-                        allsprites.add(leatherFacePlayer())
+                        player1 = leatherFacePlayer()
+                        allsprites.add(player1,leatherFaceTarget())
                         meteors.empty()
+                        break
             meteors.update(speed)
             meteors.draw(screen)
             player1LifeMeter.draw(screen)
+        if trackNumber == 3:
+            for i in allsprites.sprites():
+                if type(i) == leatherFaceTarget:
+                    if not i.facingRight and player1.visible:
+                        player1.kill()
         allsprites.update()
         allsprites.draw(screen)
         pygame.display.flip()
