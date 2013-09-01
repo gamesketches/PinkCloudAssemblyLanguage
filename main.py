@@ -79,6 +79,39 @@ class leatherFaceTarget(pygame.sprite.Sprite):
                 self.facingRight = True
                 self.switchTimer = 0
 
+class pinkSpiderPlayer(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image, self.rect = load_image('hideRocketDive.png')
+        self.velocity = [0,0]
+        self.rect.x = 100
+        self.rect.y = 500
+        self.state = "grounded"
+
+    def update(self):
+        keys = pygame.key.get_pressed()
+        if keys[K_LEFT]:
+            self.velocity[0] = -3
+        elif keys[K_RIGHT]:
+            self.velocity[0] = 3
+        elif keys[K_UP]:
+            if self.state == "ladder" or self.rect.colliderect(ladderRect):
+                self.state = "ladder"
+                self.velocity[1] = 5
+        elif keys[K_DOWN]:
+            if self.state == "ladder":
+                self.velocity[1] = -5
+        else:
+            self.velocity[0] = 0
+        self.rect.x += self.velocity[0]
+        if self.state is not "grounded":
+            self.rect.y += self.velocity[1]
+
+class pinkSpiderLadder(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image, self.rect = load_image('ladder.png')
+
 class rocketDivePlayer(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
