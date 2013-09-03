@@ -38,7 +38,7 @@ def load_sound(name):
 class leatherFacePlayer(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image, self.rect = load_image('hideRocketDive.png', -1)
+        self.image, self.rect = load_image('hideLeatherFace.png', -1)
         self.velocity = 0
         self.rect.y = 400
         self.rect.x = 100
@@ -60,7 +60,7 @@ class leatherFacePlayer(pygame.sprite.Sprite):
 class leatherFaceTarget(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image, self.rect = load_image('hideRocketDive.png', -1)
+        self.image, self.rect = load_image('leatherfaceTarget.png', -1)
         self.velocity = 0
         self.rect.y = 400
         self.rect.x = 900
@@ -73,11 +73,13 @@ class leatherFaceTarget(pygame.sprite.Sprite):
             if self.switchTimer == 60:
                 self.facingRight = False
                 self.switchTimer = 0
+                self.image = pygame.transform.flip(self.image, True, False)
         else:
             self.switchTimer += 1
             if self.switchTimer == 10:
                 self.facingRight = True
                 self.switchTimer = 0
+                self.image = pygame.transform.flip(self.image, True, False)
 
 class pinkSpiderPlayer(pygame.sprite.Sprite):
     def __init__(self):
@@ -95,17 +97,19 @@ class pinkSpiderPlayer(pygame.sprite.Sprite):
         elif keys[K_RIGHT]:
             self.velocity[0] = 3
         elif keys[K_UP]:
-            if self.state == "ladder" or self.rect.colliderect(ladderRect):
-                self.state = "ladder"
-                self.velocity[1] = 5
+            #if self.state == "ladder" or self.rect.colliderect(ladderRect):
+            #    self.state = "ladder"
+            #    self.velocity[1] = 5
+            self.velocity[1] = -3
         elif keys[K_DOWN]:
-            if self.state == "ladder":
-                self.velocity[1] = -5
+            #if self.state == "ladder":
+            #    self.velocity[1] = -5
+            self.velocity[1] = 3
         else:
             self.velocity[0] = 0
+            self.velocity[1] = 0
         self.rect.x += self.velocity[0]
-        if self.state is not "grounded":
-            self.rect.y += self.velocity[1]
+        self.rect.y += self.velocity[1]
 
 class pinkSpiderLadder(pygame.sprite.Sprite):
     def __init__(self):
@@ -212,6 +216,7 @@ def main():
                 pygame.quit()
 
         screen.blit(background, (0,0))
+        # ----- Track 2, Rocket Dive -------
         if trackNumber == 2:
             meteorTimer -= 1
 
@@ -235,11 +240,21 @@ def main():
             meteors.update(speed)
             meteors.draw(screen)
             player1LifeMeter.draw(screen)
+        # ----- Track 3, Leather Face -------
         if trackNumber == 3:
             for i in allsprites.sprites():
                 if type(i) == leatherFaceTarget:
                     if not i.facingRight and player1.visible:
                         player1.kill()
+                        allsprites.empty()
+                        player1 = pinkSpiderPlayer()
+                        allsprites.add(player1)
+                        trackNumber = 4
+        # ----- Track 4, Pink Spider -------
+        if trackNumber == 4:
+            spiderWebImage, temp = load_image("spiderweb.png")
+            screen.blit(spiderWebImage, (0,0))
+            
         allsprites.update()
         allsprites.draw(screen)
         pygame.display.flip()
