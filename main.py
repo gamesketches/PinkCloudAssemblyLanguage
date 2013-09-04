@@ -111,6 +111,14 @@ class pinkSpiderPlayer(pygame.sprite.Sprite):
         self.rect.x += self.velocity[0]
         self.rect.y += self.velocity[1]
 
+class pinkSpiderFly(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image, self.rect = load_image('fly.png', -1)
+        self.image = pygame.transform.rotate(self.image, randint(0,360))
+        self.velocity = [0,0]
+        self.caught = False
+
 class pinkSpiderLadder(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
@@ -201,7 +209,7 @@ def main():
     player1LifeMeter = Meter((800,0,200,60), (0,255,0),(200,200,200), 100, 100)
     meteors = pygame.sprite.Group(rocketDiveMeteor((300,600)))
     allsprites = pygame.sprite.Group(player1)
-    meteorTimer = 30
+    frameTimer = 30
     speed = 5
     trackNumber = 2
 
@@ -218,12 +226,12 @@ def main():
         screen.blit(background, (0,0))
         # ----- Track 2, Rocket Dive -------
         if trackNumber == 2:
-            meteorTimer -= 1
+            frameTimer -= 1
 
             speed += 0.005
-            if meteorTimer == 0:
+            if frameTimer == 0:
                 meteors.add(rocketDiveMeteor((randint(0,1000),600)))
-                meteorTimer = 30 + randint(-3,20)
+                frameTimer = 30 + randint(-3,20)
             for i in meteors.sprites():
                 if player1.rect.colliderect(i.rect):
                     player1.life -= 50
@@ -250,11 +258,15 @@ def main():
                         player1 = pinkSpiderPlayer()
                         allsprites.add(player1)
                         trackNumber = 4
+                        frameTimer = 50
+                        spiderWebImage, temp = load_image("spiderweb.png")
         # ----- Track 4, Pink Spider -------
         if trackNumber == 4:
-            spiderWebImage, temp = load_image("spiderweb.png")
             screen.blit(spiderWebImage, (0,0))
-            
+            frameTimer -= 1
+            if frameTimer == 0:
+                allsprites.add(pinkSpiderFly())
+                frameTimer = 200
         allsprites.update()
         allsprites.draw(screen)
         pygame.display.flip()
