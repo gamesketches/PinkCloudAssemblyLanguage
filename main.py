@@ -50,10 +50,11 @@ class leatherFacePlayer(pygame.sprite.Sprite):
             self.velocity = -3
         elif keys[K_RIGHT]:
             self.velocity = 3
-        elif keys[K_DOWN]:
-            self.visible = False
         else:
             self.velocity = 0
+        if keys[K_DOWN]:
+            self.visible = False
+        else:
             self.visible = True
         self.rect.x += self.velocity
 
@@ -66,20 +67,33 @@ class leatherFaceTarget(pygame.sprite.Sprite):
         self.rect.x = 900
         self.facingRight = True
         self.switchTimer = 0
+        self.state = "standing"
 
     def update(self):
-        if self.facingRight:
-            self.switchTimer += 1
-            if self.switchTimer == 60:
-                self.facingRight = False
-                self.switchTimer = 0
-                self.image = pygame.transform.flip(self.image, True, False)
-        else:
-            self.switchTimer += 1
-            if self.switchTimer == 10:
-                self.facingRight = True
-                self.switchTimer = 0
-                self.image = pygame.transform.flip(self.image, True, False)
+        if self.state is "standing":                
+            if self.facingRight:
+                self.switchTimer += 1
+                if self.switchTimer == 60:
+                    self.facingRight = False
+                    self.switchTimer = 0
+                    self.image = pygame.transform.flip(self.image, True, False)
+            else:
+                self.switchTimer += 1
+                if self.switchTimer == 10:
+                    self.facingRight = True
+                    self.switchTimer = 0
+                    self.image = pygame.transform.flip(self.image, True, False)
+        elif self.state is "running":
+            self.frameTimer -= 1
+            if self.frameTimer == 0:
+                self.state = "standing"
+            else:
+                self.rect.x += 5
+
+    def runAway(self):
+        self.state = "running"
+        self.frameTimer = 50
+        self.facingRight = True
 
 class pinkSpiderPlayer(pygame.sprite.Sprite):
     def __init__(self):
@@ -269,6 +283,9 @@ def main():
         if trackNumber == 3:
             for i in allsprites.sprites():
                 if type(i) == leatherFaceTarget:
+                    i.rect.x += -1 * player1.velocity
+                    if i.rect.colliderect(player1.rect):
+                        i.runAway()
                     if not i.facingRight and player1.visible:
                         player1.kill()
                         allsprites.empty()
