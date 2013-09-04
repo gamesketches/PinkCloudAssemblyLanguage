@@ -116,8 +116,25 @@ class pinkSpiderFly(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.image, self.rect = load_image('fly.png', -1)
         self.image = pygame.transform.rotate(self.image, randint(0,360))
-        self.velocity = [0,0]
+        self.rect.x = randint(0,1000)
+        self.rect.y = randint(0,600)
+        self.velocity = [5,0]
         self.caught = False
+        self.frameTimer = 0
+        self.wiggleTime = randint(3,6)
+
+    def update(self):
+        self.frameTimer += 1
+        if self.frameTimer == self.wiggleTime:
+            self.frameTimer = 0
+            self.rect.x += self.velocity[0]
+            self.velocity[0] *= -1
+
+    def getCaught(self):
+        self.caught = True
+        self.image, temp = load_image('wrappedFly.png', -1)
+        self.wiggleTime = 10
+        
 
 class pinkSpiderLadder(pygame.sprite.Sprite):
     def __init__(self):
@@ -267,6 +284,9 @@ def main():
             if frameTimer == 0:
                 allsprites.add(pinkSpiderFly())
                 frameTimer = 200
+                for i in allsprites.sprites():
+                    if type(i) != pinkSpiderPlayer and player1.rect.colliderect(i.rect):
+                        i.getCaught()
         allsprites.update()
         allsprites.draw(screen)
         pygame.display.flip()
