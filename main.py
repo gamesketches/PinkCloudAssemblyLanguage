@@ -217,6 +217,13 @@ class Meter():
         screen.blit(self.frame, (self.x, self.y))
         screen.blit(self.bar, (self.frame.get_width() * 0.025 + self.x, self.frame.get_height() * 0.1))
 
+def changeTrack(trackNumber, spriteList, background, player):
+    spriteList.empty()
+    if trackNumber == 2:
+        player = leatherFacePlayer()
+        spriteList.add(player,leatherFaceTarget())
+    trackNumber += 1
+
 def main():
     
     #Initialize Everything
@@ -269,11 +276,12 @@ def main():
                     player1LifeMeter.update(player1.life)
                     i.kill()
                     if player1.life == 0:
+                        changeTrack(trackNumber, allsprites,background,player1)
                         #transition to track 3
                         trackNumber = 3
-                        allsprites.empty()
-                        player1 = leatherFacePlayer()
-                        allsprites.add(player1,leatherFaceTarget())
+                        #allsprites.empty()
+                        #player1 = leatherFacePlayer()
+                        #allsprites.add(player1,leatherFaceTarget())
                         meteors.empty()
                         break
             meteors.update(speed)
