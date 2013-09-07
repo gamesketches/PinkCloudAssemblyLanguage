@@ -217,12 +217,13 @@ class Meter():
         screen.blit(self.frame, (self.x, self.y))
         screen.blit(self.bar, (self.frame.get_width() * 0.025 + self.x, self.frame.get_height() * 0.1))
 
-def changeTrack(trackNumber, spriteList, background, player):
-    spriteList.empty()
-    if trackNumber == 2:
-        player = leatherFacePlayer()
-        spriteList.add(player,leatherFaceTarget())
-    trackNumber += 1
+def changeTrack(gameData):
+    gameData['spriteList'].empty()
+    if gameData['trackNumber'] == 2:
+        gameData['player'] = leatherFacePlayer()
+        gameData['spriteList'].add(gameData['player'],leatherFaceTarget())
+    gameData['trackNumber'] += 1
+    print gameData['trackNumber']
 
 def main():
     
@@ -250,7 +251,9 @@ def main():
     frameTimer = 30
     speed = 5
     trackNumber = 2
-
+    gameData = {'player': player1,'trackNumber':trackNumber,'spriteList':allsprites,'background':background}
+    print gameData
+    
     going = True
     while going:
         clock.tick(60)
@@ -263,7 +266,7 @@ def main():
 
         screen.blit(background, (0,0))
         # ----- Track 2, Rocket Dive -------
-        if trackNumber == 2:
+        if gameData['trackNumber'] == 2:
             frameTimer -= 1
 
             speed += 0.005
@@ -276,9 +279,10 @@ def main():
                     player1LifeMeter.update(player1.life)
                     i.kill()
                     if player1.life == 0:
-                        changeTrack(trackNumber, allsprites,background,player1)
+                        changeTrack(gameData)
+                        #changeTrack(trackNumber, allsprites,background,player1)
                         #transition to track 3
-                        trackNumber = 3
+                        #trackNumber = 3
                         #allsprites.empty()
                         #player1 = leatherFacePlayer()
                         #allsprites.add(player1,leatherFaceTarget())
@@ -288,10 +292,10 @@ def main():
             meteors.draw(screen)
             player1LifeMeter.draw(screen)
         # ----- Track 3, Leather Face -------
-        if trackNumber == 3:
+        if gameData['trackNumber'] == 3:
             for i in allsprites.sprites():
                 if type(i) == leatherFaceTarget:
-                    i.rect.x += -1 * player1.velocity
+                    i.rect.x += -1 * gameData['player'].velocity
                     if i.rect.colliderect(player1.rect):
                         i.runAway()
                     if not i.facingRight and player1.visible:
