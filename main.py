@@ -35,6 +35,44 @@ def load_sound(name):
         raise SystemExit(str(geterror()))
     return sound
 
+class rocketDivePlayer(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image, self.rect = load_image('hideRocketDive.png', -1)
+        self.velocity = [0,0]
+        self.life = 100
+
+    def update(self):
+        keys = pygame.key.get_pressed()
+        if keys[K_LEFT]:
+            self.velocity[0] = -3
+        elif keys[K_RIGHT]:
+            self.velocity[0] = 3
+        else:
+            self.velocity[0] = 0
+        if keys[K_DOWN]:
+            self.velocity[1] = 3
+        elif keys[K_UP]:
+            self.velocity[1] = -3
+        else:
+            self.velocity[1] = 0
+        self.rect.x += self.velocity[0]
+        self.rect.y += self.velocity[1]
+
+class rocketDiveMeteor(pygame.sprite.Sprite):
+    def __init__(self, loc):
+        pygame.sprite.Sprite.__init__(self)
+        self.image, self.rect = load_image('asteroid.png')
+        self.rect.x = loc[0]
+        self.rect.y = loc[1]
+        self.image = pygame.transform.rotate(self.image, randint(0,360))
+        self.image = pygame.transform.scale(self.image, (self.image.get_width() + randint(-100, 100), self.image.get_height() + randint(-100,100)))
+
+    def update(self,speed):
+        self.rect.y -= speed
+        if self.rect.bottom < 0:
+            self.kill()
+
 class leatherFacePlayer(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
@@ -155,43 +193,40 @@ class pinkSpiderLadder(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.image, self.rect = load_image('ladder.png')
 
-class rocketDivePlayer(pygame.sprite.Sprite):
+class breedingGrid():
+    def __init__(self):
+        self.player = breedingPlayer()
+        self.columns = []
+        NUMCOLUMNS = 10
+        for i in range(NUMCOLUMNS):
+            self.columns[i] = breedingColumn()
+
+class breedingColumn():
+    def __init__(self):
+        self.height = 0
+        self.occupied = False
+
+class breedingPlayer(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image, self.rect = load_image('hideRocketDive.png', -1)
-        self.velocity = [0,0]
-        self.life = 100
+        self.image, self.rect = load_image('rocketDiveHide.png',-1)
+        self.carrying = False
+        self.facingRight = True
+        self.grid = None
+        self.position = 5
 
     def update(self):
         keys = pygame.key.get_pressed()
         if keys[K_LEFT]:
-            self.velocity[0] = -3
+            if self.facingRight:
+                self.facingRight = False
+            else:
+                self.moveLeft()
         elif keys[K_RIGHT]:
-            self.velocity[0] = 3
-        else:
-            self.velocity[0] = 0
-        if keys[K_DOWN]:
-            self.velocity[1] = 3
-        elif keys[K_UP]:
-            self.velocity[1] = -3
-        else:
-            self.velocity[1] = 0
-        self.rect.x += self.velocity[0]
-        self.rect.y += self.velocity[1]
-
-class rocketDiveMeteor(pygame.sprite.Sprite):
-    def __init__(self, loc):
-        pygame.sprite.Sprite.__init__(self)
-        self.image, self.rect = load_image('asteroid.png')
-        self.rect.x = loc[0]
-        self.rect.y = loc[1]
-        self.image = pygame.transform.rotate(self.image, randint(0,360))
-        self.image = pygame.transform.scale(self.image, (self.image.get_width() + randint(-100, 100), self.image.get_height() + randint(-100,100)))
-
-    def update(self,speed):
-        self.rect.y -= speed
-        if self.rect.bottom < 0:
-            self.kill()
+            if self.facingRight:
+                self.moveRight()
+            else:
+                self.facingRight = True
 
 class Meter():
     def __init__(self,dimensions,barColor,frameColor,startingAmount, maxAmount):
