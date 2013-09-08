@@ -222,8 +222,11 @@ def changeTrack(gameData):
     if gameData['trackNumber'] == 2:
         gameData['player'] = leatherFacePlayer()
         gameData['spriteList'].add(gameData['player'],leatherFaceTarget())
+    elif gameData['trackNumber'] == 3:
+        gameData['player'] = pinkSpiderPlayer()
+        gameData['spriteList'].add(gameData['player'])
+        gameData['backGround'], temp = load_image('spiderweb.png')
     gameData['trackNumber'] += 1
-    print gameData['trackNumber']
 
 def main():
     
@@ -280,12 +283,6 @@ def main():
                     i.kill()
                     if player1.life == 0:
                         changeTrack(gameData)
-                        #changeTrack(trackNumber, allsprites,background,player1)
-                        #transition to track 3
-                        #trackNumber = 3
-                        #allsprites.empty()
-                        #player1 = leatherFacePlayer()
-                        #allsprites.add(player1,leatherFaceTarget())
                         meteors.empty()
                         break
             meteors.update(speed)
@@ -296,19 +293,20 @@ def main():
             for i in allsprites.sprites():
                 if type(i) == leatherFaceTarget:
                     i.rect.x += -1 * gameData['player'].velocity
-                    if i.rect.colliderect(player1.rect):
+                    if i.rect.colliderect(gameData['player'].rect):
                         i.runAway()
-                    if not i.facingRight and player1.visible:
-                        player1.kill()
-                        allsprites.empty()
-                        player1 = pinkSpiderPlayer()
-                        allsprites.add(player1)
-                        trackNumber = 4
+                    if not i.facingRight and gameData['player'].visible:
+                        changeTrack(gameData)
+                        #player1.kill()
+                        #allsprites.empty()
+                        #player1 = pinkSpiderPlayer()
+                        #allsprites.add(player1)
+                        #trackNumber = 4
                         frameTimer = 50
-                        spiderWebImage, temp = load_image("spiderweb.png")
+                        #spiderWebImage, temp = load_image("spiderweb.png")
         # ----- Track 4, Pink Spider -------
-        if trackNumber == 4:
-            screen.blit(spiderWebImage, (0,0))
+        if gameData['trackNumber'] == 4:
+            screen.blit(gameData['backGround'], (0,0))
             frameTimer -= 1
             if frameTimer == 0:
                 allsprites.add(pinkSpiderFly())
