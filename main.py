@@ -205,6 +205,25 @@ class breedingGrid():
         for i in range(self.NUMCOLUMNS):
             self.columns[i].drawColumn(screen)
 
+    def allowMove(self,position, goingRight):
+        if goingRight:
+            if position < 9:
+                if abs(self.columns[position].height - self.columns[position + 1].height) <= 1:
+                    return True
+                else:
+                    return False
+            else:
+                return False
+        else:
+            if position > 0:
+                if abs(self.columns[position].height - self.columns[position -1].height) <= 1:
+                    return True
+                else:
+                    return False
+            else:
+                return False
+        
+
 class breedingColumn():
     def __init__(self, number):
         self.height = 0
@@ -230,6 +249,8 @@ class breedingPlayer(pygame.sprite.Sprite):
         self.facingRight = True
         self.grid = grid
         self.position = 5
+        self.rect.x = 500
+        self.rect.y = 400
 
     def update(self):
         keys = pygame.key.get_pressed()
@@ -245,10 +266,14 @@ class breedingPlayer(pygame.sprite.Sprite):
                 self.facingRight = True
 
     def moveRight(self):
-        print "butts"
+        if self.grid.allowMove(self.position, self.facingRight):
+            self.position += 1
+            self.rect.x += 100
 
     def moveLeft(self):
-        print "balls"
+        if self.grid.allowMove(self.position, self.facingRight):
+            self.position -= 1
+            self.rect.x -= 100
 
 class breedingBlock(pygame.Surface):
     def __init__(self):
