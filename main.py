@@ -197,14 +197,30 @@ class breedingGrid():
     def __init__(self):
         self.player = breedingPlayer()
         self.columns = []
-        NUMCOLUMNS = 10
-        for i in range(NUMCOLUMNS):
-            self.columns[i] = breedingColumn()
+        self.NUMCOLUMNS = 10
+        for i in range(self.NUMCOLUMNS):
+            self.columns[i] = breedingColumn(i)
+
+    def draw(self,screen):
+        for i in range(self.NUMCOLUMNS):
+            self.columns[i].drawColumn(screen)
 
 class breedingColumn():
-    def __init__(self):
+    def __init__(self, number):
         self.height = 0
         self.occupied = False
+        self.number = number
+
+    def addBlock(self):
+        self.height += 1
+        
+    def removeBlock(self):
+        if self.height > 0:
+            self.height -= 1
+        
+    def drawColumn(self,screen):
+        for i in range(self.height):
+            screen.blit(breedingBlock(), (self.number * 200, 600 - i * 100))
 
 class breedingPlayer(pygame.sprite.Sprite):
     def __init__(self):
@@ -227,6 +243,11 @@ class breedingPlayer(pygame.sprite.Sprite):
                 self.moveRight()
             else:
                 self.facingRight = True
+
+class breedingBlock(pygame.Surface):
+    def __init__(self):
+        pygame.Surface.__init__(self, (200,100))
+        self.fill((250,0,0))
 
 class Meter():
     def __init__(self,dimensions,barColor,frameColor,startingAmount, maxAmount):
@@ -261,6 +282,14 @@ def changeTrack(gameData):
         gameData['player'] = pinkSpiderPlayer()
         gameData['spriteList'].add(gameData['player'])
         gameData['backGround'], temp = load_image('spiderweb.png')
+    elif gameData['trackNumber'] == 4:
+        gameData['grid'] = breedingGrid()
+        gameData['grid'].columns[1].height = 3
+        gameData['player'] = gameData['grid'].player
+        gameData['spriteList'].add(gameData['player'])
+        gameData['backGround'].fill((0,0,0))
+        # Temporarily skipping to that track
+        gameData['trackNumber'] = 7
     gameData['trackNumber'] += 1
 
 def main():
@@ -349,6 +378,12 @@ def main():
                 for i in allsprites.sprites():
                     if type(i) != pinkSpiderPlayer and player1.rect.colliderect(i.rect):
                         i.getCaught()
+                        changeTrack(gameData)
+        # ----- Track 8, Breeding ------
+        if gameData['trackNumber'] == 8:
+            screen.blit(gameData['background'], (0,0))
+            gameData['grid'].draw(screen)
+            
         allsprites.update()
         allsprites.draw(screen)
         pygame.display.flip()
