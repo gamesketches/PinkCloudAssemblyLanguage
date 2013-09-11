@@ -195,7 +195,7 @@ class pinkSpiderLadder(pygame.sprite.Sprite):
 
 class breedingGrid():
     def __init__(self):
-        self.player = breedingPlayer()
+        self.player = breedingPlayer(self)
         self.columns = []
         self.NUMCOLUMNS = 10
         for i in range(self.NUMCOLUMNS):
@@ -223,12 +223,12 @@ class breedingColumn():
             screen.blit(breedingBlock(), (self.number * 200, 600 - i * 100))
 
 class breedingPlayer(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, grid):
         pygame.sprite.Sprite.__init__(self)
         self.image, self.rect = load_image('hideRocketDive.png',-1)
         self.carrying = False
         self.facingRight = True
-        self.grid = None
+        self.grid = grid
         self.position = 5
 
     def update(self):
@@ -243,6 +243,12 @@ class breedingPlayer(pygame.sprite.Sprite):
                 self.moveRight()
             else:
                 self.facingRight = True
+
+    def moveRight(self):
+        print "butts"
+
+    def moveLeft(self):
+        print "balls"
 
 class breedingBlock(pygame.Surface):
     def __init__(self):
