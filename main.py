@@ -222,7 +222,20 @@ class breedingGrid():
                     return False
             else:
                 return False
-        
+
+    def allowPickup(self, position, facingRight):
+        if facingRight and position < 9:
+            if abs(self.columns[position].height - self.columns[position +1].height) <= 1:
+                self.columns[position + 1].height -= 1
+                return True
+            else:
+                return False
+        elif position > 0:
+            if abs(self.columns[position].height - self.columns[position -1].height) <= 1:
+                self.columns[position -1].height -= 1
+                return True
+            else:
+                return False
 
 class breedingColumn():
     def __init__(self, number):
@@ -264,6 +277,11 @@ class breedingPlayer(pygame.sprite.Sprite):
                 self.moveRight()
             else:
                 self.facingRight = True
+        elif keys[K_UP]:
+            if not self.carrying:
+                if self.grid.allowPickup(self.position, self.facingRight):
+                    self.carrying = True
+                
 
     def moveRight(self):
         if self.grid.allowMove(self.position, self.facingRight):
