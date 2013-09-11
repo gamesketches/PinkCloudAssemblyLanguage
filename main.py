@@ -199,7 +199,7 @@ class breedingGrid():
         self.columns = []
         self.NUMCOLUMNS = 10
         for i in range(self.NUMCOLUMNS):
-            self.columns[i] = breedingColumn(i)
+            self.columns.append(breedingColumn(i))
 
     def draw(self,screen):
         for i in range(self.NUMCOLUMNS):
@@ -225,7 +225,7 @@ class breedingColumn():
 class breedingPlayer(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image, self.rect = load_image('rocketDiveHide.png',-1)
+        self.image, self.rect = load_image('hideRocketDive.png',-1)
         self.carrying = False
         self.facingRight = True
         self.grid = None
@@ -319,7 +319,6 @@ def main():
     speed = 5
     trackNumber = 2
     gameData = {'player': player1,'trackNumber':trackNumber,'spriteList':allsprites,'background':background}
-    print gameData
     
     going = True
     while going:
@@ -375,10 +374,10 @@ def main():
             if frameTimer == 0:
                 allsprites.add(pinkSpiderFly())
                 frameTimer = 200
-                for i in allsprites.sprites():
-                    if type(i) != pinkSpiderPlayer and player1.rect.colliderect(i.rect):
-                        i.getCaught()
-                        changeTrack(gameData)
+            for i in allsprites.sprites():
+                if type(i) != pinkSpiderPlayer and gameData['player'].rect.colliderect(i.rect):
+                    i.getCaught()
+                    changeTrack(gameData)
         # ----- Track 8, Breeding ------
         if gameData['trackNumber'] == 8:
             screen.blit(gameData['background'], (0,0))
