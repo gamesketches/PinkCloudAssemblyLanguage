@@ -268,7 +268,7 @@ class breedingColumn():
         
     def drawColumn(self,screen):
         for i in range(self.height + 1):
-            pygame.draw.rect(screen, (250,0,0), pygame.Rect(self.number + 1 * 100,600-i*100, 100, 100))
+            pygame.draw.rect(screen, (250,0,0), pygame.Rect((self.number + 1) * 100,600-i*100, 100, 100))
 
 class breedingPlayer(pygame.sprite.Sprite):
     def __init__(self, grid):
@@ -279,7 +279,7 @@ class breedingPlayer(pygame.sprite.Sprite):
         self.locked = False
         self.grid = grid
         self.position = 2
-        self.rect.x = 200
+        self.rect.x = (self.position + 1) * 100
         self.rect.y = 600 - self.rect.height
 
     def update(self):
