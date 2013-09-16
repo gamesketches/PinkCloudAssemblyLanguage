@@ -378,6 +378,8 @@ def main():
                 pygame.quit()
             elif event.type == KEYDOWN and event.key == K_ESCAPE:
                 pygame.quit()
+            elif event.type == KEYDOWN and event.key == K_p:
+                changeTrack(gameData)
 
         screen.blit(background, (0,0))
         # ----- Track 2, Rocket Dive -------
@@ -409,13 +411,7 @@ def main():
                         i.runAway()
                     if not i.facingRight and gameData['player'].visible:
                         changeTrack(gameData)
-                        #player1.kill()
-                        #allsprites.empty()
-                        #player1 = pinkSpiderPlayer()
-                        #allsprites.add(player1)
-                        #trackNumber = 4
                         frameTimer = 50
-                        #spiderWebImage, temp = load_image("spiderweb.png")
         # ----- Track 4, Pink Spider -------
         if gameData['trackNumber'] == 4:
             screen.blit(gameData['backGround'], (0,0))
