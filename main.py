@@ -224,11 +224,11 @@ class fishScratchFeverObstacle(pygame.sprite.Sprite):
         self.rect.topleft = (470, 340)
 
     def updateDistance(self, speed):
-        self.distance -= speed
+        self.distance = int(speed)
         
     def update(self):
-        scalar = 10.0 / self.distance
-        self.image = pygame.transform.smoothscale(self.image, (int(self.image.get_width() * scalar), int(self.image.get_height() * scalar)))
+        scalar = self.distance
+        self.image = pygame.transform.smoothscale(self.image, (self.image.get_width() + scalar, self.image.get_height() + scalar))
 
 class breedingGrid():
     def __init__(self):
