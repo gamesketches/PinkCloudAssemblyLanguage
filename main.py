@@ -196,11 +196,21 @@ class pinkSpiderLadder(pygame.sprite.Sprite):
 class fishScratchFeverPlayer():
     def __init__(self):
         self.fishNum = 4
-        self.speed = 10
+        self.speed = 1
         self.state = "neutral"
         frameTimer = 0
-        self.fishPic, temp = load_image("wrappedFly.png")
+        self.fishPic, temp = load_image("salmon.png", -1)
 
+    def update(self):
+        self.speed += 0.01
+        return self.speed
+
+    def draw(self, screen):
+        screen.blit(pygame.transform.rotate(pygame.transform.flip(self.fishPic, True, False), - 25),(250, 500))
+        screen.blit(pygame.transform.rotate(pygame.transform.flip(self.fishPic,True,False), -12), (380,520))
+        screen.blit(pygame.transform.rotate(self.fishPic, 12), (620,520))
+        screen.blit(pygame.transform.rotate(self.fishPic, 25), (750, 500))
+        
 class fishScratchFeverObstacle(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
@@ -388,6 +398,7 @@ def changeTrack(gameData):
         newBackground.fill((0,0,0))
         pygame.draw.polygon(newBackground,(20,40,200),[(0,600),(470,340),(530,340),(1000,600)])
         gameData['backGround'] = newBackground
+        gameData['player'] = fishScratchFeverPlayer()
         gameData['spriteList'].add(fishScratchFeverObstacle())
     # Change track to Breeding
     elif gameData['trackNumber'] == 6:
@@ -486,7 +497,7 @@ def main():
         if gameData['trackNumber'] == 6:
             screen.blit(gameData['backGround'],(0,0))
             allsprites = gameData['spriteList']
-            
+            gameData['player'].draw(screen)
         # ----- Track 8, Breeding ------
         if gameData['trackNumber'] == 8:
             screen.blit(gameData['background'], (0,0))
