@@ -221,6 +221,14 @@ class fishScratchFeverObstacle(pygame.sprite.Sprite):
             self.image, self.rect = load_image("log.png", -1)
         else:
             self.image, self.rect = load_image("log.png", -1)
+        self.rect.topleft = (470, 340)
+
+    def updateDistance(self, speed):
+        self.distance -= speed
+        
+    def update(self):
+        scalar = 10.0 / self.distance
+        self.image = pygame.transform.smoothscale(self.image, (int(self.image.get_width() * scalar), int(self.image.get_height() * scalar)))
 
 class breedingGrid():
     def __init__(self):
@@ -497,6 +505,9 @@ def main():
         if gameData['trackNumber'] == 6:
             screen.blit(gameData['backGround'],(0,0))
             allsprites = gameData['spriteList']
+            curSpeed = gameData['player'].update()
+            for i in allsprites.sprites():
+                i.updateDistance(curSpeed)
             gameData['player'].draw(screen)
         # ----- Track 8, Breeding ------
         if gameData['trackNumber'] == 8:
