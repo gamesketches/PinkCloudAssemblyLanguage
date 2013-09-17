@@ -193,6 +193,14 @@ class pinkSpiderLadder(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.image, self.rect = load_image('ladder.png')
 
+class fishScratchFeverPlayer():
+    def __init__(self):
+        self.fishNum = 4
+        self.speed = 10
+        self.state = "neutral"
+        frameTimer = 0
+        self.fishPic, temp = load_image("wrappedFly.png")
+
 class breedingGrid():
     def __init__(self):
         self.player = breedingPlayer(self)
@@ -360,6 +368,13 @@ def changeTrack(gameData):
         gameData['spriteList'].add(gameData['player'])
         gameData['backGround'], temp = load_image('spiderweb.png')
     elif gameData['trackNumber'] == 4:
+        gameData['trackNumber'] = 5
+        newBackground = pygame.Surface((1000,600))
+        newBackground = newBackground.convert()
+        newBackground.fill((0,0,0))
+        pygame.draw.polygon(newBackground,(20,40,200),[(0,600),(470,340),(530,340),(1000,600)])
+        gameData['backGround'] = newBackground
+    elif gameData['trackNumber'] == 6:
         gameData['grid'] = breedingGrid()
         gameData['grid'].columns[0].height = 2
         gameData['grid'].columns[1].height = 1
@@ -452,6 +467,9 @@ def main():
                 if type(i) != pinkSpiderPlayer and gameData['player'].rect.colliderect(i.rect):
                     i.getCaught()
                     changeTrack(gameData)
+        # ----- Track 6, Fish Scratch Fever -----
+        if gameData['trackNumber'] == 6:
+            screen.blit(gameData['backGround'],(0,0))
         # ----- Track 8, Breeding ------
         if gameData['trackNumber'] == 8:
             screen.blit(gameData['background'], (0,0))
