@@ -196,6 +196,9 @@ class pinkSpiderLadder(pygame.sprite.Sprite):
 class breedingGrid():
     def __init__(self):
         self.player = breedingPlayer(self)
+        self.goal = pygame.sprite.Sprite()
+        self.goal.image, self.goal.rect = load_image("magmaBall.png")
+        self.goal.rect.topleft = (900,50)
         self.columns = []
         self.NUMCOLUMNS = 10
         for i in range(self.NUMCOLUMNS):
@@ -206,6 +209,7 @@ class breedingGrid():
             self.columns[i].drawColumn(screen)
         if self.player.carrying:
             pygame.draw.rect(screen,(250,0,0),pygame.Rect(self.player.rect.left,self.player.rect.top - 100, 100, 100))
+        screen.blit(self.goal.image, self.goal.rect.topleft)
 
     def allowMove(self,position, goingRight):
         if goingRight:
@@ -246,7 +250,7 @@ class breedingGrid():
                     self.columns[position -1].removeBlock()
                     return True
                 elif action is "drop":
-                    self.columns[position +1].addBlock()
+                    self.columns[position -1].addBlock()
                     return True
                 else:
                     return False
@@ -357,6 +361,7 @@ def changeTrack(gameData):
         gameData['backGround'], temp = load_image('spiderweb.png')
     elif gameData['trackNumber'] == 4:
         gameData['grid'] = breedingGrid()
+        gameData['grid'].columns[0].height = 2
         gameData['grid'].columns[1].height = 1
         gameData['player'] = gameData['grid'].player
         gameData['spriteList'].add(gameData['player'])
