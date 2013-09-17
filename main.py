@@ -201,6 +201,17 @@ class fishScratchFeverPlayer():
         frameTimer = 0
         self.fishPic, temp = load_image("wrappedFly.png")
 
+class fishScratchFeverObstacle(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        typeList = {0:"log",1:"bear",2:"food",3:"Damn"}
+        self.type = typeList[randint(0,3)]
+        self.distance = 100
+        if self.type == "log":
+            self.image, self.rect = load_image("log.png", -1)
+        else:
+            self.image, self.rect = load_image("log.png", -1)
+
 class breedingGrid():
     def __init__(self):
         self.player = breedingPlayer(self)
@@ -360,20 +371,25 @@ class Meter():
 
 def changeTrack(gameData):
     gameData['spriteList'].empty()
+    # Change track to Leather Face
     if gameData['trackNumber'] == 2:
         gameData['player'] = leatherFacePlayer()
         gameData['spriteList'].add(gameData['player'],leatherFaceTarget())
+    # Change track to Pink Spider
     elif gameData['trackNumber'] == 3:
         gameData['player'] = pinkSpiderPlayer()
         gameData['spriteList'].add(gameData['player'])
         gameData['backGround'], temp = load_image('spiderweb.png')
+    # Change track to Fish Scratch Fever
     elif gameData['trackNumber'] == 4:
-        gameData['trackNumber'] = 5
+        gameData['trackNumber'] = 5 # remove this line later
         newBackground = pygame.Surface((1000,600))
         newBackground = newBackground.convert()
         newBackground.fill((0,0,0))
         pygame.draw.polygon(newBackground,(20,40,200),[(0,600),(470,340),(530,340),(1000,600)])
         gameData['backGround'] = newBackground
+        gameData['spriteList'].add(fishScratchFeverObstacle())
+    # Change track to Breeding
     elif gameData['trackNumber'] == 6:
         gameData['grid'] = breedingGrid()
         gameData['grid'].columns[0].height = 2
@@ -381,8 +397,7 @@ def changeTrack(gameData):
         gameData['player'] = gameData['grid'].player
         gameData['spriteList'].add(gameData['player'])
         gameData['backGround'].fill((0,0,0))
-        # Temporarily skipping to that track
-        gameData['trackNumber'] = 7
+        gameData['trackNumber'] = 7 #remove this line later
     gameData['trackNumber'] += 1
 
 def main():
@@ -470,6 +485,8 @@ def main():
         # ----- Track 6, Fish Scratch Fever -----
         if gameData['trackNumber'] == 6:
             screen.blit(gameData['backGround'],(0,0))
+            allsprites = gameData['spriteList']
+            
         # ----- Track 8, Breeding ------
         if gameData['trackNumber'] == 8:
             screen.blit(gameData['background'], (0,0))
