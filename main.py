@@ -149,13 +149,8 @@ class pinkSpiderPlayer(pygame.sprite.Sprite):
         elif keys[K_RIGHT]:
             self.velocity[0] = 3
         elif keys[K_UP]:
-            #if self.state == "ladder" or self.rect.colliderect(ladderRect):
-            #    self.state = "ladder"
-            #    self.velocity[1] = 5
             self.velocity[1] = -3
         elif keys[K_DOWN]:
-            #if self.state == "ladder":
-            #    self.velocity[1] = -5
             self.velocity[1] = 3
         else:
             self.velocity[0] = 0
@@ -198,18 +193,33 @@ class fishScratchFeverPlayer():
         self.fishNum = 4
         self.speed = 1
         self.state = "neutral"
-        frameTimer = 0
+        self.frameTimer = 0
         self.fishPic, temp = load_image("salmon.png", -1)
 
     def update(self):
-        self.speed += 0.01
+        if self.state == "neutral":
+            keys = pygame.key.get_pressed()
+            if keys[K_UP]:
+                self.state = "jumping"
+                self.frameTimer = 100
+            self.speed += 0.01
+        elif self.state == "jumping":
+            self.frameTimer -= 1
+            if self.frameTimer == 0:
+                self.state = "neutral"
         return self.speed
 
     def draw(self, screen):
-        screen.blit(pygame.transform.rotate(pygame.transform.flip(self.fishPic, True, False), - 25),(250, 500))
-        screen.blit(pygame.transform.rotate(pygame.transform.flip(self.fishPic,True,False), -12), (380,520))
-        screen.blit(pygame.transform.rotate(self.fishPic, 12), (620,520))
-        screen.blit(pygame.transform.rotate(self.fishPic, 25), (750, 500))
+        if self.state is "neutral":
+            screen.blit(pygame.transform.rotate(pygame.transform.flip(self.fishPic, True, False), - 25),(250, 500))
+            screen.blit(pygame.transform.rotate(pygame.transform.flip(self.fishPic,True,False), -12), (380,520))
+            screen.blit(pygame.transform.rotate(self.fishPic, 12), (620,520))
+            screen.blit(pygame.transform.rotate(self.fishPic, 25), (750, 500))
+        elif self.state is "jumping":
+            screen.blit(pygame.transform.rotate(pygame.transform.flip(self.fishPic, True, False), - 25),(250, 400))
+            screen.blit(pygame.transform.rotate(pygame.transform.flip(self.fishPic,True,False), -12), (380,420))
+            screen.blit(pygame.transform.rotate(self.fishPic, 12), (620,420))
+            screen.blit(pygame.transform.rotate(self.fishPic, 25), (750, 400))
         
 class fishScratchFeverObstacle(pygame.sprite.Sprite):
     def __init__(self):
@@ -221,19 +231,24 @@ class fishScratchFeverObstacle(pygame.sprite.Sprite):
             self.image, self.rect = load_image("log.png", -1)
         else:
             self.image, self.rect = load_image("log.png", -1)
+        self.originalImage = self.image
         self.rect.topleft = (470, 340)
 
     def updateDistance(self, speed):
         self.distance -= speed
+        self.rect.y += 2 * speed
+        if self.distance <= 0:
+            self.kill()
         
     def update(self):
-        scaleWidth = self.image.get_width() - int(self.distance)
-        scaleHeight = self.image.get_height() - int(self.distance)
+        scaleWidth = self.originalImage.get_width() - int(self.distance)
+        scaleHeight = self.originalImage.get_height() - int(self.distance)
         if scaleWidth < 0:
             scaleWidth = 1
         if scaleHeight < 0:
             scaleHeight = 1
-        self.image = pygame.transform.smoothscale(self.image, (scaleWidth, scaleHeight))
+        self.image = pygame.transform.scale(self.originalImage, (scaleWidth, scaleHeight))
+        self.rect.centerx = 500
 
 class breedingGrid():
     def __init__(self):
