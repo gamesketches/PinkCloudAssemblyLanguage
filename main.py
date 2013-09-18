@@ -231,6 +231,19 @@ class fishScratchFeverPlayer():
             screen.blit(self.fishShadow, (620, 520))
             screen.blit(pygame.transform.rotate(self.fishPic, 25), (750, 400))
             screen.blit(self.fishShadow, (750, 500))
+        elif self.state is "submerged":
+            screen.blit(self.fishShadow, (250,500))
+            screen.blit(self.fishShadow, (380, 520))
+            screen.blit(self.fishShadow, (620, 520))
+            screen.blit(self.fishShadow, (750, 500))
+
+    def gameOverKa(self, obstacle):
+        print "gameOverKa with argument: ", obstacle
+        if obstacle is "log":
+            if self.state is "jumping":
+                return False
+            else:
+                return True
         
 class fishScratchFeverObstacle(pygame.sprite.Sprite):
     def __init__(self):
@@ -242,6 +255,7 @@ class fishScratchFeverObstacle(pygame.sprite.Sprite):
             self.image, self.rect = load_image("log.png", -1)
         else:
             self.image, self.rect = load_image("log.png", -1)
+            self.type = "log"
         self.originalImage = self.image
         self.rect.topleft = (470, 340)
 
@@ -253,7 +267,7 @@ class fishScratchFeverObstacle(pygame.sprite.Sprite):
         
     def update(self):
         scaleWidth = self.originalImage.get_width() - int(self.distance)
-        scaleHeight = self.originalImage.get_height() - int(self.distance)
+        scaleHeight = self.originalImage.get_height() - (int(self.distance) / 2)
         if scaleWidth < 0:
             scaleWidth = 1
         if scaleHeight < 0:
@@ -537,9 +551,12 @@ def main():
             screen.blit(gameData['backGround'],(0,0))
             allsprites = gameData['spriteList']
             curSpeed = gameData['player'].update()
+            gameData['player'].draw(screen)
             for i in allsprites.sprites():
                 i.updateDistance(curSpeed)
-            gameData['player'].draw(screen)
+                if i.distance <= 0:
+                    if gameData['player'].gameOverKa(i.type):
+                        changeTrack(gameData)
         # ----- Track 8, Breeding ------
         if gameData['trackNumber'] == 8:
             screen.blit(gameData['background'], (0,0))
