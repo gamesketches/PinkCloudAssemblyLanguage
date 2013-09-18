@@ -194,15 +194,15 @@ class doubtPlayer():
         keys = pygame.key.get_pressed()
         if keys[K_UP]:
             if self.slope['y'] < 6:
-                self.slope['y'] += 1
+                self.slope['y'] -= 1
         elif keys[K_DOWN]:
             if self.slope['y'] > -6:
-                self.slope['y'] -= 1
+                self.slope['y'] += 1
         else:
             if self.slope['y'] < 0:
-                self.slope['y'] += 0.3
-            elif self.slope['y'] > 0:
                 self.slope['y'] -= 0.3
+            elif self.slope['y'] > 0:
+                self.slope['y'] += 0.3
         if keys[K_RIGHT]:
             if self.slope['x'] < 6:
                 self.slope['x'] += 1
@@ -214,6 +214,7 @@ class doubtPlayer():
                 self.slope['x'] += 0.3
             elif self.slope['x'] > 0:
                 self.slope['x'] -= 0.3
+        self.sprite.rect = self.sprite.rect.move(self.slope['x'],self.slope['y'])
             
 
 class fishScratchFeverPlayer():
@@ -585,6 +586,7 @@ def main():
         if gameData['trackNumber'] == 5:
             screen.blit(gameData['backGround'], (0,0))
             allsprites = gameData['spriteList']
+            gameData['player'].update()
         # ----- Track 6, Fish Scratch Fever -----
         if gameData['trackNumber'] == 6:
             screen.blit(gameData['backGround'],(0,0))
