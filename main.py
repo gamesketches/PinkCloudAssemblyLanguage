@@ -471,9 +471,16 @@ def changeTrack(gameData):
         gameData['player'] = pinkSpiderPlayer()
         gameData['spriteList'].add(gameData['player'])
         gameData['backGround'], temp = load_image('spiderweb.png')
-    # Change track to Fish Scratch Fever
+    # Change track to Doubt '97
     elif gameData['trackNumber'] == 4:
-        gameData['trackNumber'] = 5 # remove this line later
+        gameData['player'] = doubtPlayer()
+        gameData['spriteList'].add(gameData['player'].sprite)
+        newBackground = pygame.Surface((1000,600))
+        newBackground = newBackground.convert()
+        newBackground.fill((0,0,0))
+        gameData['backGround'] = newBackground
+    # Change track to Fish Scratch Fever    
+    elif gameData['trackNumber'] == 5: # remove this line later
         newBackground = pygame.Surface((1000,600))
         newBackground = newBackground.convert()
         newBackground.fill((0,0,0))
@@ -574,6 +581,10 @@ def main():
                 if type(i) != pinkSpiderPlayer and gameData['player'].rect.colliderect(i.rect):
                     i.getCaught()
                     changeTrack(gameData)
+        # ----- Track 5, Doubt -----
+        if gameData['trackNumber'] == 5:
+            screen.blit(gameData['backGround'], (0,0))
+            allsprites = gameData['spriteList']
         # ----- Track 6, Fish Scratch Fever -----
         if gameData['trackNumber'] == 6:
             screen.blit(gameData['backGround'],(0,0))
