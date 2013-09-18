@@ -195,15 +195,22 @@ class fishScratchFeverPlayer():
         self.state = "neutral"
         self.frameTimer = 0
         self.fishPic, temp = load_image("salmon.png", -1)
+        self.fishShadow = pygame.Surface((30,30))
+        self.fishShadow = self.fishShadow.convert()
+        self.fishShadow.fill((20,40,200))
+        pygame.draw.circle(self.fishShadow,(10,20,100),(15,15) ,15)
 
     def update(self):
         if self.state == "neutral":
             keys = pygame.key.get_pressed()
             if keys[K_UP]:
                 self.state = "jumping"
-                self.frameTimer = 100
+                self.frameTimer = 80
+            if keys[K_DOWN]:
+                self.state = "submerged"
+                self.frameTimer = 80
             self.speed += 0.01
-        elif self.state == "jumping":
+        elif self.state is "jumping" or self.state == "submerged":
             self.frameTimer -= 1
             if self.frameTimer == 0:
                 self.state = "neutral"
@@ -217,9 +224,13 @@ class fishScratchFeverPlayer():
             screen.blit(pygame.transform.rotate(self.fishPic, 25), (750, 500))
         elif self.state is "jumping":
             screen.blit(pygame.transform.rotate(pygame.transform.flip(self.fishPic, True, False), - 25),(250, 400))
+            screen.blit(self.fishShadow, (250,500))
             screen.blit(pygame.transform.rotate(pygame.transform.flip(self.fishPic,True,False), -12), (380,420))
+            screen.blit(self.fishShadow, (380, 520))
             screen.blit(pygame.transform.rotate(self.fishPic, 12), (620,420))
+            screen.blit(self.fishShadow, (620, 520))
             screen.blit(pygame.transform.rotate(self.fishPic, 25), (750, 400))
+            screen.blit(self.fishShadow, (750, 500))
         
 class fishScratchFeverObstacle(pygame.sprite.Sprite):
     def __init__(self):
