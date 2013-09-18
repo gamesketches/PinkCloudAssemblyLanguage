@@ -183,10 +183,38 @@ class pinkSpiderFly(pygame.sprite.Sprite):
         self.wiggleTime = 10
         
 
-class pinkSpiderLadder(pygame.sprite.Sprite):
+class doubtPlayer():
     def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.image, self.rect = load_image('ladder.png')
+        self.tail = []
+        self.slope = {'x':0,'y':0}
+        self.sprite = pygame.sprite.Sprite()
+        self.sprite.image, self.sprite.rect = load_image('hideRocketDive.png')
+
+    def update(self):
+        keys = pygame.key.get_pressed()
+        if keys[K_UP]:
+            if self.slope['y'] < 6:
+                self.slope['y'] += 1
+        elif keys[K_DOWN]:
+            if self.slope['y'] > -6:
+                self.slope['y'] -= 1
+        else:
+            if self.slope['y'] < 0:
+                self.slope['y'] += 0.3
+            elif self.slope['y'] > 0:
+                self.slope['y'] -= 0.3
+        if keys[K_RIGHT]:
+            if self.slope['x'] < 6:
+                self.slope['x'] += 1
+        elif keys[K_LEFT]:
+            if self.slope['x'] > -6:
+                self.slope['x'] -= 1
+        else:
+            if self.slope['x'] < 0:
+                self.slope['x'] += 0.3
+            elif self.slope['x'] > 0:
+                self.slope['x'] -= 0.3
+            
 
 class fishScratchFeverPlayer():
     def __init__(self):
