@@ -388,9 +388,10 @@ class breedingColumn():
 class breedingPlayer(pygame.sprite.Sprite):
     def __init__(self, grid):
         pygame.sprite.Sprite.__init__(self)
-        self.image, self.rect = load_image('hideRocketDive.png',-1)
+        self.image, self.rect = load_image('breedingHide.png',-1)
         self.carrying = False
         self.facingRight = True
+        self.image = pygame.transform.flip(self.image, True, False)
         self.locked = False
         self.grid = grid
         self.position = 2
@@ -403,6 +404,7 @@ class breedingPlayer(pygame.sprite.Sprite):
             if keys[K_LEFT]:
                 if self.facingRight:
                     self.facingRight = False
+                    self.image = pygame.transform.flip(self.image, True, False)
                 else:
                     self.moveLeft()
                 self.locked = True
@@ -411,6 +413,7 @@ class breedingPlayer(pygame.sprite.Sprite):
                     self.moveRight()
                 else:
                     self.facingRight = True
+                    self.image = pygame.transform.flip(self.image, True, False)
                 self.locked = True
             elif keys[K_UP]:
                 if not self.carrying:
