@@ -529,7 +529,8 @@ def main():
     frameTimer = 30
     speed = 5
     trackNumber = 2
-    gameData = {'player': player1,'trackNumber':trackNumber,'spriteList':allsprites,'background':background}
+    gameData = {'player': player1,'trackNumber':trackNumber,'spriteList':allsprites,'background':background,'distance':1000}
+    distanceTracker = pygame.font.Font(None, 36)
     
     going = True
     while going:
@@ -549,6 +550,8 @@ def main():
             frameTimer -= 1
 
             speed += 0.005
+            gameData['distance'] -= (speed / 50)
+            
             if frameTimer == 0:
                 meteors.add(rocketDiveMeteor((randint(0,1000),600)))
                 frameTimer = 30 + randint(-3,20)
@@ -561,9 +564,13 @@ def main():
                         changeTrack(gameData)
                         meteors.empty()
                         break
+            if gameData['distance'] <= 0:
+                changeTrack(gameData)
+                meteors.empty()
             meteors.update(speed)
             meteors.draw(screen)
             player1LifeMeter.draw(screen)
+            screen.blit(distanceTracker.render(str(gameData['distance']), 1, (200,10,10)), (900,500))
         # ----- Track 3, Leather Face -------
         if gameData['trackNumber'] == 3:
             for i in allsprites.sprites():
