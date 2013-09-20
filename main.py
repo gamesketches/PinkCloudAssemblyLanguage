@@ -35,6 +35,18 @@ def load_sound(name):
         raise SystemExit(str(geterror()))
     return sound
 
+class equalizingNumber():
+    def __init__(self,number):
+        self.number = number
+
+    def add(self,number):
+        if number < 0:
+            return number + self.number
+        elif number > 0:
+            return number - self.number
+    def increase(self,number):
+        self.number += number
+
 class rocketDivePlayer(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
@@ -200,9 +212,9 @@ class doubtPlayer():
                 self.slope['y'] += 1
         else:
             if self.slope['y'] < 0:
-                self.slope['y'] -= 0.3
-            elif self.slope['y'] > 0:
                 self.slope['y'] += 0.3
+            elif self.slope['y'] > 0:
+                self.slope['y'] -= 0.3
         if keys[K_RIGHT]:
             if self.slope['x'] < 6:
                 self.slope['x'] += 1
@@ -215,7 +227,26 @@ class doubtPlayer():
             elif self.slope['x'] > 0:
                 self.slope['x'] -= 0.3
         self.sprite.rect = self.sprite.rect.move(self.slope['x'],self.slope['y'])
-            
+
+class doubtEnemy(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image, self.rect = load_image("fly.png", -1)
+        self.velocity = [0,0]
+        self.acceleration = 0
+
+    def update(self):
+        if abs(self.velocity[0]) + abs(self.velocity[1]) < 1:
+            self.acceleration = equalizingNumber(0.0003)
+            self.velocity[randint(0,1)] = randint(0,6)
+        else:
+            self.acceleration.number *= 2
+            for i in self.velocity:
+                i = self.acceleration.add(i)
+                if i < 0:
+                    i = 0
+            print self.velocity
+            self.rect = self.rect.move((self.velocity[0],self.velocity[1]))
 
 class fishScratchFeverPlayer():
     def __init__(self):
@@ -478,7 +509,7 @@ def changeTrack(gameData):
     # Change track to Doubt '97
     elif gameData['trackNumber'] == 4:
         gameData['player'] = doubtPlayer()
-        gameData['spriteList'].add(gameData['player'].sprite)
+        gameData['spriteList'].add(gameData['player'].sprite, doubtEnemy())
         newBackground = pygame.Surface((1000,600))
         newBackground = newBackground.convert()
         newBackground.fill((0,0,0))
@@ -592,7 +623,7 @@ def main():
                 if type(i) != pinkSpiderPlayer and gameData['player'].rect.colliderect(i.rect):
                     i.getCaught()
                     changeTrack(gameData)
-        # ----- Track 5, Doubt -----
+        # ----- Track 5, Doubt '97 -----
         if gameData['trackNumber'] == 5:
             screen.blit(gameData['backGround'], (0,0))
             allsprites = gameData['spriteList']
