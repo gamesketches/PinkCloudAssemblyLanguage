@@ -41,9 +41,18 @@ class equalizingNumber():
 
     def add(self,number):
         if number < 0:
-            return number + self.number
+            if number + self.number > 0:
+                return 0
+            else:
+                return number + self.number
         elif number > 0:
-            return number - self.number
+            if number - self.number < 0:
+                return 0
+            else:
+                return number - self.number
+        else:
+            return 0
+
     def increase(self,number):
         self.number += number
 
@@ -236,16 +245,20 @@ class doubtEnemy(pygame.sprite.Sprite):
         self.acceleration = 0
 
     def update(self):
-        if abs(self.velocity[0]) + abs(self.velocity[1]) < 1:
+        if abs(self.velocity[0]) <= 0 and abs(self.velocity[1]) <= 0:
             self.acceleration = equalizingNumber(0.0003)
             self.velocity[randint(0,1)] = randint(0,6)
         else:
             self.acceleration.number *= 2
-            for i in self.velocity:
-                i = self.acceleration.add(i)
-                if i < 0:
-                    i = 0
-            print self.velocity
+            if abs(self.velocity[0]) > 0:
+                self.velocity[0] = self.acceleration.add(self.velocity[0])
+                if abs(self.velocity[0]) <= 0:
+                    self.velocity[0] = 0
+            if abs(self.velocity[1]) > 0:
+                self.velocity[1] = self.acceleration.add(self.velocity[1])
+                if abs(self.velocity[1]) <= 0:
+                    self.velocity[1] = 0
+            
             self.rect = self.rect.move((self.velocity[0],self.velocity[1]))
 
 class fishScratchFeverPlayer():
