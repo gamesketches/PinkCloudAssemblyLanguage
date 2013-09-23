@@ -241,10 +241,17 @@ class doubtPlayer():
         self.offset[0] += self.slope['x']
         self.offset[1] -= self.slope['y']
 
+    def eat(self):
+        print self.sprite.rect, " before"
+        self.sprite.rect = self.sprite.rect.inflate(10, 10)
+        self.sprite.image = pygame.transform.scale(self.sprite.image,(self.sprite.rect.width, self.sprite.rect.height))
+        print self.sprite.rect, " after"
+
 class doubtEnemy(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.image, self.rect = load_image("fly.png", -1)
+        self.rect.center = (randint(-1000,2000),randint(-600,1200))
         self.velocity = [0,0]
         self.acceleration = 0
 
@@ -526,7 +533,8 @@ def changeTrack(gameData):
     # Change track to Doubt '97
     elif gameData['trackNumber'] == 4:
         gameData['player'] = doubtPlayer()
-        gameData['spriteList'].add(doubtEnemy())
+        for i in range(6):
+            gameData['spriteList'].add(doubtEnemy())
         newBackground = pygame.Surface((1000,600))
         newBackground = newBackground.convert()
         newBackground.fill((0,0,0))
@@ -650,6 +658,9 @@ def main():
             screen.blit(gameData['player'].sprite.image, (500,300))
             for i in gameData['spriteList'].sprites():
                 screen.blit(i.image, (i.rect.x - offset[0], i.rect.y + offset[1]))
+                if i.rect.colliderect(gameData['player'].sprite.rect):
+                    i.kill()
+                    gameData['player'].eat()
             #gameData['spriteList'].draw(screen)
         # ----- Track 6, Fish Scratch Fever -----
         if gameData['trackNumber'] == 6:
