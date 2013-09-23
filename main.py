@@ -212,6 +212,8 @@ class doubtPlayer():
         self.sprite.image, self.sprite.rect = load_image('hideRocketDive.png')
         self.sprite.rect.center = (500,300)
         self.offset = [0,0]
+        self.trueWidth = self.sprite.rect.width
+        self.trueHeight = self.sprite.rect.height
 
     def update(self):
         keys = pygame.key.get_pressed()
@@ -240,12 +242,16 @@ class doubtPlayer():
         self.sprite.rect = self.sprite.rect.move(self.slope['x'],self.slope['y'])
         self.offset[0] += self.slope['x']
         self.offset[1] -= self.slope['y']
+        self.trueWidth -= 0.01
+        self.trueHeight -= 0.01
+        self.sprite.rect.width = self.trueWidth
+        self.sprite.rect.height = self.trueHeight
+        self.sprite.image = pygame.transform.scale(self.sprite.image,(self.sprite.rect.width, self.sprite.rect.height))
 
     def eat(self):
-        print self.sprite.rect, " before"
-        self.sprite.rect = self.sprite.rect.inflate(10, 10)
+        self.trueWidth += 10
+        self.trueHeight += 10
         self.sprite.image = pygame.transform.scale(self.sprite.image,(self.sprite.rect.width, self.sprite.rect.height))
-        print self.sprite.rect, " after"
 
 class doubtEnemy(pygame.sprite.Sprite):
     def __init__(self):
@@ -661,7 +667,8 @@ def main():
                 if i.rect.colliderect(gameData['player'].sprite.rect):
                     i.kill()
                     gameData['player'].eat()
-            #gameData['spriteList'].draw(screen)
+            if gameData['player'].sprite.rect.width < 5:
+                changeTrack(gameData)
         # ----- Track 6, Fish Scratch Fever -----
         if gameData['trackNumber'] == 6:
             screen.blit(gameData['backGround'],(0,0))
