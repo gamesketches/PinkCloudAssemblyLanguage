@@ -210,14 +210,16 @@ class doubtPlayer():
         self.slope = {'x':0,'y':0}
         self.sprite = pygame.sprite.Sprite()
         self.sprite.image, self.sprite.rect = load_image('hideRocketDive.png')
+        self.sprite.rect.center = (500,300)
+        self.offset = [0,0]
 
     def update(self):
         keys = pygame.key.get_pressed()
         if keys[K_UP]:
-            if self.slope['y'] < 6:
+            if self.slope['y'] > -6:
                 self.slope['y'] -= 1
         elif keys[K_DOWN]:
-            if self.slope['y'] > -6:
+            if self.slope['y'] < 6:
                 self.slope['y'] += 1
         else:
             if self.slope['y'] < 0:
@@ -236,6 +238,8 @@ class doubtPlayer():
             elif self.slope['x'] > 0:
                 self.slope['x'] -= 0.3
         self.sprite.rect = self.sprite.rect.move(self.slope['x'],self.slope['y'])
+        self.offset[0] += self.slope['x']
+        self.offset[1] -= self.slope['y']
 
 class doubtEnemy(pygame.sprite.Sprite):
     def __init__(self):
@@ -247,7 +251,7 @@ class doubtEnemy(pygame.sprite.Sprite):
     def update(self):
         if abs(self.velocity[0]) <= 0 and abs(self.velocity[1]) <= 0:
             self.acceleration = equalizingNumber(0.0003)
-            self.velocity[randint(0,1)] = randint(0,6)
+            self.velocity[randint(0,1)] = randint(-6,6)
         else:
             self.acceleration.number *= 2
             if abs(self.velocity[0]) > 0:
@@ -522,7 +526,7 @@ def changeTrack(gameData):
     # Change track to Doubt '97
     elif gameData['trackNumber'] == 4:
         gameData['player'] = doubtPlayer()
-        gameData['spriteList'].add(gameData['player'].sprite, doubtEnemy())
+        gameData['spriteList'].add(doubtEnemy())
         newBackground = pygame.Surface((1000,600))
         newBackground = newBackground.convert()
         newBackground.fill((0,0,0))
@@ -638,9 +642,15 @@ def main():
                     changeTrack(gameData)
         # ----- Track 5, Doubt '97 -----
         if gameData['trackNumber'] == 5:
+            allsprites = pygame.sprite.Group()
             screen.blit(gameData['backGround'], (0,0))
-            allsprites = gameData['spriteList']
+            gameData['spriteList'].update()
             gameData['player'].update()
+            offset = gameData['player'].offset
+            screen.blit(gameData['player'].sprite.image, (500,300))
+            for i in gameData['spriteList'].sprites():
+                screen.blit(i.image, (i.rect.x - offset[0], i.rect.y + offset[1]))
+            #gameData['spriteList'].draw(screen)
         # ----- Track 6, Fish Scratch Fever -----
         if gameData['trackNumber'] == 6:
             screen.blit(gameData['backGround'],(0,0))
