@@ -561,6 +561,10 @@ class Meter():
 
 def changeTrack(gameData):
     gameData['spriteList'].empty()
+    # Change track to Rocket Dive
+    if gameData['trackNumber'] == 1:
+        gameData['player'] = rocketDivePlayer()
+        gameData['spriteList'].add(gameData['player'])
     # Change track to Leather Face
     if gameData['trackNumber'] == 2:
         gameData['player'] = leatherFacePlayer()
@@ -618,14 +622,14 @@ def main():
 
     #Prepare Game Objects
     clock = pygame.time.Clock()
-    player1 = rocketDivePlayer()
+    #player1 = rocketDivePlayer()
     player1LifeMeter = Meter((800,0,200,60), (0,255,0),(200,200,200), 100, 100)
     meteors = pygame.sprite.Group(rocketDiveMeteor((300,600)))
-    allsprites = pygame.sprite.Group(player1)
     frameTimer = 30
     speed = 5
     trackNumber = 1
-    gameData = {'player': player1,'trackNumber':trackNumber,'spriteList':allsprites,'background':background,'distance':1000}
+    allsprites = pygame.sprite.Group()
+    gameData = {'player': None,'trackNumber':trackNumber,'spriteList':allsprites,'background':background,'distance':1000}
     distanceTracker = pygame.font.Font(None, 36)
 
     grid = spreadBeaverGrid()
@@ -647,7 +651,7 @@ def main():
         if gameData['trackNumber'] == 1:
             grid.draw(screen)
         # ----- Track 2, Rocket Dive -------
-        if gameData['trackNumber'] == 2:
+        elif gameData['trackNumber'] == 2:
             frameTimer -= 1
 
             speed += 0.005
@@ -657,11 +661,11 @@ def main():
                 meteors.add(rocketDiveMeteor((randint(0,1000),600)))
                 frameTimer = 30 + randint(-3,20)
             for i in meteors.sprites():
-                if player1.rect.colliderect(i.rect):
-                    player1.life -= 50
+                if gameData['player'].rect.colliderect(i.rect):
+                    gameData['player'].life -= 50
                     player1LifeMeter.update(player1.life)
                     i.kill()
-                    if player1.life == 0:
+                    if gameData['player'].life == 0:
                         changeTrack(gameData)
                         meteors.empty()
                         break
@@ -673,7 +677,7 @@ def main():
             player1LifeMeter.draw(screen)
             screen.blit(distanceTracker.render(str(gameData['distance']), 1, (200,10,10)), (900,500))
         # ----- Track 3, Leather Face -------
-        if gameData['trackNumber'] == 3:
+        elif gameData['trackNumber'] == 3:
             for i in allsprites.sprites():
                 if type(i) == leatherFaceTarget:
                     i.rect.x += -1 * gameData['player'].velocity
@@ -683,7 +687,7 @@ def main():
                         changeTrack(gameData)
                         frameTimer = 50
         # ----- Track 4, Pink Spider -------
-        if gameData['trackNumber'] == 4:
+        elif gameData['trackNumber'] == 4:
             screen.blit(gameData['backGround'], (0,0))
             frameTimer -= 1
             if frameTimer == 0:
@@ -694,7 +698,7 @@ def main():
                     i.getCaught()
                     changeTrack(gameData)
         # ----- Track 5, Doubt '97 -----
-        if gameData['trackNumber'] == 5:
+        elif gameData['trackNumber'] == 5:
             allsprites = pygame.sprite.Group()
             screen.blit(gameData['backGround'], (0,0))
             gameData['spriteList'].update()
@@ -709,7 +713,7 @@ def main():
             if gameData['player'].sprite.rect.width < 5:
                 changeTrack(gameData)
         # ----- Track 6, Fish Scratch Fever -----
-        if gameData['trackNumber'] == 6:
+        elif gameData['trackNumber'] == 6:
             screen.blit(gameData['backGround'],(0,0))
             allsprites = gameData['spriteList']
             curSpeed = gameData['player'].update()
@@ -720,7 +724,7 @@ def main():
                     if gameData['player'].gameOverKa(i.type):
                         changeTrack(gameData)
         # ----- Track 8, Breeding ------
-        if gameData['trackNumber'] == 8:
+        elif gameData['trackNumber'] == 8:
             screen.blit(gameData['background'], (0,0))
             gameData['grid'].draw(screen)
             
