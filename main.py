@@ -659,7 +659,6 @@ def main():
 
     #Prepare Game Objects
     clock = pygame.time.Clock()
-    #player1 = rocketDivePlayer()
     player1LifeMeter = Meter((800,0,200,60), (0,255,0),(200,200,200), 100, 100)
     meteors = pygame.sprite.Group(rocketDiveMeteor((300,600)))
     frameTimer = 30
