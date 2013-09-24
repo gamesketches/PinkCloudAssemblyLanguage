@@ -84,11 +84,30 @@ class spreadBeaverGrid():
                 tempList.append(spreadBeaverNode(["NORTH","EAST","WEST","SOUTH"]))
             self.grid.append(tempList)
         self.pos = [0,0]
+        self.cursor = pygame.Surface((10,10))
+        self.cursor = self.cursor.convert()
+        self.cursor.fill((255, 102, 204))
 
+    def update(self):
+        keys = pygame.key.get_pressed()
+        if keys[K_RIGHT]:
+            if "EAST" in self.grid[self.pos[0]][self.pos[1]].directions:
+                self.pos[0] += 1
+        elif keys[K_DOWN]:
+            if "SOUTH" in self.grid[self.pos[0]][self.pos[1]].directions:
+                self.pos[1] += 1
+        elif keys[K_LEFT]:
+            if "WEST" in self.grid[self.pos[0]][self.pos[1]].directions:
+                self.pos[0] -= 1
+        elif keys[K_UP]:
+            if "NORTH" in self.grid[self.pos[0]][self.pos[1]].directions:
+                self.pos[1] -= 1
+                
     def draw(self,screen):
         for i in range(len(self.grid)):
             for k in range(len(self.grid[i])):
                 screen.blit(self.grid[i][k].drawSurface, (i * 10, k * 10))
+        screen.blit(self.cursor, (self.pos[0] * 10, self.pos[1] * 10))
 
 class rocketDivePlayer(pygame.sprite.Sprite):
     def __init__(self):
@@ -649,6 +668,7 @@ def main():
         screen.blit(background, (0,0))
         # ----- Track 1, Spread Beaver -----
         if gameData['trackNumber'] == 1:
+            grid.update()
             grid.draw(screen)
         # ----- Track 2, Rocket Dive -------
         elif gameData['trackNumber'] == 2:
