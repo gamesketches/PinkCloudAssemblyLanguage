@@ -56,6 +56,40 @@ class equalizingNumber():
     def increase(self,number):
         self.number += number
 
+class spreadBeaverNode():
+    def __init__(self, directions):
+        self.directions = directions #Should be "NORTH" "EAST" "WEST" or "SOUTH
+        self.drawSurface = pygame.Surface((10,10))
+        if "NORTH" in self.directions:
+            pygame.draw.line(self.drawSurface, (250,250,250), (5,5),(5,0))
+        if "EAST" in self.directions:
+            pygame.draw.line(self.drawSurface, (250,250,250), (5,5),(10,5))
+        if "WEST" in self.directions:
+            pygame.draw.line(self.drawSurface, (250,250,250), (5,5),(0,5))
+        if "SOUTH" in self.directions:
+            pygame.draw.line(self.drawSurface, (250,250,250), (5,5), (5,10))
+
+    def hasDirection(self,direction):
+        if direction in self.directions:
+            return True
+        else:
+            return False
+
+class spreadBeaverGrid():
+    def __init__(self):
+        self.grid = []
+        for i in xrange(100):
+            tempList = []
+            for j in xrange(60):
+                tempList.append(spreadBeaverNode(["NORTH","EAST","WEST","SOUTH"]))
+            self.grid.append(tempList)
+        self.pos = [0,0]
+
+    def draw(self,screen):
+        for i in range(len(self.grid)):
+            for k in range(len(self.grid[i])):
+                screen.blit(self.grid[i][k].drawSurface, (i * 10, k * 10))
+
 class rocketDivePlayer(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
@@ -590,9 +624,11 @@ def main():
     allsprites = pygame.sprite.Group(player1)
     frameTimer = 30
     speed = 5
-    trackNumber = 2
+    trackNumber = 1
     gameData = {'player': player1,'trackNumber':trackNumber,'spriteList':allsprites,'background':background,'distance':1000}
     distanceTracker = pygame.font.Font(None, 36)
+
+    grid = spreadBeaverGrid()
     
     going = True
     while going:
@@ -607,6 +643,9 @@ def main():
                 changeTrack(gameData)
 
         screen.blit(background, (0,0))
+        # ----- Track 1, Spread Beaver -----
+        if gameData['trackNumber'] == 1:
+            grid.draw(screen)
         # ----- Track 2, Rocket Dive -------
         if gameData['trackNumber'] == 2:
             frameTimer -= 1
