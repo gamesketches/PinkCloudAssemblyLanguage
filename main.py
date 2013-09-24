@@ -500,6 +500,16 @@ class breedingGrid():
             else:
                 return False
 
+class everFreePlayer(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image, self.rect = load_image("breedingHide.png", -1)
+        self.velocity = [0,0]
+        self.grounded = True
+
+    def update(self):
+        print "updating"
+
 class breedingColumn():
     def __init__(self, number):
         self.height = 0
