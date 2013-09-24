@@ -60,6 +60,7 @@ class spreadBeaverNode():
     def __init__(self, directions):
         self.directions = directions #Should be "NORTH" "EAST" "WEST" or "SOUTH
         self.drawSurface = pygame.Surface((10,10))
+        self.locked = False
         if "NORTH" in self.directions:
             pygame.draw.line(self.drawSurface, (250,250,250), (5,5),(5,0))
         if "EAST" in self.directions:
@@ -81,9 +82,12 @@ class spreadBeaverGrid():
         for i in xrange(100):
             tempList = []
             for j in xrange(60):
-                tempList.append(spreadBeaverNode(["NORTH","EAST","WEST","SOUTH"]))
+                tempList.append(spreadBeaverNode([]))
             self.grid.append(tempList)
-        self.pos = [0,0]
+        for i in xrange(60):
+            self.grid[50][i] = spreadBeaverNode(["NORTH","SOUTH"])
+        self.pos = [50,50]
+        self.grid[50][51].locked = True
         self.cursor = pygame.Surface((10,10))
         self.cursor = self.cursor.convert()
         self.cursor.fill((255, 102, 204))
@@ -91,22 +95,31 @@ class spreadBeaverGrid():
     def update(self):
         keys = pygame.key.get_pressed()
         if keys[K_RIGHT]:
-            if "EAST" in self.grid[self.pos[0]][self.pos[1]].directions:
-                self.pos[0] += 1
+            if self.grid[self.pos[0]][self.pos[1]].hasDirection("EAST"):
+                if not self.grid[self.pos[0] + 1][self.pos[1]].locked:
+                    self.pos[0] += 1
         elif keys[K_DOWN]:
-            if "SOUTH" in self.grid[self.pos[0]][self.pos[1]].directions:
-                self.pos[1] += 1
+            if self.grid[self.pos[0]][self.pos[1]].hasDirection("SOUTH"):
+                if not self.grid[self.pos[0]][self.pos[1] + 1].locked:
+                    self.pos[1] += 1
         elif keys[K_LEFT]:
-            if "WEST" in self.grid[self.pos[0]][self.pos[1]].directions:
-                self.pos[0] -= 1
+            if self.grid[self.pos[0]][self.pos[1]].hasDirection("WEST"):
+                if not self.grid[self.pos[0] - 1][self.pos[1]].locked:
+                    self.pos[0] -= 1
         elif keys[K_UP]:
-            if "NORTH" in self.grid[self.pos[0]][self.pos[1]].directions:
-                self.pos[1] -= 1
+            if self.grid[self.pos[0]][self.pos[1]].hasDirection("NORTH"):
+                if not self.grid[self.pos[0]][self.pos[1] - 1].locked:
+                    self.pos[1] -= 1
                 
     def draw(self,screen):
+        lock = pygame.Surface((10,10))
+        lock.convert()
+        lock.fill((0,0,200))
         for i in range(len(self.grid)):
             for k in range(len(self.grid[i])):
                 screen.blit(self.grid[i][k].drawSurface, (i * 10, k * 10))
+                if self.grid[i][k].locked:
+                    screen.blit(lock, (i * 10, k * 10))
         screen.blit(self.cursor, (self.pos[0] * 10, self.pos[1] * 10))
 
 class rocketDivePlayer(pygame.sprite.Sprite):
