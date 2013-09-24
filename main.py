@@ -87,10 +87,14 @@ class spreadBeaverGrid():
         for i in xrange(60):
             self.grid[50][i] = spreadBeaverNode(["NORTH","SOUTH"])
         self.pos = [50,50]
+        self.goalPos = [50,10]
         self.grid[50][51].locked = True
         self.cursor = pygame.Surface((10,10))
         self.cursor = self.cursor.convert()
         self.cursor.fill((255, 102, 204))
+        self.goal = pygame.Surface((10,10))
+        self.goal = self.goal.convert()
+        self.goal.fill((255,255,0))
 
     def update(self):
         keys = pygame.key.get_pressed()
@@ -121,6 +125,7 @@ class spreadBeaverGrid():
                 if self.grid[i][k].locked:
                     screen.blit(lock, (i * 10, k * 10))
         screen.blit(self.cursor, (self.pos[0] * 10, self.pos[1] * 10))
+        screen.blit(self.goal, (self.goalPos[0] * 10, self.goalPos[1] * 10))
 
 class rocketDivePlayer(pygame.sprite.Sprite):
     def __init__(self):
@@ -683,6 +688,8 @@ def main():
         if gameData['trackNumber'] == 1:
             grid.update()
             grid.draw(screen)
+            if grid.pos == grid.goalPos:
+                changeTrack(gameData)
         # ----- Track 2, Rocket Dive -------
         elif gameData['trackNumber'] == 2:
             frameTimer -= 1
