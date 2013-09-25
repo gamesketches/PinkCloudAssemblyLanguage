@@ -445,11 +445,19 @@ class everFreePlayer(pygame.sprite.Sprite):
         self.touchingSurface = False
 
     def update(self):
+        keys = pygame.key.get_pressed()
+        if keys[K_RIGHT]:
+            self.velocity[0] = True
+        elif keys[K_LEFT]:
+            self.velocity[0] = -1
+        else:
+            self.velocity[0] = False
+            
         self.rect = self.rect.move(self.slope[0] * self.velocity[0], self.slope[1] * self.velocity[1])
 
     def changeOrientation(self,bottomCenter,slope):
         self.rect.center = bottomCenter
-        self.image = pygame.transform.rotate(self.image, math.degrees(math.atan(slope[1]/slope[0])))
+        self.image = pygame.transform.rotate(self.image, math.degrees(math.atan(slope[1]/slope[0])) * -1)
         self.slope = slope
         
 class everFreeSurface():
@@ -466,6 +474,9 @@ class everFreeSurface():
     def draw(self,screen):
         screen.blit(self.drawSurface,self.position)
 
+    def collideableRect(self):
+        return self.drawSurface.get_rect().move(self.position)
+    
 class breedingGrid():
     def __init__(self):
         self.player = breedingPlayer(self)
@@ -807,7 +818,7 @@ def main():
             allsprites.add(gameData['player'])
             for i in gameData['surfaces']:
                 i.draw(screen)
-                if gameData['player'].rect.colliderect(i.drawSurface.get_rect().move(i.position)):
+                if gameData['player'].rect.colliderect(i.collideableRect()):
                     gameData['player'].changeOrientation((500,200),i.slope)
         # ----- Track 8, Breeding ------
         elif gameData['trackNumber'] == 8:
