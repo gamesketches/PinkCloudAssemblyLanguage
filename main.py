@@ -455,10 +455,17 @@ class everFreePlayer(pygame.sprite.Sprite):
             
         self.rect = self.rect.move(self.slope[0] * self.velocity[0], self.slope[1] * self.velocity[1])
 
-    def changeOrientation(self,bottomCenter,slope):
-        self.rect.center = bottomCenter
+    def changeOrientation(self,slope):
         self.image = pygame.transform.rotate(self.image, math.degrees(math.atan(slope[1]/slope[0])) * -1)
         self.slope = slope
+        print self.slope
+
+    def attachToSurface(self,surface):
+        print 'attached'
+        self.touchingSurface = surface
+        self.rect.bottom = surface.returnHeight(self.rect.centerx)
+        self.changeOrientation(surface.slope)
+        self.velocity[1] = False
         
 class everFreeSurface():
     def __init__(self,slope,position,drag,length):
@@ -476,6 +483,9 @@ class everFreeSurface():
 
     def collideableRect(self):
         return self.drawSurface.get_rect().move(self.position)
+
+    def returnHeight(self,x):
+        return (x * (self.slope[1] / self.slope[0])) + self.position[1]
     
 class breedingGrid():
     def __init__(self):
@@ -674,7 +684,7 @@ def changeTrack(gameData):
     # Change track to Ever Free
     elif gameData['trackNumber'] == 6:
         gameData['player'] = everFreePlayer()
-        gameData['player'].changeOrientation((500,200),[1,1])
+        gameData['player'].rect.center = (500,200)
         gameData['surfaces'] = [everFreeSurface([10,3],(200,200),1,400)]
         newBackground = pygame.Surface((1000,600))
         newBackground = newBackground.convert()
@@ -818,8 +828,9 @@ def main():
             allsprites.add(gameData['player'])
             for i in gameData['surfaces']:
                 i.draw(screen)
-                if gameData['player'].rect.colliderect(i.collideableRect()):
-                    gameData['player'].changeOrientation((500,200),i.slope)
+                if i != gameData['player'].touchingSurface:
+                    if gameData['player'].rect.colliderect(i.collideableRect()):
+                        gameData['player'].attachToSurface(i)
         # ----- Track 8, Breeding ------
         elif gameData['trackNumber'] == 8:
             screen.blit(gameData['background'], (0,0))
