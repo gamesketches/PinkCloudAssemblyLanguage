@@ -436,6 +436,28 @@ class fishScratchFeverObstacle(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.originalImage, (scaleWidth, scaleHeight))
         self.rect.centerx = 500
 
+class everFreePlayer(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image, self.rect = load_image("breedingHide.png", -1)
+        self.velocity = [False,True]
+        self.slope = [0,0]
+        self.touchingSurface = False
+
+    def update(self):
+        self.rect.move(self.slope[0] * self.velocity[0], self.slope[1] * self.velocity[1])
+
+class everFreeSurface():
+    def __init__(self,slope,position,drag,length):
+        self.slope = slope
+        self.position = position
+        self.drag = drag
+        self.length = length
+        self.drawSurface = pygame.Surface(length, (length / slope[0]) * slope[1])
+        self.drawSurface = self.drawSurface.convert()
+        self.drawSurface.fill((0,0,0))
+        pygame.draw.line(self.drawSurface,(250,250,250),(0,0),(self.length,self.drawSurface.get_height()))
+
 class breedingGrid():
     def __init__(self):
         self.player = breedingPlayer(self)
@@ -500,15 +522,6 @@ class breedingGrid():
             else:
                 return False
 
-class everFreePlayer(pygame.sprite.Sprite):
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.image, self.rect = load_image("breedingHide.png", -1)
-        self.velocity = [0,0]
-        self.grounded = True
-
-    def update(self):
-        print "updating"
 
 class breedingColumn():
     def __init__(self, number):
