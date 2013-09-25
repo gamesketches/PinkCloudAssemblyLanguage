@@ -458,7 +458,7 @@ class everFreeSurface():
         self.position = position
         self.drag = drag
         self.length = length
-        self.drawSurface = pygame.Surface(length, (length / slope[0]) * slope[1])
+        self.drawSurface = pygame.Surface((length, (length / slope[0]) * slope[1]))
         self.drawSurface = self.drawSurface.convert()
         self.drawSurface.fill((0,0,0))
         pygame.draw.line(self.drawSurface,(250,250,250),(0,0),(self.length,self.drawSurface.get_height()))
@@ -664,6 +664,7 @@ def changeTrack(gameData):
     elif gameData['trackNumber'] == 6:
         gameData['player'] = everFreePlayer()
         gameData['player'].changeOrientation((500,200),[1,1])
+        gameData['surfaces'] = [everFreeSurface([10,3],(200,200),1,400)]
         newBackground = pygame.Surface((1000,600))
         newBackground = newBackground.convert()
         newBackground.fill((0,0,0))
@@ -804,6 +805,10 @@ def main():
         elif gameData['trackNumber'] == 7:
             screen.blit(gameData['backGround'],(0,0))
             allsprites.add(gameData['player'])
+            for i in gameData['surfaces']:
+                i.draw(screen)
+                if gameData['player'].rect.colliderect(i.drawSurface.get_rect().move(i.position)):
+                    gameData['player'].changeOrientation((500,200),i.slope)
         # ----- Track 8, Breeding ------
         elif gameData['trackNumber'] == 8:
             screen.blit(gameData['background'], (0,0))
