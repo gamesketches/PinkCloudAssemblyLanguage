@@ -454,6 +454,8 @@ class everFreePlayer(pygame.sprite.Sprite):
             self.velocity[0] = False
             
         self.rect = self.rect.move(self.slope[0] * self.velocity[0], self.slope[1] * self.velocity[1])
+        if self.touchingSurface:
+            self.rect.bottom = self.touchingSurface.returnHeight(self.rect.centerx)
 
     def changeOrientation(self,slope):
         self.image = pygame.transform.rotate(self.image, math.degrees(math.atan(slope[1]/slope[0])) * -1)
@@ -465,13 +467,14 @@ class everFreePlayer(pygame.sprite.Sprite):
         self.touchingSurface = surface
         self.rect.bottom = surface.returnHeight(self.rect.centerx)
         self.changeOrientation(surface.slope)
-        self.velocity[1] = False
+        self.velocity = surface.velocityProfile
         
 class everFreeSurface():
-    def __init__(self,slope,position,drag,length):
+    def __init__(self,slope,position,drag,length, velocityProfile):
         self.slope = slope
         self.position = position
         self.drag = drag
+        self.velocityProfile = [False,False]
         self.length = length
         self.drawSurface = pygame.Surface((length, (length / slope[0]) * slope[1]))
         self.drawSurface = self.drawSurface.convert()
@@ -685,7 +688,7 @@ def changeTrack(gameData):
     elif gameData['trackNumber'] == 6:
         gameData['player'] = everFreePlayer()
         gameData['player'].rect.center = (500,200)
-        gameData['surfaces'] = [everFreeSurface([10,3],(200,200),1,400)]
+        gameData['surfaces'] = [everFreeSurface([10,3],(200,200),1,400, [True,False])]
         newBackground = pygame.Surface((1000,600))
         newBackground = newBackground.convert()
         newBackground.fill((0,0,0))
