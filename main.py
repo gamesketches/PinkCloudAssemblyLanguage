@@ -1,4 +1,4 @@
-import pygame, sys, os
+import pygame, sys, os, math
 from pygame.locals import *
 from random import randint
 
@@ -441,12 +441,17 @@ class everFreePlayer(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.image, self.rect = load_image("breedingHide.png", -1)
         self.velocity = [False,True]
-        self.slope = [0,0]
+        self.slope = [0,5]
         self.touchingSurface = False
 
     def update(self):
-        self.rect.move(self.slope[0] * self.velocity[0], self.slope[1] * self.velocity[1])
+        self.rect = self.rect.move(self.slope[0] * self.velocity[0], self.slope[1] * self.velocity[1])
 
+    def changeOrientation(self,bottomCenter,slope):
+        self.rect.center = bottomCenter
+        self.image = pygame.transform.rotate(self.image, math.degrees(math.atan(slope[1]/slope[0])))
+        self.slope = slope
+        
 class everFreeSurface():
     def __init__(self,slope,position,drag,length):
         self.slope = slope
@@ -457,6 +462,9 @@ class everFreeSurface():
         self.drawSurface = self.drawSurface.convert()
         self.drawSurface.fill((0,0,0))
         pygame.draw.line(self.drawSurface,(250,250,250),(0,0),(self.length,self.drawSurface.get_height()))
+
+    def draw(self,screen):
+        screen.blit(self.drawSurface,self.position)
 
 class breedingGrid():
     def __init__(self):
@@ -644,7 +652,7 @@ def changeTrack(gameData):
         newBackground.fill((0,0,0))
         gameData['backGround'] = newBackground
     # Change track to Fish Scratch Fever    
-    elif gameData['trackNumber'] == 5: # remove this line later
+    elif gameData['trackNumber'] == 5: 
         newBackground = pygame.Surface((1000,600))
         newBackground = newBackground.convert()
         newBackground.fill((0,0,0))
@@ -652,15 +660,22 @@ def changeTrack(gameData):
         gameData['backGround'] = newBackground
         gameData['player'] = fishScratchFeverPlayer()
         gameData['spriteList'].add(fishScratchFeverObstacle())
-    # Change track to Breeding
+    # Change track to Ever Free
     elif gameData['trackNumber'] == 6:
+        gameData['player'] = everFreePlayer()
+        gameData['player'].changeOrientation((500,200),[1,1])
+        newBackground = pygame.Surface((1000,600))
+        newBackground = newBackground.convert()
+        newBackground.fill((0,0,0))
+        gameData['backGround'] = newBackground
+    # Change track to Breeding
+    elif gameData['trackNumber'] == 7:
         gameData['grid'] = breedingGrid()
         gameData['grid'].columns[0].height = 2
         gameData['grid'].columns[1].height = 1
         gameData['player'] = gameData['grid'].player
         gameData['spriteList'].add(gameData['player'])
         gameData['backGround'].fill((0,0,0))
-        gameData['trackNumber'] = 7 #remove this line later
     gameData['trackNumber'] += 1
 
 def main():
@@ -785,6 +800,10 @@ def main():
                 if i.distance <= 0:
                     if gameData['player'].gameOverKa(i.type):
                         changeTrack(gameData)
+        # ----- Track 7, Ever Free -----
+        elif gameData['trackNumber'] == 7:
+            screen.blit(gameData['backGround'],(0,0))
+            allsprites.add(gameData['player'])
         # ----- Track 8, Breeding ------
         elif gameData['trackNumber'] == 8:
             screen.blit(gameData['background'], (0,0))
