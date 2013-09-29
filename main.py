@@ -452,22 +452,26 @@ class everFreePlayer(pygame.sprite.Sprite):
             self.velocity[0] = -1
         else:
             self.velocity[0] = False
-            
+   
         self.rect = self.rect.move(self.slope[0] * self.velocity[0], self.slope[1] * self.velocity[1])
         if self.touchingSurface:
-            self.rect.bottom = self.touchingSurface.returnHeight(self.rect.centerx)
+            self.rect.y = self.touchingSurface.returnHeight(self.rect.centerx) - self.rect.height
 
     def changeOrientation(self,slope):
         self.image = pygame.transform.rotate(self.image, math.degrees(math.atan(slope[1]/slope[0])) * -1)
         self.slope = slope
-        print self.slope
 
     def attachToSurface(self,surface):
-        print 'attached'
         self.touchingSurface = surface
         self.rect.bottom = surface.returnHeight(self.rect.centerx)
         self.changeOrientation(surface.slope)
+        self.rect.y = surface.returnHeight(self.rect.x) - self.rect.height
         self.velocity = surface.velocityProfile
+
+    def detachFromSurface(self, velocityProfile):
+        self.touchingSurface = False
+        self.velocity = velocityProfile
+        self.image, temp = load_image("breedingHide.png", -1)
         
 class everFreeSurface():
     def __init__(self,slope,position,drag,length, velocityProfile):
@@ -488,7 +492,8 @@ class everFreeSurface():
         return self.drawSurface.get_rect().move(self.position)
 
     def returnHeight(self,x):
-        return (x * (self.slope[1] / self.slope[0])) + self.position[1]
+        x -= self.position[0]
+        return (x * (float(self.slope[1]) / self.slope[0])) + self.position[1]
     
 class breedingGrid():
     def __init__(self):
@@ -834,6 +839,9 @@ def main():
                 if i != gameData['player'].touchingSurface:
                     if gameData['player'].rect.colliderect(i.collideableRect()):
                         gameData['player'].attachToSurface(i)
+                else:
+                    if not gameData['player'].rect.colliderect(i.collideableRect()):
+                        gameData['player'].detachFromSurface([0,6])
         # ----- Track 8, Breeding ------
         elif gameData['trackNumber'] == 8:
             screen.blit(gameData['background'], (0,0))
