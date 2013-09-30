@@ -452,20 +452,26 @@ class everFreePlayer(pygame.sprite.Sprite):
             self.velocity[0] = -1
         else:
             self.velocity[0] = False
-   
         self.rect = self.rect.move(self.slope[0] * self.velocity[0], self.slope[1] * self.velocity[1])
-        if self.touchingSurface:
+        if self.touchingSurface and self.slope[0] != 0:
             self.rect.y = self.touchingSurface.returnHeight(self.rect.centerx) - self.rect.height
 
     def changeOrientation(self,slope):
-        self.image = pygame.transform.rotate(self.image, math.degrees(math.atan(slope[1]/slope[0])) * -1)
+        if slope[0] != 0:
+            self.image = pygame.transform.rotate(self.image, math.degrees(math.atan(slope[1]/slope[0])) * -1)
         self.slope = slope
 
     def attachToSurface(self,surface):
         self.touchingSurface = surface
-        self.rect.bottom = surface.returnHeight(self.rect.centerx)
+        if surface.slope[0] == 0:
+            if surface.position[0] > self.rect.x:
+                self.rect.x = surface.position[0] - self.rect.width + 1
+            else:
+                self.rect.x = surface.position[0] - 1
+        else:
+            self.rect.y = surface.returnHeight(self.rect.x) - self.rect.height
+            self.rect.bottom = surface.returnHeight(self.rect.centerx)
         self.changeOrientation(surface.slope)
-        self.rect.y = surface.returnHeight(self.rect.x) - self.rect.height
         self.velocity = surface.velocityProfile
 
     def detachFromSurface(self, velocityProfile):
@@ -480,10 +486,16 @@ class everFreeSurface():
         self.drag = drag
         self.velocityProfile = [False,False]
         self.length = length
-        self.drawSurface = pygame.Surface((length, (length / slope[0]) * slope[1]))
+        if slope[0] == 0:
+            self.drawSurface = pygame.Surface((5,length))
+        else:
+            self.drawSurface = pygame.Surface((length, (length / slope[0]) * slope[1]))
         self.drawSurface = self.drawSurface.convert()
         self.drawSurface.fill((0,0,0))
-        pygame.draw.line(self.drawSurface,(250,250,250),(0,0),(self.length,self.drawSurface.get_height()))
+        if slope[0] == 0:
+            pygame.draw.line(self.drawSurface,(250,250,250), (0,0),(0,self.drawSurface.get_height()))
+        else:
+            pygame.draw.line(self.drawSurface,(250,250,250),(0,0),(self.length,self.drawSurface.get_height()))
 
     def draw(self,screen):
         screen.blit(self.drawSurface,self.position)
@@ -493,7 +505,11 @@ class everFreeSurface():
 
     def returnHeight(self,x):
         x -= self.position[0]
-        return (x * (float(self.slope[1]) / self.slope[0])) + self.position[1]
+        if self.slope[0] == 0:
+            return x
+        else:
+            return (x * (float(self.slope[1]) / self.slope[0])) + self.position[1]
+        
     
 class breedingGrid():
     def __init__(self):
@@ -694,6 +710,7 @@ def changeTrack(gameData):
         gameData['player'] = everFreePlayer()
         gameData['player'].rect.center = (500,200)
         gameData['surfaces'] = [everFreeSurface([10,3],(200,200),1,400, [True,False])]
+        gameData['surfaces'].append(everFreeSurface([0,5],(800,200),1,400,[False,False]))
         newBackground = pygame.Surface((1000,600))
         newBackground = newBackground.convert()
         newBackground.fill((0,0,0))
