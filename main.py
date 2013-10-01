@@ -443,6 +443,7 @@ class everFreePlayer(pygame.sprite.Sprite):
         self.velocity = [False,True]
         self.slope = [0,5]
         self.touchingSurface = False
+        self.unattachableTime = 0
 
     def update(self):
         keys = pygame.key.get_pressed()
@@ -452,9 +453,29 @@ class everFreePlayer(pygame.sprite.Sprite):
             self.velocity[0] = -1
         else:
             self.velocity[0] = False
+        if keys[K_UP]:
+            if self.touchingSurface:
+                self.unattachableTime = 30
+                if self.slope[0] == 0:
+                    self.slope = [5,5]
+                    # If attached to a vertial wall on the right side
+                    if self.touchingSurface.position[0] > self.rect.centerx:
+                        self.detachFromSurface([-1,-1])
+                    else:
+                        self.detachFromSurface([1,-1])
+                else:
+                    self.slope = [5,5]
+                    self.detachFromSurface([False,-1])
+        
         self.rect = self.rect.move(self.slope[0] * self.velocity[0], self.slope[1] * self.velocity[1])
         if self.touchingSurface and self.slope[0] != 0:
             self.rect.y = self.touchingSurface.returnHeight(self.rect.centerx) - self.rect.height
+
+        if self.unattachableTime:
+            self.unattachableTime -= 1
+            self.velocity[1] = -1
+        elif not self.touchingSurface:
+            self.velocity[1] = 1
 
     def changeOrientation(self,slope):
         if slope[0] != 0:
@@ -853,12 +874,13 @@ def main():
             allsprites.add(gameData['player'])
             for i in gameData['surfaces']:
                 i.draw(screen)
-                if i != gameData['player'].touchingSurface:
-                    if gameData['player'].rect.colliderect(i.collideableRect()):
-                        gameData['player'].attachToSurface(i)
-                else:
-                    if not gameData['player'].rect.colliderect(i.collideableRect()):
-                        gameData['player'].detachFromSurface([0,6])
+                if not gameData['player'].unattachableTime:                        
+                    if i != gameData['player'].touchingSurface:
+                        if gameData['player'].rect.colliderect(i.collideableRect()):
+                            gameData['player'].attachToSurface(i)
+                    else:
+                        if not gameData['player'].rect.colliderect(i.collideableRect()):
+                            gameData['player'].detachFromSurface([0,6])
         # ----- Track 8, Breeding ------
         elif gameData['trackNumber'] == 8:
             screen.blit(gameData['background'], (0,0))
