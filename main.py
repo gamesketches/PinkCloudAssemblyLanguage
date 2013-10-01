@@ -679,6 +679,12 @@ class hurryGoRoundPlayer(pygame.sprite.Sprite):
     def update(self):
         self.rect.x += 5
 
+class hurryGoRoundFootprint(pygame.sprite.Sprite):
+    def __init__(self,position):
+        pygame.sprite.Sprite.__init__(self)
+        self.image, self.rect = load_image("magmaBall.png", -1)
+        self.rect.midbottom = position
+
 class Meter():
     def __init__(self,dimensions,barColor,frameColor,startingAmount, maxAmount):
         self.frame = pygame.Surface((dimensions[2],dimensions[3]))
@@ -758,6 +764,7 @@ def changeTrack(gameData):
     elif gameData['trackNumber'] == 8:
         gameData['player'] = hurryGoRoundPlayer()
         gameData['spriteList'].add(gameData['player'])
+        gameData['frameCounter'] = 20
     gameData['trackNumber'] += 1
 
 def main():
@@ -903,6 +910,11 @@ def main():
         # ----- Track 9 Hurry Go Round -----
         elif gameData['trackNumber'] == 9:
             screen.blit(gameData['background'], (0,0))
+            if gameData['frameCounter'] == 0:
+                allsprites.add(hurryGoRoundFootprint(gameData['player'].rect.bottomleft))
+                gameData['frameCounter'] = 20
+            else:
+                gameData['frameCounter'] -= 1
             
             
         allsprites.update()
