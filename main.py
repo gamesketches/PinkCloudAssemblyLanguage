@@ -669,6 +669,16 @@ class breedingPlayer(pygame.sprite.Sprite):
             self.position -= 1
             self.rect.x -= 100
 
+class hurryGoRoundPlayer(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image, self.rect = load_image("breedingHide.png", -1)
+        self.rect.x = 10
+        self.rect.y = 500
+
+    def update(self):
+        self.rect.x += 5
+
 class Meter():
     def __init__(self,dimensions,barColor,frameColor,startingAmount, maxAmount):
         self.frame = pygame.Surface((dimensions[2],dimensions[3]))
@@ -744,6 +754,10 @@ def changeTrack(gameData):
         gameData['player'] = gameData['grid'].player
         gameData['spriteList'].add(gameData['player'])
         gameData['backGround'].fill((0,0,0))
+    # Change track to Hurry Go Round
+    elif gameData['trackNumber'] == 8:
+        gameData['player'] = hurryGoRoundPlayer()
+        gameData['spriteList'].add(gameData['player'])
     gameData['trackNumber'] += 1
 
 def main():
@@ -786,6 +800,7 @@ def main():
             elif event.type == KEYDOWN and event.key == K_ESCAPE:
                 pygame.quit()
             elif event.type == KEYDOWN and event.key == K_p:
+                allsprites.empty()
                 changeTrack(gameData)
 
         screen.blit(background, (0,0))
@@ -885,6 +900,10 @@ def main():
         elif gameData['trackNumber'] == 8:
             screen.blit(gameData['background'], (0,0))
             gameData['grid'].draw(screen)
+        # ----- Track 9 Hurry Go Round -----
+        elif gameData['trackNumber'] == 9:
+            screen.blit(gameData['background'], (0,0))
+            
             
         allsprites.update()
         allsprites.draw(screen)
