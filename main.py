@@ -170,7 +170,7 @@ class leatherFacePlayer(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.image, self.rect = load_image('hideLeatherFace.png', -1)
         self.velocity = 0
-        self.rect.y = 400
+        self.rect.y = 220
         self.rect.x = 100
         self.visible = True
 
@@ -224,6 +224,12 @@ class leatherFaceTarget(pygame.sprite.Sprite):
         self.state = "running"
         self.frameTimer = 50
         self.facingRight = True
+
+class leatherFaceDoor(pygame.sprite.Sprite):
+    def __init__(self, position):
+        pygame.sprite.Sprite.__init__(self)
+        self.image, self.rect = load_image('door.png')
+        self.rect.topleft = position
 
 class pinkSpiderPlayer(pygame.sprite.Sprite):
     def __init__(self):
@@ -725,7 +731,7 @@ def changeTrack(gameData):
     # Change track to Leather Face
     if gameData['trackNumber'] == 2:
         gameData['player'] = leatherFacePlayer()
-        gameData['spriteList'].add(gameData['player'],leatherFaceTarget())
+        gameData['spriteList'].add(gameData['player'],leatherFaceTarget(),leatherFaceDoor((500,220)))
     # Change track to Pink Spider
     elif gameData['trackNumber'] == 3:
         gameData['player'] = pinkSpiderPlayer()
@@ -837,7 +843,7 @@ def main():
             for i in meteors.sprites():
                 if gameData['player'].rect.colliderect(i.rect):
                     gameData['player'].life -= 50
-                    player1LifeMeter.update(player1.life)
+                    player1LifeMeter.update(gameData['player'].life)
                     i.kill()
                     if gameData['player'].life == 0:
                         changeTrack(gameData)
@@ -860,6 +866,8 @@ def main():
                     if not i.facingRight and gameData['player'].visible:
                         changeTrack(gameData)
                         frameTimer = 50
+                elif type(i) == leatherFaceDoor:
+                    i.rect.x += -1 * gameData['player'].velocity
         # ----- Track 4, Pink Spider -------
         elif gameData['trackNumber'] == 4:
             screen.blit(gameData['backGround'], (0,0))
@@ -920,7 +928,6 @@ def main():
             screen.blit(gameData['background'], (0,0))
             if gameData['frameCounter'] == 0:
                 gameData['spriteList'].add(hurryGoRoundFootprint(gameData['player'].rect.bottomleft))
-                #allsprites.add(hurryGoRoundFootprint(gameData['player'].rect.bottomleft))
                 gameData['frameCounter'] = 20
             else:
                 gameData['frameCounter'] -= 1
