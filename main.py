@@ -184,8 +184,10 @@ class leatherFacePlayer(pygame.sprite.Sprite):
             self.velocity = 0
         if keys[K_DOWN]:
             self.visible = False
+            self.image.set_alpha(100)
         else:
             self.visible = True
+            self.image.set_alpha(None)
         self.rect.x += self.velocity
 
 class leatherFaceTarget(pygame.sprite.Sprite):
