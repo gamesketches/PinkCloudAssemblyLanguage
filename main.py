@@ -675,15 +675,22 @@ class hurryGoRoundPlayer(pygame.sprite.Sprite):
         self.image, self.rect = load_image("breedingHide.png", -1)
         self.rect.x = 10
         self.rect.y = 500
+        self.offset = 0
 
     def update(self):
         self.rect.x += 5
+
+    def draw(self,screen):
+        screen.blit(self.image, (10 + self.offset,self.rect.y))
 
 class hurryGoRoundFootprint(pygame.sprite.Sprite):
     def __init__(self,position):
         pygame.sprite.Sprite.__init__(self)
         self.image, self.rect = load_image("magmaBall.png", -1)
         self.rect.midbottom = position
+
+    def draw(self,screen, offset, x):
+        screen.blit(self.image,(self.rect.x - x + offset, self.rect.y))
 
 class Meter():
     def __init__(self,dimensions,barColor,frameColor,startingAmount, maxAmount):
@@ -909,12 +916,20 @@ def main():
             gameData['grid'].draw(screen)
         # ----- Track 9 Hurry Go Round -----
         elif gameData['trackNumber'] == 9:
+            allsprites = pygame.sprite.Group()
             screen.blit(gameData['background'], (0,0))
             if gameData['frameCounter'] == 0:
-                allsprites.add(hurryGoRoundFootprint(gameData['player'].rect.bottomleft))
+                gameData['spriteList'].add(hurryGoRoundFootprint(gameData['player'].rect.bottomleft))
+                #allsprites.add(hurryGoRoundFootprint(gameData['player'].rect.bottomleft))
                 gameData['frameCounter'] = 20
             else:
                 gameData['frameCounter'] -= 1
+            gameData['player'].update()
+            for i in gameData['spriteList'].sprites():
+                if type(i) is hurryGoRoundPlayer:
+                    i.draw(screen)
+                else:
+                    i.draw(screen,gameData['player'].offset,gameData['player'].rect.x)
             
             
         allsprites.update()
