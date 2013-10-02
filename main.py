@@ -169,6 +169,8 @@ class leatherFacePlayer(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.image, self.rect = load_image('hideLeatherFace.png', -1)
+        self.originalImage = self.image
+        self.lyingDownImage, temp = load_image('hideLeatherFaceLyingDown.png', -1)
         self.velocity = 0
         self.rect.y = 220
         self.rect.x = 100
@@ -183,11 +185,18 @@ class leatherFacePlayer(pygame.sprite.Sprite):
         else:
             self.velocity = 0
         if keys[K_DOWN]:
-            self.visible = False
-            self.image.set_alpha(100)
+            if self.visible:                    
+                self.visible = False
+                self.image = self.lyingDownImage
+                self.rect.y += 180
+                self.image.set_alpha(100)
         else:
-            self.visible = True
-            self.image.set_alpha(None)
+            if not self.visible:
+                self.visible = True
+                self.image = self.originalImage
+                self.rect.y -= 180
+                self.image.set_alpha(None)
+                
         self.rect.x += self.velocity
 
 class leatherFaceTarget(pygame.sprite.Sprite):
