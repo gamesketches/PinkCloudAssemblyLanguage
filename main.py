@@ -744,6 +744,7 @@ def changeTrack(gameData):
     if gameData['trackNumber'] == 2:
         gameData['player'] = leatherFacePlayer()
         gameData['spriteList'].add(gameData['player'],leatherFaceTarget(),leatherFaceDoor((500,220)))
+        gameData['frameCounter'] = 0
     # Change track to Pink Spider
     elif gameData['trackNumber'] == 3:
         gameData['player'] = pinkSpiderPlayer()
@@ -872,15 +873,21 @@ def main():
         # ----- Track 3, Leather Face -------
         elif gameData['trackNumber'] == 3:
             for i in allsprites.sprites():
-                if type(i) == leatherFaceTarget:
-                    i.rect.x += -1 * gameData['player'].velocity
-                    if i.rect.colliderect(gameData['player'].rect):
-                        i.runAway()
-                    if not i.facingRight and gameData['player'].visible:
-                        changeTrack(gameData)
-                        frameTimer = 50
-                elif type(i) == leatherFaceDoor:
-                    i.rect.x += -1 * gameData['player'].velocity
+                if gameData['frameCounter'] == 0:
+                    if type(i) == leatherFaceTarget:
+                        i.rect.x += -1 * gameData['player'].velocity
+                        if i.rect.colliderect(gameData['player'].rect):
+                            i.runAway()
+                            gameData['frameCounter'] = 40
+                        if not i.facingRight and gameData['player'].visible:
+                            changeTrack(gameData)
+                            frameTimer = 50
+                    elif type(i) == leatherFaceDoor:
+                        i.rect.x += -1 * gameData['player'].velocity
+                else:
+                    i.rect.x -= 5
+            if gameData['frameCounter'] > 0:
+                gameData['frameCounter'] -= 1
         # ----- Track 4, Pink Spider -------
         elif gameData['trackNumber'] == 4:
             screen.blit(gameData['backGround'], (0,0))
