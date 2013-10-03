@@ -268,9 +268,12 @@ class pinkSpiderPlayer(pygame.sprite.Sprite):
         self.rect.y += self.velocity[1]
 
 class pinkSpiderFly(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, bugType):
         pygame.sprite.Sprite.__init__(self)
-        self.image, self.rect = load_image('fly.png', -1)
+        if bugType is "fly":                
+            self.image, self.rect = load_image('fly.png', -1)
+        else:
+            self.image, self.rect = load_image('butterfly.png', -1)
         self.image = pygame.transform.rotate(self.image, randint(0,360))
         self.rect.x = randint(0,1000)
         self.rect.y = randint(0,600)
@@ -290,7 +293,7 @@ class pinkSpiderFly(pygame.sprite.Sprite):
         self.caught = True
         self.image, temp = load_image('wrappedFly.png', -1)
         self.wiggleTime = 10
-        
+
 
 class doubtPlayer():
     def __init__(self):
@@ -899,7 +902,10 @@ def main():
             screen.blit(gameData['backGround'], (0,0))
             frameTimer -= 1
             if frameTimer == 0:
-                allsprites.add(pinkSpiderFly())
+                if randint(0,5) == 1:
+                    allsprites.add(pinkSpiderFly("butterfly"))
+                else:
+                    allsprites.add(pinkSpiderFly("fly"))
                 frameTimer = 200
             for i in allsprites.sprites():
                 if type(i) != pinkSpiderPlayer and gameData['player'].rect.colliderect(i.rect):
