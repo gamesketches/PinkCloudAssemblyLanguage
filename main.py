@@ -178,9 +178,9 @@ class leatherFacePlayer(pygame.sprite.Sprite):
 
     def update(self):
         keys = pygame.key.get_pressed()
-        if keys[K_LEFT]:
+        if keys[K_LEFT] and self.visible:
             self.velocity = -3
-        elif keys[K_RIGHT]:
+        elif keys[K_RIGHT] and self.visible:
             self.velocity = 3
         else:
             self.velocity = 0
@@ -701,9 +701,10 @@ class hurryGoRoundPlayer(pygame.sprite.Sprite):
         screen.blit(self.image, (10 + self.offset,self.rect.y))
 
 class hurryGoRoundFootprint(pygame.sprite.Sprite):
-    def __init__(self,position):
+    def __init__(self,position,flipped):
         pygame.sprite.Sprite.__init__(self)
-        self.image, self.rect = load_image("magmaBall.png", -1)
+        self.image, self.rect = load_image("footPrint.png", -1)
+        self.image = pygame.transform.flip(self.image,False,flipped)
         self.rect.midbottom = position
 
     def draw(self,screen, offset, x):
@@ -788,6 +789,7 @@ def changeTrack(gameData):
     elif gameData['trackNumber'] == 8:
         gameData['player'] = hurryGoRoundPlayer()
         gameData['spriteList'].add(gameData['player'])
+        gameData['flipped'] = False
         gameData['frameCounter'] = 20
     gameData['trackNumber'] += 1
 
@@ -938,7 +940,8 @@ def main():
             allsprites = pygame.sprite.Group()
             screen.blit(gameData['background'], (0,0))
             if gameData['frameCounter'] == 0:
-                gameData['spriteList'].add(hurryGoRoundFootprint(gameData['player'].rect.bottomleft))
+                gameData['spriteList'].add(hurryGoRoundFootprint(gameData['player'].rect.bottomleft,gameData['flipped']))
+                gameData['flipped'] = not gameData['flipped']
                 gameData['frameCounter'] = 20
             else:
                 gameData['frameCounter'] -= 1
