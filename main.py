@@ -742,6 +742,11 @@ def changeTrack(gameData):
         gameData['spriteList'].add(gameData['player'])
     # Change track to Leather Face
     if gameData['trackNumber'] == 2:
+        newBackground = pygame.Surface((1000,600))
+        newBackground = newBackground.convert()
+        newBackground.fill((0,0,0))
+        pygame.draw.polygon(newBackground,(200,200,200),[(0,200),(1000,200),(1000,500),(0,500)])
+        gameData['backGround'] = newBackground
         gameData['player'] = leatherFacePlayer()
         gameData['spriteList'].add(gameData['player'],leatherFaceTarget(),leatherFaceDoor((500,220)))
         gameData['frameCounter'] = 0
@@ -872,6 +877,7 @@ def main():
             screen.blit(distanceTracker.render(str(gameData['distance']), 1, (200,10,10)), (900,500))
         # ----- Track 3, Leather Face -------
         elif gameData['trackNumber'] == 3:
+            screen.blit(gameData['backGround'], (0,0))
             for i in allsprites.sprites():
                 if gameData['frameCounter'] == 0:
                     if type(i) == leatherFaceTarget:
