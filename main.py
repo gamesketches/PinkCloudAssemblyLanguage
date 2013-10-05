@@ -301,6 +301,7 @@ class doubtPlayer():
         self.slope = {'x':0,'y':0}
         self.sprite = pygame.sprite.Sprite()
         self.sprite.image, self.sprite.rect = load_image('doubtFrog.png', -1)
+        self.originalImage = self.sprite.image.convert()
         self.sprite.rect.center = (500,300)
         self.offset = [0,0]
         self.trueWidth = self.sprite.rect.width
@@ -322,10 +323,26 @@ class doubtPlayer():
         if keys[K_RIGHT]:
             if self.slope['x'] < 6:
                 self.slope['x'] += 1
+            if keys[K_UP]:
+                self.sprite.image = pygame.transform.rotate(self.originalImage, 135)
+            elif keys[K_DOWN]:
+                self.sprite.image = pygame.transform.rotate(self.originalImage, 45)
+            else:
+                self.sprite.image = pygame.transform.rotate(self.originalImage, 90)
         elif keys[K_LEFT]:
             if self.slope['x'] > -6:
                 self.slope['x'] -= 1
+            if keys[K_UP]:
+                self.sprite.image = pygame.transform.rotate(self.originalImage, -135)
+            elif keys[K_DOWN]:
+                self.sprite.image = pygame.transform.rotate(self.originalImage, -45)
+            else:
+                self.sprite.image = pygame.transform.rotate(self.originalImage, -90)
         else:
+            if keys[K_UP]:
+                self.sprite.image = pygame.transform.rotate(self.originalImage, 180)
+            elif keys[K_DOWN]:
+                self.sprite.image = pygame.transform.rotate(self.originalImage, 0)
             if self.slope['x'] < 0:
                 self.slope['x'] += 0.3
             elif self.slope['x'] > 0:
