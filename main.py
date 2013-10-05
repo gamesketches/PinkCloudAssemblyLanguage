@@ -245,7 +245,7 @@ class leatherFaceDoor(pygame.sprite.Sprite):
 class pinkSpiderPlayer(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image, self.rect = load_image('hideRocketDive.png')
+        self.image, self.rect = load_image('pinkSpider.png', -1)
         self.velocity = [0,0]
         self.rect.x = 100
         self.rect.y = 500
