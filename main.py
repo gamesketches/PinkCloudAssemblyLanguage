@@ -300,7 +300,7 @@ class doubtPlayer():
         self.tail = []
         self.slope = {'x':0,'y':0}
         self.sprite = pygame.sprite.Sprite()
-        self.sprite.image, self.sprite.rect = load_image('hideRocketDive.png')
+        self.sprite.image, self.sprite.rect = load_image('doubtFrog.png', -1)
         self.sprite.rect.center = (500,300)
         self.offset = [0,0]
         self.trueWidth = self.sprite.rect.width
