@@ -209,6 +209,7 @@ class leatherFaceTarget(pygame.sprite.Sprite):
         self.facingRight = True
         self.switchTimer = 0
         self.state = "standing"
+        self.timesSpotted = 0
 
     def update(self):
         if self.state is "standing":                
@@ -235,6 +236,7 @@ class leatherFaceTarget(pygame.sprite.Sprite):
         self.state = "running"
         self.frameTimer = 50
         self.facingRight = True
+        self.timesSpotted += 1
 
 class leatherFaceDoor(pygame.sprite.Sprite):
     def __init__(self, position):
@@ -904,6 +906,9 @@ def main():
                         i.rect.x += -1 * gameData['player'].velocity
                         if i.rect.colliderect(gameData['player'].rect):
                             i.runAway()
+                            if i.timesSpotted == 3:
+                                changeTrack(gameData)
+                                frameTimer = 50
                             gameData['frameCounter'] = 40
                         if not i.facingRight and gameData['player'].visible:
                             changeTrack(gameData)
