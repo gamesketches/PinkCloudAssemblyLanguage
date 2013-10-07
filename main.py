@@ -405,10 +405,10 @@ class fishScratchFeverPlayer():
             keys = pygame.key.get_pressed()
             if keys[K_UP]:
                 self.state = "jumping"
-                self.frameTimer = 80
+                self.frameTimer = 40
             if keys[K_DOWN]:
                 self.state = "submerged"
-                self.frameTimer = 80
+                self.frameTimer = 40
             self.speed += 0.01
         elif self.state is "jumping" or self.state == "submerged":
             self.frameTimer -= 1
@@ -448,7 +448,7 @@ class fishScratchFeverPlayer():
 class fishScratchFeverObstacle(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        typeList = {0:"log",1:"bear",2:"food",3:"Damn"}
+        typeList = {0:"log",1:"bear",2:"food",3:"Dam"}
         self.type = typeList[randint(0,3)]
         self.distance = 100
         if self.type == "log":
@@ -795,6 +795,7 @@ def changeTrack(gameData):
         gameData['backGround'] = newBackground
         gameData['player'] = fishScratchFeverPlayer()
         gameData['spriteList'].add(fishScratchFeverObstacle())
+        gameData['frameCounter'] = 130
     # Change track to Ever Free
     elif gameData['trackNumber'] == 6:
         gameData['player'] = everFreePlayer()
@@ -959,6 +960,10 @@ def main():
                 if i.distance <= 0:
                     if gameData['player'].gameOverKa(i.type):
                         changeTrack(gameData)
+            gameData['frameCounter'] -= 1
+            if gameData['frameCounter'] == 0:
+                gameData['spriteList'].add(fishScratchFeverObstacle())
+                gameData['frameCounter'] = 130
         # ----- Track 7, Ever Free -----
         elif gameData['trackNumber'] == 7:
             screen.blit(gameData['backGround'],(0,0))
