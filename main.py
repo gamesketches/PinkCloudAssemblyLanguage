@@ -418,24 +418,36 @@ class fishScratchFeverPlayer():
 
     def draw(self, screen):
         if self.state is "neutral":
-            screen.blit(pygame.transform.rotate(pygame.transform.flip(self.fishPic, True, False), - 25),(250, 500))
-            screen.blit(pygame.transform.rotate(pygame.transform.flip(self.fishPic,True,False), -12), (380,520))
-            screen.blit(pygame.transform.rotate(self.fishPic, 12), (620,520))
-            screen.blit(pygame.transform.rotate(self.fishPic, 25), (750, 500))
+            if self.fishNum > 0:
+                screen.blit(pygame.transform.rotate(pygame.transform.flip(self.fishPic, True, False), - 25),(250, 500))
+            if self.fishNum > 1:
+                screen.blit(pygame.transform.rotate(pygame.transform.flip(self.fishPic,True,False), -12), (380,520))
+            if self.fishNum > 2:
+                screen.blit(pygame.transform.rotate(self.fishPic, 12), (620,520))
+            if self.fishNum > 3:
+                screen.blit(pygame.transform.rotate(self.fishPic, 25), (750, 500))
         elif self.state is "jumping":
-            screen.blit(pygame.transform.rotate(pygame.transform.flip(self.fishPic, True, False), - 25),(250, 400))
-            screen.blit(self.fishShadow, (250,500))
-            screen.blit(pygame.transform.rotate(pygame.transform.flip(self.fishPic,True,False), -12), (380,420))
-            screen.blit(self.fishShadow, (380, 520))
-            screen.blit(pygame.transform.rotate(self.fishPic, 12), (620,420))
-            screen.blit(self.fishShadow, (620, 520))
-            screen.blit(pygame.transform.rotate(self.fishPic, 25), (750, 400))
-            screen.blit(self.fishShadow, (750, 500))
+            if self.fishNum > 0:
+                screen.blit(pygame.transform.rotate(pygame.transform.flip(self.fishPic, True, False), - 25),(250, 400))
+                screen.blit(self.fishShadow, (250,500))
+            if self.fishNum > 1:
+                screen.blit(pygame.transform.rotate(pygame.transform.flip(self.fishPic,True,False), -12), (380,420))
+                screen.blit(self.fishShadow, (380, 520))
+            if self.fishNum > 2:
+                screen.blit(pygame.transform.rotate(self.fishPic, 12), (620,420))
+                screen.blit(self.fishShadow, (620, 520))
+            if self.fishNum > 3:
+                screen.blit(pygame.transform.rotate(self.fishPic, 25), (750, 400))
+                screen.blit(self.fishShadow, (750, 500))
         elif self.state is "submerged":
-            screen.blit(self.fishShadow, (250,500))
-            screen.blit(self.fishShadow, (380, 520))
-            screen.blit(self.fishShadow, (620, 520))
-            screen.blit(self.fishShadow, (750, 500))
+            if self.fishNum > 0:
+                screen.blit(self.fishShadow, (250,500))
+            if self.fishNum > 1:
+                screen.blit(self.fishShadow, (380, 520))
+            if self.fishNum > 2:
+                screen.blit(self.fishShadow, (620, 520))
+            if self.fishNum > 3:
+                screen.blit(self.fishShadow, (750, 500))
 
     def gameOverKa(self, obstacle):
         print "gameOverKa with argument: ", obstacle
@@ -443,12 +455,21 @@ class fishScratchFeverPlayer():
             if self.state is "jumping":
                 return False
             else:
-                return True
+                self.fishNum -= 1
+                if self.fishNum <= 0:
+                    return True
+                else:
+                    return False
         elif obstacle is "bear":
             if self.state is "submerged":
                 return False
             else:
-                return True
+                
+                self.fishNum -= 1
+                if self.fishNum <= 0:
+                    return True
+                else:
+                    return False
         
 class fishScratchFeverObstacle(pygame.sprite.Sprite):
     def __init__(self):
