@@ -269,6 +269,10 @@ class pinkSpiderPlayer(pygame.sprite.Sprite):
         self.rect.x += self.velocity[0]
         self.rect.y += self.velocity[1]
 
+    def transform(self):
+        self.image, temp = load_image("pinkSpiderWings.png", -1)
+        self.state = "flying"
+
 class pinkSpiderFly(pygame.sprite.Sprite):
     def __init__(self, bugType):
         pygame.sprite.Sprite.__init__(self)
@@ -282,6 +286,7 @@ class pinkSpiderFly(pygame.sprite.Sprite):
         self.velocity = [5,0]
         self.caught = False
         self.frameTimer = 0
+        self.bugType = bugType
         self.wiggleTime = randint(3,6)
 
     def update(self):
@@ -968,7 +973,10 @@ def main():
             for i in allsprites.sprites():
                 if type(i) != pinkSpiderPlayer and gameData['player'].rect.colliderect(i.rect):
                     i.getCaught()
-                    changeTrack(gameData)
+                    if i.bugType is not "fly":
+                        gameData['player'].transform()
+                    else:
+                        changeTrack(gameData)
         # ----- Track 5, Doubt '97 -----
         elif gameData['trackNumber'] == 5:
             allsprites = pygame.sprite.Group()
