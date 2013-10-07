@@ -695,7 +695,7 @@ class breedingPlayer(pygame.sprite.Sprite):
         self.image = pygame.transform.flip(self.image, True, False)
         self.locked = False
         self.grid = grid
-        self.position = 2
+        self.position = 4
         self.rect.x = (self.position + 1) * 100
         self.rect.y = 600 - self.rect.height
 
@@ -842,8 +842,10 @@ def changeTrack(gameData):
     # Change track to Breeding
     elif gameData['trackNumber'] == 7:
         gameData['grid'] = breedingGrid()
-        gameData['grid'].columns[0].height = 2
-        gameData['grid'].columns[1].height = 1
+        gameData['grid'].columns[0].height = 4
+        gameData['grid'].columns[1].height = 3
+        gameData['grid'].columns[2].height = 2
+        gameData['grid'].columns[3].height = 1
         gameData['player'] = gameData['grid'].player
         gameData['spriteList'].add(gameData['player'])
         gameData['backGround'].fill((0,0,0))
