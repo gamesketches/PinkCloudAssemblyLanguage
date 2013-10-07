@@ -444,6 +444,11 @@ class fishScratchFeverPlayer():
                 return False
             else:
                 return True
+        elif obstacle is "bear":
+            if self.state is "submerged":
+                return False
+            else:
+                return True
         
 class fishScratchFeverObstacle(pygame.sprite.Sprite):
     def __init__(self):
@@ -453,11 +458,15 @@ class fishScratchFeverObstacle(pygame.sprite.Sprite):
         self.distance = 100
         if self.type == "log":
             self.image, self.rect = load_image("log.png", -1)
+            self.rect.topleft = (470, 340)
+        elif self.type == "bear":
+            self.image, self.rect = load_image("bear.png", -1)
+            self.rect.topleft = (0, 300)
         else:
             self.image, self.rect = load_image("log.png", -1)
             self.type = "log"
+            self.rect.topleft = (470, 340)
         self.originalImage = self.image
-        self.rect.topleft = (470, 340)
 
     def updateDistance(self, speed):
         self.distance -= speed
