@@ -461,7 +461,7 @@ class fishScratchFeverObstacle(pygame.sprite.Sprite):
             self.rect.topleft = (470, 340)
         elif self.type == "bear":
             self.image, self.rect = load_image("bear.png", -1)
-            self.rect.topleft = (0, 300)
+            self.rect.topleft = (200, 230)
         else:
             self.image, self.rect = load_image("log.png", -1)
             self.type = "log"
@@ -482,7 +482,10 @@ class fishScratchFeverObstacle(pygame.sprite.Sprite):
         if scaleHeight < 0:
             scaleHeight = 1
         self.image = pygame.transform.scale(self.originalImage, (scaleWidth, scaleHeight))
-        self.rect.centerx = 500
+        if self.type is "log":
+            self.rect.centerx = 500
+        if self.type is "bear":
+            self.rect.centerx -= 5
 
 class everFreePlayer(pygame.sprite.Sprite):
     def __init__(self):
