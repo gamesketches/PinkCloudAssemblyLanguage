@@ -249,6 +249,8 @@ class pinkSpiderPlayer(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.image, self.rect = load_image('pinkSpider.png', -1)
         self.originalImage = None
+        self.rightWingStrength = 5
+        self.leftWingStrength = 5
         self.velocity = [0,0]
         self.rect.x = 100
         self.rect.y = 500
@@ -270,19 +272,21 @@ class pinkSpiderPlayer(pygame.sprite.Sprite):
                 self.velocity[1] = 0
         else:
             if keys[K_LEFT]:
-                self.velocity[2] = 5
+                self.velocity[2] = self.leftWingStrength
+                self.leftWingStrength -= 0.05
             elif keys[K_RIGHT]:
-                self.velocity[3] = 5
+                self.velocity[3] = self.rightWingStrength
+                self.rightWingStrength -= 0.05
             else:
                 if self.velocity[2] > -5:
-                    self.velocity[2] -= 1
+                    self.velocity[2] -= 2
                 if self.velocity[3] > -5:
-                    self.velocity[3] -= 1
+                    self.velocity[3] -= 2
 
             self.velocity[1] = (self.velocity[2] + self.velocity[3]) * -1
             balance = self.velocity[2] - self.velocity[3]
-            self.image = pygame.transform.rotate(self.originalImage, 10 * balance)
-            self.velocity[0] = balance * 3
+            self.image = pygame.transform.rotate(self.originalImage, 5 * balance)
+            self.velocity[0] = balance * 2
         self.rect.x += self.velocity[0]
         self.rect.y += self.velocity[1]
 
