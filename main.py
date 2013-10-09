@@ -248,6 +248,7 @@ class pinkSpiderPlayer(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.image, self.rect = load_image('pinkSpider.png', -1)
+        self.originalImage = None
         self.velocity = [0,0]
         self.rect.x = 100
         self.rect.y = 500
@@ -255,23 +256,41 @@ class pinkSpiderPlayer(pygame.sprite.Sprite):
 
     def update(self):
         keys = pygame.key.get_pressed()
-        if keys[K_LEFT]:
-            self.velocity[0] = -3
-        elif keys[K_RIGHT]:
-            self.velocity[0] = 3
-        elif keys[K_UP]:
-            self.velocity[1] = -3
-        elif keys[K_DOWN]:
-            self.velocity[1] = 3
+        if self.state == "grounded":
+            if keys[K_LEFT]:
+                self.velocity[0] = -3
+            elif keys[K_RIGHT]:
+                self.velocity[0] = 3
+            elif keys[K_UP]:
+                self.velocity[1] = -3
+            elif keys[K_DOWN]:
+                self.velocity[1] = 3
+            else:
+                self.velocity[0] = 0
+                self.velocity[1] = 0
         else:
-            self.velocity[0] = 0
-            self.velocity[1] = 0
+            if keys[K_LEFT]:
+                self.velocity[2] = 5
+            elif keys[K_RIGHT]:
+                self.velocity[3] = 5
+            else:
+                if self.velocity[2] > -5:
+                    self.velocity[2] -= 1
+                if self.velocity[3] > -5:
+                    self.velocity[3] -= 1
+
+            self.velocity[1] = (self.velocity[2] + self.velocity[3]) * -1
+            balance = self.velocity[2] - self.velocity[3]
+            self.image = pygame.transform.rotate(self.originalImage, 10 * balance)
+            self.velocity[0] = balance * 3
         self.rect.x += self.velocity[0]
         self.rect.y += self.velocity[1]
 
     def transform(self):
         self.image, temp = load_image("pinkSpiderWings.png", -1)
+        self.originalImage = self.image
         self.state = "flying"
+        self.velocity = [self.velocity[0],self.velocity[1], 0, 0]
 
 class pinkSpiderFly(pygame.sprite.Sprite):
     def __init__(self, bugType):
@@ -975,8 +994,8 @@ def main():
                     i.getCaught()
                     if i.bugType is not "fly":
                         gameData['player'].transform()
-                    else:
-                        changeTrack(gameData)
+                    #else:
+                     #   changeTrack(gameData)
         # ----- Track 5, Doubt '97 -----
         elif gameData['trackNumber'] == 5:
             allsprites = pygame.sprite.Group()
