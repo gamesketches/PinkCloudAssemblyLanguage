@@ -615,6 +615,8 @@ class everFreeSurface():
         self.drawSurface.fill((0,0,0))
         if slope[0] == 0:
             pygame.draw.line(self.drawSurface,(250,250,250), (0,0),(0,self.drawSurface.get_height()))
+        elif slope[1] < 0:
+            pygame.draw.line(self.drawSurface,(250,250,250),(0,self.drawSurface.get_height()),(self.length,0))
         else:
             pygame.draw.line(self.drawSurface,(250,250,250),(0,0),(self.length,self.drawSurface.get_height()))
 
