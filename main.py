@@ -985,21 +985,36 @@ def main():
                 gameData['frameCounter'] -= 1
         # ----- Track 4, Pink Spider -------
         elif gameData['trackNumber'] == 4:
-            screen.blit(gameData['backGround'], (0,0))
+            #screen.blit(gameData['backGround'], (0,0))
+            allsprites = pygame.sprite.Group()
+            sideScrollingSurface.blit(gameData['backGround'], (0,0))
             frameTimer -= 1
             if frameTimer == 0:
                 if randint(0,5) == 1:
-                    allsprites.add(pinkSpiderFly("butterfly"))
+                    gameData['spriteList'].add(pinkSpiderFly("butterfly"))
+                    #allsprites.add(pinkSpiderFly("butterfly"))
                 else:
-                    allsprites.add(pinkSpiderFly("fly"))
+                    gameData['spriteList'].add(pinkSpiderFly("fly"))
+                    #allsprites.add(pinkSpiderFly("fly"))
                 frameTimer = 200
-            for i in allsprites.sprites():
+            #for i in allsprites.sprites():
+            for i in gameData['spriteList'].sprites():
                 if type(i) != pinkSpiderPlayer and gameData['player'].rect.colliderect(i.rect):
                     i.getCaught()
                     if i.bugType is not "fly":
                         gameData['player'].transform()
+                        gameData['spriteList'].remove(gameData['player'])
                     #else:
                      #   changeTrack(gameData)
+            gameData['spriteList'].update()
+            gameData['spriteList'].draw(sideScrollingSurface)
+            sideScrollingOffset = gameData['player'].velocity
+            if gameData['player'].state == "grounded":
+                screen.blit(sideScrollingSurface, (0,0))
+            else:
+                gameData['player'].update()
+                screen.blit(sideScrollingSurface, (500 - gameData['player'].rect.x,300 - gameData['player'].rect.y))
+                screen.blit(gameData['player'].image, (500,300))
         # ----- Track 5, Doubt '97 -----
         elif gameData['trackNumber'] == 5:
             allsprites = pygame.sprite.Group()
