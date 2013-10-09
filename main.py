@@ -610,7 +610,7 @@ class everFreeSurface():
         if slope[0] == 0:
             self.drawSurface = pygame.Surface((5,length))
         else:
-            self.drawSurface = pygame.Surface((length, (length / slope[0]) * slope[1]))
+            self.drawSurface = pygame.Surface((length, (length / slope[0]) * abs(slope[1])))
         self.drawSurface = self.drawSurface.convert()
         self.drawSurface.fill((0,0,0))
         if slope[0] == 0:
@@ -864,7 +864,9 @@ def changeTrack(gameData):
         gameData['player'] = everFreePlayer()
         gameData['player'].rect.center = (500,200)
         gameData['surfaces'] = [everFreeSurface([10,3],(200,200),1,400, [True,False])]
-        gameData['surfaces'].append(everFreeSurface([0,5],(800,200),1,400,[False,False]))
+        gameData['surfaces'].append(everFreeSurface([0,5],(800,100),1,400,[False,False]))
+        gameData['surfaces'].append(everFreeSurface([0,5], (500,0),1,400,[False,False]))
+        gameData['surfaces'].append(everFreeSurface([10,-3],(1100,200),1,500, [True,False]))
         newBackground = pygame.Surface((1000,600))
         newBackground = newBackground.convert()
         newBackground.fill((0,0,0))
@@ -1037,6 +1039,8 @@ def main():
                 changeTrack(gameData)
         # ----- Track 6, Fish Scratch Fever -----
         elif gameData['trackNumber'] == 6:
+            #This next line is pretty hacky, but enables the stuff in Ever Free
+            sideScrollingSurface = pygame.Surface((2000,2000))
             screen.blit(gameData['backGround'],(0,0))
             allsprites = gameData['spriteList']
             curSpeed = gameData['player'].update()
@@ -1052,10 +1056,9 @@ def main():
                 gameData['frameCounter'] = 130
         # ----- Track 7, Ever Free -----
         elif gameData['trackNumber'] == 7:
-            screen.blit(gameData['backGround'],(0,0))
-            allsprites.add(gameData['player'])
+            sideScrollingSurface.blit(gameData['backGround'], (0,0))
             for i in gameData['surfaces']:
-                i.draw(screen)
+                i.draw(sideScrollingSurface)
                 if not gameData['player'].unattachableTime:                        
                     if i != gameData['player'].touchingSurface:
                         if gameData['player'].rect.colliderect(i.collideableRect()):
@@ -1063,6 +1066,10 @@ def main():
                     else:
                         if not gameData['player'].rect.colliderect(i.collideableRect()):
                             gameData['player'].detachFromSurface([0,6])
+            gameData['player'].update()
+            screen.blit(sideScrollingSurface, (500 - gameData['player'].rect.x,300 - gameData['player'].rect.y))
+            screen.blit(gameData['player'].image, (500,300))
+            
         # ----- Track 8, Breeding ------
         elif gameData['trackNumber'] == 8:
             screen.blit(gameData['background'], (0,0))
