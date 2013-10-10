@@ -1019,11 +1019,11 @@ def main():
                     gameData['player'].leftWingStrength = 10
                     gameData['player'].rightWingStrength = 10
                     gameData['bounces'] += 1
-                if gameData['player'].rect.y > 600:
-                    changeTrack(gameData)
                 gameData['player'].update()
                 screen.blit(sideScrollingSurface, (500 - gameData['player'].rect.x,300 - gameData['player'].rect.y))
                 screen.blit(gameData['player'].image, (500,300))
+                if gameData['player'].rect.y > 600:
+                    changeTrack(gameData)
         # ----- Track 5, Doubt '97 -----
         elif gameData['trackNumber'] == 5:
             allsprites = pygame.sprite.Group()
