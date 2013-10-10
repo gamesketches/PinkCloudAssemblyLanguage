@@ -866,11 +866,13 @@ def changeTrack(gameData):
     # Change track to Ever Free
     elif gameData['trackNumber'] == 6:
         gameData['player'] = everFreePlayer()
-        gameData['player'].rect.center = (500,200)
-        gameData['surfaces'] = [everFreeSurface([10,3],(200,200),1,400, [True,False])]
-        gameData['surfaces'].append(everFreeSurface([0,5],(800,100),1,400,[False,False]))
-        gameData['surfaces'].append(everFreeSurface([0,5], (500,0),1,400,[False,False]))
-        gameData['surfaces'].append(everFreeSurface([10,-3],(1100,200),1,500, [True,False]))
+        gameData['player'].rect.center = (500,700)
+        gameData['surfaces'] = [everFreeSurface([10,3],(200,700),1,400, [True,False])]
+        gameData['surfaces'].append(everFreeSurface([0,5],(800,600),1,400,[False,False]))
+        gameData['surfaces'].append(everFreeSurface([0,5], (600,400),1,200,[False,False]))
+        gameData['surfaces'].append(everFreeSurface([10,-3],(1100,700),1,500, [True,False]))
+        gameData['surfaces'].append(everFreeSurface([0,5], (1700,500),1,200,[False,False]))
+        gameData['surfaces'].append(everFreeSurface([0,5],(1400,400),1,100,[False,False]))
         newBackground = pygame.Surface((1000,600))
         newBackground = newBackground.convert()
         newBackground.fill((0,0,0))
