@@ -630,6 +630,8 @@ class everFreeSurface():
         x -= self.position[0]
         if self.slope[0] == 0:
             return x
+        elif self.slope[1] < 0:
+            return (x * (float(self.slope[1]) / self.slope[0]) + self.drawSurface.get_height() + self.position[1])
         else:
             return (x * (float(self.slope[1]) / self.slope[0])) + self.position[1]
         
