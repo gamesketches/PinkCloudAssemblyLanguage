@@ -90,21 +90,23 @@ class spreadBeaverNode():
 
     def drawLines(self):
         if "NORTH" in self.directions:
-            #pygame.draw.line(self.drawSurface, (250,250,250), (5,5),(5,0))
             pygame.draw.line(self.drawSurface, self.color, (5,5),(5,0))
         if "EAST" in self.directions:
-            #pygame.draw.line(self.drawSurface, (250,250,250), (5,5),(10,5))
             pygame.draw.line(self.drawSurface, self.color, (5,5),(10,5))
         if "WEST" in self.directions:
-            #pygame.draw.line(self.drawSurface, (250,250,250), (5,5),(0,5))
             pygame.draw.line(self.drawSurface, self.color, (5,5),(0,5))
         if "SOUTH" in self.directions:
-            #pygame.draw.line(self.drawSurface, (250,250,250), (5,5), (5,10))
             pygame.draw.line(self.drawSurface, self.color, (5,5), (5,10))
 
-    def unlock(self):
-        self.locked = False
-        self.drawLines()
+    def unlock(self,color):
+        if self.color == color:
+            if self.locked and self.locked is not "UNLOCK":
+                self.locked = False
+                self.drawLines()
+            else:
+                self.locked = True
+                self.color = (0,0,0)
+                self.drawSurface.fill(self.color)
 
 class spreadBeaverGrid():
     def __init__(self):
