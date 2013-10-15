@@ -59,7 +59,7 @@ class equalizingNumber():
 class spreadBeaverNode():
     def __init__(self, directions, lock, color):
         self.directions = directions #Should be "NORTH" "EAST" "WEST" or "SOUTH
-        self.drawSurface = pygame.Surface((10,10))
+        self.drawSurface = pygame.Surface((20,20))
         if color is "RED":
             self.color = (250,0,0)
         elif color is "GREEN":
@@ -111,20 +111,20 @@ class spreadBeaverNode():
 class spreadBeaverGrid():
     def __init__(self):
         self.grid = []
-        for i in xrange(100):
+        for i in xrange(50):
             tempList = []
-            for j in xrange(60):
+            for j in xrange(30):
                 tempList.append(spreadBeaverNode([],False,"WHITE"))
             self.grid.append(tempList)
-        for i in xrange(60):
-            self.grid[50][i] = spreadBeaverNode(["NORTH","SOUTH"], False, "WHITE")
-        self.pos = [50,50]
-        self.goalPos = [50,10]
-        self.grid[50][51] = spreadBeaverNode(["NORTH","SOUTH"],True,"BLUE")
-        self.cursor = pygame.Surface((10,10))
+        for i in xrange(30):
+            self.grid[25][i] = spreadBeaverNode(["NORTH","SOUTH"], False, "WHITE")
+        self.pos = [25,20]
+        self.goalPos = [25,5]
+        self.grid[25][26] = spreadBeaverNode(["NORTH","SOUTH"],True,"BLUE")
+        self.cursor = pygame.Surface((20,20))
         self.cursor = self.cursor.convert()
         self.cursor.fill((255, 102, 204))
-        self.goal = pygame.Surface((10,10))
+        self.goal = pygame.Surface((20,20))
         self.goal = self.goal.convert()
         self.goal.fill((255,255,0))
 
@@ -148,16 +148,16 @@ class spreadBeaverGrid():
                     self.pos[1] -= 1
                 
     def draw(self,screen):
-        lock = pygame.Surface((10,10))
+        lock = pygame.Surface((20,20))
         lock.convert()
         lock.fill((0,0,200))
         for i in range(len(self.grid)):
             for k in range(len(self.grid[i])):
-                screen.blit(self.grid[i][k].drawSurface, (i * 10, k * 10))
+                screen.blit(self.grid[i][k].drawSurface, (i * 20, k * 20))
                 if self.grid[i][k].locked:
-                    screen.blit(lock, (i * 10, k * 10))
-        screen.blit(self.cursor, (self.pos[0] * 10, self.pos[1] * 10))
-        screen.blit(self.goal, (self.goalPos[0] * 10, self.goalPos[1] * 10))
+                    screen.blit(lock, (i * 20, k * 20))
+        screen.blit(self.cursor, (self.pos[0] * 20, self.pos[1] * 20))
+        screen.blit(self.goal, (self.goalPos[0] * 20, self.goalPos[1] * 20))
 
 class rocketDivePlayer(pygame.sprite.Sprite):
     def __init__(self):
