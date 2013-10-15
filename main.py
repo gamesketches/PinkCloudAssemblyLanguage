@@ -132,7 +132,7 @@ class spreadBeaverGrid():
         keys = pygame.key.get_pressed()
         if keys[K_RIGHT]:
             if self.grid[self.pos[0]][self.pos[1]].hasDirection("EAST"):
-                if not self.grid[self.pos[0] + 1][self.pos[1]].locked:
+                if self.grid[self.pos[0] +1][self.pos[1]].locked == "UNLOCK" or not self.grid[self.pos[0] + 1][self.pos[1]].locked:
                     self.pos[0] += 1
         elif keys[K_DOWN]:
             if self.grid[self.pos[0]][self.pos[1]].hasDirection("SOUTH"):
@@ -146,11 +146,18 @@ class spreadBeaverGrid():
             if self.grid[self.pos[0]][self.pos[1]].hasDirection("NORTH"):
                 if not self.grid[self.pos[0]][self.pos[1] - 1].locked:
                     self.pos[1] -= 1
+        if self.grid[self.pos[0]][self.pos[1]].locked is "UNLOCK":
+            self.unlockGrid(self.grid[self.pos[0]][self.pos[1]].color)
+            
         if self.pos == [25,5]:
             self.clearGrid()
             self.horizontalGridLine([0,15],[50,15],"WHITE")
             self.verticalGridLine([15,8],[15,15],"WHITE")
+            self.horizontalGridLine([15,8],[40,8],"WHITE")
             self.grid[15][15] = spreadBeaverNode(["NORTH","WEST","EAST"], False, "WHITE")
+            self.grid[15][8] = spreadBeaverNode(["EAST","SOUTH"],False,"WHTIE")
+            self.grid[40][15] = spreadBeaverNode(["WEST","EAST"],True,"BLUE")
+            self.grid[39][8] = spreadBeaverNode(["WEST"],"UNLOCK","BLUE")
             self.pos = [2,15]
             self.goalPos = [45,15]
                 
@@ -165,6 +172,11 @@ class spreadBeaverGrid():
                     screen.blit(lock, (i * 20, k * 20))
         screen.blit(self.cursor, (self.pos[0] * 20, self.pos[1] * 20))
         screen.blit(self.goal, (self.goalPos[0] * 20, self.goalPos[1] * 20))
+
+    def unlockGrid(self,color):
+        for i in range(len(self.grid)):
+            for k in range(len(self.grid[i])):
+                self.grid[i][k].unlock(color)
 
     def clearGrid(self):
         for i in range(len(self.grid)):
