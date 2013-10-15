@@ -146,6 +146,11 @@ class spreadBeaverGrid():
             if self.grid[self.pos[0]][self.pos[1]].hasDirection("NORTH"):
                 if not self.grid[self.pos[0]][self.pos[1] - 1].locked:
                     self.pos[1] -= 1
+        if self.pos == [25,5]:
+            self.clearGrid()
+            self.horizontalGridLine([0,15],[50,15],"WHITE")
+            self.pos = [2,15]
+            
                 
     def draw(self,screen):
         lock = pygame.Surface((20,20))
@@ -158,6 +163,20 @@ class spreadBeaverGrid():
                     screen.blit(lock, (i * 20, k * 20))
         screen.blit(self.cursor, (self.pos[0] * 20, self.pos[1] * 20))
         screen.blit(self.goal, (self.goalPos[0] * 20, self.goalPos[1] * 20))
+
+    def clearGrid(self):
+        for i in range(len(self.grid)):
+            for k in range(len(self.grid[i])):
+                self.grid[i][k] = spreadBeaverNode([],False,"WHITE")
+
+    def horizontalGridLine(self,startPos,endPos,color):
+        if startPos[0] > endPos[0]:
+            temp = startPos
+            startPos = endPos
+            endPos = temp
+            
+        for i in range(endPos[0] - startPos[0]):
+            self.grid[i + startPos[0]][startPos[1]] = spreadBeaverNode(["EAST","WEST"],False,color)
 
 class rocketDivePlayer(pygame.sprite.Sprite):
     def __init__(self):
