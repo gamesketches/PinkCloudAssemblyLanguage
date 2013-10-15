@@ -146,7 +146,8 @@ class spreadBeaverGrid():
             if self.grid[self.pos[0]][self.pos[1]].hasDirection("NORTH"):
                 if not self.grid[self.pos[0]][self.pos[1] - 1].locked:
                     self.pos[1] -= 1
-        if self.grid[self.pos[0]][self.pos[1]].locked is "UNLOCK":
+                    
+        if self.grid[self.pos[0]][self.pos[1]].locked == "UNLOCK":
             self.unlockGrid(self.grid[self.pos[0]][self.pos[1]].color)
             
         if self.pos == [25,5]:
@@ -160,6 +161,19 @@ class spreadBeaverGrid():
             self.grid[39][8] = spreadBeaverNode(["WEST"],"UNLOCK","BLUE")
             self.pos = [2,15]
             self.goalPos = [45,15]
+            print "Passed level 1"
+            
+        if self.pos == [45,15]:
+            self.clearGrid()
+            self.verticalGridLine([48,30],[48,20],"WHITE")
+            self.horizontalGridLine([0,20],[48,20],"WHITE")
+            self.verticalGridLine([40,20],[40,10],"WHITE")
+            self.verticalGridLine([30,20],[30,25],"WHITE")
+            self.horizontalGridLine([20,10],[40,10],"WHITE")
+            self.horizontalGridLine([10,25],[30,25],"WHITE")
+            self.pos = [48,28]
+            self.goalPos = [5,20]
+            print "Passed level 2"
                 
     def draw(self,screen):
         lock = pygame.Surface((20,20))
