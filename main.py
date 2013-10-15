@@ -57,24 +57,54 @@ class equalizingNumber():
         self.number += number
 
 class spreadBeaverNode():
-    def __init__(self, directions):
+    def __init__(self, directions, lock, color):
         self.directions = directions #Should be "NORTH" "EAST" "WEST" or "SOUTH
         self.drawSurface = pygame.Surface((10,10))
-        self.locked = False
-        if "NORTH" in self.directions:
-            pygame.draw.line(self.drawSurface, (250,250,250), (5,5),(5,0))
-        if "EAST" in self.directions:
-            pygame.draw.line(self.drawSurface, (250,250,250), (5,5),(10,5))
-        if "WEST" in self.directions:
-            pygame.draw.line(self.drawSurface, (250,250,250), (5,5),(0,5))
-        if "SOUTH" in self.directions:
-            pygame.draw.line(self.drawSurface, (250,250,250), (5,5), (5,10))
-
+        if color is "RED":
+            self.color = (250,0,0)
+        elif color is "GREEN":
+            self.color = (0,250,0)
+        elif color is "BLUE":
+            self.color = (0,0,25)
+        elif color is "PINK":
+            self.color = (255,102,204)
+        elif color is "YELLOW":
+            self.color = (255,255,0)
+        else:
+            self.color = (255,255,255)
+        if lock is False:
+            self.locked = False
+            self.drawLines()
+        elif lock is "UNLOCK":
+            self.locked = "UNLOCK"
+            self.drawSurface.fill(self.color)
+        else:
+            self.locked = True
+            self.drawSurface.fill(self.color)
+            
     def hasDirection(self,direction):
         if direction in self.directions:
             return True
         else:
             return False
+
+    def drawLines(self):
+        if "NORTH" in self.directions:
+            #pygame.draw.line(self.drawSurface, (250,250,250), (5,5),(5,0))
+            pygame.draw.line(self.drawSurface, self.color, (5,5),(5,0))
+        if "EAST" in self.directions:
+            #pygame.draw.line(self.drawSurface, (250,250,250), (5,5),(10,5))
+            pygame.draw.line(self.drawSurface, self.color, (5,5),(10,5))
+        if "WEST" in self.directions:
+            #pygame.draw.line(self.drawSurface, (250,250,250), (5,5),(0,5))
+            pygame.draw.line(self.drawSurface, self.color, (5,5),(0,5))
+        if "SOUTH" in self.directions:
+            #pygame.draw.line(self.drawSurface, (250,250,250), (5,5), (5,10))
+            pygame.draw.line(self.drawSurface, self.color, (5,5), (5,10))
+
+    def unlock(self):
+        self.locked = False
+        self.drawLines()
 
 class spreadBeaverGrid():
     def __init__(self):
@@ -82,13 +112,13 @@ class spreadBeaverGrid():
         for i in xrange(100):
             tempList = []
             for j in xrange(60):
-                tempList.append(spreadBeaverNode([]))
+                tempList.append(spreadBeaverNode([],False,"WHITE"))
             self.grid.append(tempList)
         for i in xrange(60):
-            self.grid[50][i] = spreadBeaverNode(["NORTH","SOUTH"])
+            self.grid[50][i] = spreadBeaverNode(["NORTH","SOUTH"], False, "WHITE")
         self.pos = [50,50]
         self.goalPos = [50,10]
-        self.grid[50][51].locked = True
+        self.grid[50][51] = spreadBeaverNode(["NORTH","SOUTH"],True,"BLUE")
         self.cursor = pygame.Surface((10,10))
         self.cursor = self.cursor.convert()
         self.cursor.fill((255, 102, 204))
