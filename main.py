@@ -375,7 +375,12 @@ class pinkSpiderPlayer(pygame.sprite.Sprite):
             balance = self.velocity[2] - self.velocity[3]
             self.image = pygame.transform.rotate(self.originalImage, 5 * balance)
             self.velocity[0] = balance * 2
+            
         self.rect.x += self.velocity[0]
+        if self.rect.x < 0:
+            self.rect.x = 0
+        elif self.rect.x + self.rect.width > 1000:
+            self.rect.x = 1000 - self.rect.width
         self.rect.y += self.velocity[1]
 
     def transform(self):
@@ -1048,7 +1053,7 @@ def main():
                 frameTimer = 30 + randint(-3,20)
             for i in meteors.sprites():
                 if gameData['player'].rect.colliderect(i.rect):
-                    gameData['player'].life -= 50
+                    gameData['player'].life -= 10
                     player1LifeMeter.update(gameData['player'].life)
                     i.kill()
                     if gameData['player'].life == 0:
