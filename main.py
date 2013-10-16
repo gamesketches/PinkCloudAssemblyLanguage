@@ -920,6 +920,7 @@ def changeTrack(gameData):
     if gameData['trackNumber'] == 1:
         gameData['player'] = rocketDivePlayer()
         gameData['spriteList'].add(gameData['player'])
+        gameData['frameCounter'] = 100
     # Change track to Leather Face
     if gameData['trackNumber'] == 2:
         newBackground = pygame.Surface((1000,600))
@@ -1013,7 +1014,7 @@ def main():
     speed = 5
     trackNumber = 1
     allsprites = pygame.sprite.Group()
-    gameData = {'player': None,'trackNumber':trackNumber,'spriteList':allsprites,'background':background,'distance':1000}
+    gameData = {'player': None,'trackNumber':trackNumber,'spriteList':allsprites,'background':background,'distance':100}
     distanceTracker = pygame.font.Font(None, 36)
     sideScrollingSurface = pygame.Surface(screen.get_size())
     sideScrollingSurface = sideScrollingSurface.convert()
@@ -1061,12 +1062,19 @@ def main():
                         meteors.empty()
                         break
             if gameData['distance'] <= 0:
-                changeTrack(gameData)
+                #changeTrack(gameData)
                 meteors.empty()
+                allsprites.empty()
+                gameData['frameCounter'] -= 1
+                screen.blit(distanceTracker.render("Sail Away!", 1, (200,10,10)), (500,300))
+                if gameData['frameCounter'] <= 0:
+                    changeTrack(gameData)
+            else:
+                screen.blit(distanceTracker.render(str(gameData['distance']), 1, (200,10,10)), (900,500))
             meteors.update(speed)
             meteors.draw(screen)
             player1LifeMeter.draw(screen)
-            screen.blit(distanceTracker.render(str(gameData['distance']), 1, (200,10,10)), (900,500))
+            
         # ----- Track 3, Leather Face -------
         elif gameData['trackNumber'] == 3:
             screen.blit(gameData['backGround'], (0,0))
