@@ -1,6 +1,7 @@
 import pygame, sys, os, math
 from pygame.locals import *
 from random import randint
+from interpolator import *
 
 if not pygame.font: print 'Warning, fonts disabled'
 if not pygame.mixer: print 'Warning, sound disabled'
@@ -520,6 +521,7 @@ class fishScratchFeverPlayer():
         self.fishShadow = self.fishShadow.convert()
         self.fishShadow.fill((20,40,200))
         pygame.draw.circle(self.fishShadow,(10,20,100),(15,15) ,15)
+        self.endLines = []
 
     def update(self):
         if self.state == "neutral":
@@ -538,6 +540,8 @@ class fishScratchFeverPlayer():
         elif self.state == "homeFree":
             self.frameTimer -= 1
             self.fishPic = pygame.transform.scale(self.fishPic,(self.frameTimer,self.frameTimer * 2))
+            for i in self.endLines:
+                i.next()
         return self.speed
 
     def draw(self, screen):
@@ -574,13 +578,13 @@ class fishScratchFeverPlayer():
                 screen.blit(self.fishShadow, (750, 500))
         elif self.state is "homeFree":
             if self.fishNum > 0:
-                screen.blit(pygame.transform.rotate(pygame.transform.flip(self.fishPic, True, False), - 25),(250, 500))
+                screen.blit(pygame.transform.rotate(pygame.transform.flip(self.fishPic, True, False), - 25),self.endLines[0].pos)
             if self.fishNum > 1:
-                screen.blit(pygame.transform.rotate(pygame.transform.flip(self.fishPic,True,False), -12), (380,520))
+                screen.blit(pygame.transform.rotate(pygame.transform.flip(self.fishPic,True,False), -12), self.endLines[1].pos)
             if self.fishNum > 2:
-                screen.blit(pygame.transform.rotate(self.fishPic, 12), (620,520))
+                screen.blit(pygame.transform.rotate(self.fishPic, 12), self.endLines[2].pos)
             if self.fishNum > 3:
-                screen.blit(pygame.transform.rotate(self.fishPic, 25), (750, 500))
+                screen.blit(pygame.transform.rotate(self.fishPic, 25), self.endLines[3].pos)
 
     def gameOverKa(self, obstacle):
         print "gameOverKa with argument: ", obstacle
@@ -603,6 +607,22 @@ class fishScratchFeverPlayer():
                     return True
                 else:
                     return False
+
+    def beFree(self):
+        if self.state is "homeFree":
+            self.frameTimer -= 1
+        else:
+            self.state = "homeFree"
+            self.frameTimer = 40
+            if self.fishNum > 0:
+                self.endLines.append( Interpolator((250, 500),(500,300),0.7,60))
+            if self.fishNum > 1:
+                self.endLines.append(Interpolator((380,520),(500,300),0.7,60))
+            if self.fishNum > 2:
+                self.endLines.append(Interpolator((620,520),(500,300),0.7,60))
+            if self.fishNum > 3:
+                self.endLines.append(Interpolator((750,500),(500,300),0.7,60))
+            
         
 class fishScratchFeverObstacle(pygame.sprite.Sprite):
     def __init__(self):
@@ -1185,10 +1205,8 @@ def main():
                 gameData['spriteList'].add(fishScratchFeverObstacle())
                 gameData['frameCounter'] = 130
             if gameData['targetDistance'] <= 0:
-                if gameData['player'].state != "homeFree":
-                    gameData['player'].state = "homeFree"
-                    gameData['player'].frameTimer = 40
-                elif gameData['player'].frameTimer <= 0:
+                gameData['player'].beFree()
+                if gameData['player'].frameTimer <= 0:
                     changeTrack(gameData)
         # ----- Track 7, Ever Free -----
         elif gameData['trackNumber'] == 7:
