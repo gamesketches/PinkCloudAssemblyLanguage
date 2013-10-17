@@ -943,9 +943,17 @@ def changeTrack(gameData):
         gameData['player'] = doubtPlayer()
         for i in range(6):
             gameData['spriteList'].add(doubtEnemy())
-        newBackground = pygame.Surface((1000,600))
+        newBackground = pygame.Surface((10000,6000))
         newBackground = newBackground.convert()
-        newBackground.fill((0,0,0))
+        #newBackground.fill((0,0,0),)
+        red = 67
+        green = 233
+        blue = 41
+        for i in [0,600,1200,1800,2400,3000,3600,4200,4800,5400,6000]:
+            newBackground.fill((red,green,blue),pygame.Rect(0,i,10000,600))
+            red -= 5
+            green -= 20
+            blue -= 3
         gameData['backGround'] = newBackground
     # Change track to Fish Scratch Fever    
     elif gameData['trackNumber'] == 5: 
@@ -957,6 +965,7 @@ def changeTrack(gameData):
         gameData['player'] = fishScratchFeverPlayer()
         gameData['spriteList'].add(fishScratchFeverObstacle())
         gameData['frameCounter'] = 130
+        gameData['targetDistance'] = 5000
     # Change track to Ever Free
     elif gameData['trackNumber'] == 6:
         gameData['player'] = everFreePlayer()
@@ -1132,10 +1141,11 @@ def main():
         # ----- Track 5, Doubt '97 -----
         elif gameData['trackNumber'] == 5:
             allsprites = pygame.sprite.Group()
-            screen.blit(gameData['backGround'], (0,0))
+            #screen.blit(gameData['backGround'], (0,0))
             gameData['spriteList'].update()
             gameData['player'].update()
             offset = gameData['player'].offset
+            screen.blit(gameData['backGround'], (-5000 - offset[0],-2000 + offset[1]))
             screen.blit(gameData['player'].sprite.image, (500,300))
             for i in gameData['spriteList'].sprites():
                 screen.blit(i.image, (i.rect.x - offset[0], i.rect.y + offset[1]))
@@ -1158,9 +1168,12 @@ def main():
                     if gameData['player'].gameOverKa(i.type):
                         changeTrack(gameData)
             gameData['frameCounter'] -= 1
-            if gameData['frameCounter'] == 0:
+            gameData['targetDistance'] -= curSpeed
+            if gameData['frameCounter'] == 0 and gameData['targetDistance']:
                 gameData['spriteList'].add(fishScratchFeverObstacle())
                 gameData['frameCounter'] = 130
+            if gameData['targetDistance'] <= 0:
+                changeTrack(gameData)
         # ----- Track 7, Ever Free -----
         elif gameData['trackNumber'] == 7:
             sideScrollingSurface.blit(gameData['backGround'], (0,0))
