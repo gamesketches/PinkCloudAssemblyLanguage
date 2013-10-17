@@ -535,6 +535,9 @@ class fishScratchFeverPlayer():
             self.frameTimer -= 1
             if self.frameTimer == 0:
                 self.state = "neutral"
+        elif self.state == "homeFree":
+            self.frameTimer -= 1
+            self.fishPic = pygame.transform.scale(self.fishPic,(self.frameTimer,self.frameTimer * 2))
         return self.speed
 
     def draw(self, screen):
@@ -569,6 +572,15 @@ class fishScratchFeverPlayer():
                 screen.blit(self.fishShadow, (620, 520))
             if self.fishNum > 3:
                 screen.blit(self.fishShadow, (750, 500))
+        elif self.state is "homeFree":
+            if self.fishNum > 0:
+                screen.blit(pygame.transform.rotate(pygame.transform.flip(self.fishPic, True, False), - 25),(250, 500))
+            if self.fishNum > 1:
+                screen.blit(pygame.transform.rotate(pygame.transform.flip(self.fishPic,True,False), -12), (380,520))
+            if self.fishNum > 2:
+                screen.blit(pygame.transform.rotate(self.fishPic, 12), (620,520))
+            if self.fishNum > 3:
+                screen.blit(pygame.transform.rotate(self.fishPic, 25), (750, 500))
 
     def gameOverKa(self, obstacle):
         print "gameOverKa with argument: ", obstacle
@@ -965,7 +977,7 @@ def changeTrack(gameData):
         gameData['player'] = fishScratchFeverPlayer()
         gameData['spriteList'].add(fishScratchFeverObstacle())
         gameData['frameCounter'] = 130
-        gameData['targetDistance'] = 5000
+        gameData['targetDistance'] = 1000
     # Change track to Ever Free
     elif gameData['trackNumber'] == 6:
         gameData['player'] = everFreePlayer()
@@ -1169,11 +1181,15 @@ def main():
                         changeTrack(gameData)
             gameData['frameCounter'] -= 1
             gameData['targetDistance'] -= curSpeed
-            if gameData['frameCounter'] == 0 and gameData['targetDistance']:
+            if gameData['frameCounter'] == 0 and gameData['targetDistance'] > 0:
                 gameData['spriteList'].add(fishScratchFeverObstacle())
                 gameData['frameCounter'] = 130
             if gameData['targetDistance'] <= 0:
-                changeTrack(gameData)
+                if gameData['player'].state != "homeFree":
+                    gameData['player'].state = "homeFree"
+                    gameData['player'].frameTimer = 40
+                elif gameData['player'].frameTimer <= 0:
+                    changeTrack(gameData)
         # ----- Track 7, Ever Free -----
         elif gameData['trackNumber'] == 7:
             sideScrollingSurface.blit(gameData['backGround'], (0,0))
