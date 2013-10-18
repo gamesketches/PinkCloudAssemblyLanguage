@@ -279,14 +279,28 @@ class leatherFacePlayer(pygame.sprite.Sprite):
                 self.image = self.lyingDownImage
                 self.rect.y += 180
                 self.image.set_alpha(100)
+        elif keys[K_UP]:
+            if not self.hiding:
+                self.hiding = True
+                self.image.set_alpha(100)
         else:
             if self.hiding:
                 self.hiding = False
-                self.image = self.originalImage
-                self.rect.y -= 180
+                if self.image == self.lyingDownImage:
+                    self.image = self.originalImage
+                    self.rect.y -= 180
                 self.image.set_alpha(None)
                 
         self.rect.x += self.velocity
+
+    def hidingPosture(self):
+        if self.hiding:
+            if self.image is self.lyingDownImage:
+                return "lyingDown"
+            else:
+                return "standing"
+        else:
+            return False
 
 class leatherFaceTarget(pygame.sprite.Sprite):
     def __init__(self):
@@ -328,11 +342,18 @@ class leatherFaceTarget(pygame.sprite.Sprite):
         self.timesSpotted += 1
 
 class leatherFaceObject(pygame.sprite.Sprite):
-    def __init__(self,image, position, hideBox):
+    def __init__(self,image, position, hideBox, hidingType):
         pygame.sprite.Sprite.__init__(self)
         self.image, self.rect = load_image(image)
         self.rect.topleft = position
         self.hideBox = pygame.Rect(hideBox)
+        self.hidingType = hidingType
+
+    def checkHidingSpot(self,state,hitBox):
+        if self.rect.colliderect(hitBox) and state == self.hidingType:
+            return True
+        else:
+            return False
 
 class pinkSpiderPlayer(pygame.sprite.Sprite):
     def __init__(self):
@@ -962,7 +983,8 @@ def changeTrack(gameData):
         pygame.draw.polygon(newBackground,(200,200,200),[(0,200),(1000,200),(1000,500),(0,500)])
         gameData['backGround'] = newBackground
         gameData['player'] = leatherFacePlayer()
-        gameData['spriteList'].add(gameData['player'],leatherFaceTarget(),leatherFaceObject('door.png',(500,220),(500,220,100,250)))
+        gameData['leatherFaceObjects'] = pygame.sprite.Group(leatherFaceObject('door.png',(400,220),(400,220,100,250),"standing"))
+        gameData['spriteList'].add(gameData['player'],leatherFaceTarget(), gameData['leatherFaceObjects'])
         gameData['frameCounter'] = 0
     # Change track to Pink Spider
     elif gameData['trackNumber'] == 3:
@@ -1119,9 +1141,11 @@ def main():
         # ----- Track 3, Leather Face -------
         elif gameData['trackNumber'] == 3:
             screen.blit(gameData['backGround'], (0,0))
-            for i in allsprites.sprites():
+            for i in gameData['spriteList'].sprites():
                 if gameData['frameCounter'] == 0:
-                    if type(i) == leatherFaceTarget:
+                    if type(i) == leatherFaceObject:
+                        i.rect.x += -1 * gameData['player'].velocity
+                    elif type(i) == leatherFaceTarget:
                         i.rect.x += -1 * gameData['player'].velocity
                         if i.rect.colliderect(gameData['player'].rect):
                             i.runAway()
@@ -1129,11 +1153,19 @@ def main():
                                 changeTrack(gameData)
                                 frameTimer = 50
                             gameData['frameCounter'] = 40
-                        if not i.facingRight and not gameData['player'].hiding:
-                            changeTrack(gameData)
-                            frameTimer = 50
-                    elif type(i) == leatherFaceObject:
-                        i.rect.x += -1 * gameData['player'].velocity
+                        if not i.facingRight:
+                            if not gameData['player'].hiding:
+                                changeTrack(gameData)
+                                frameTimer = 50
+                            else:
+                                visible = True
+                                for i in gameData['leatherFaceObjects']:
+                                    if i.checkHidingSpot(gameData['player'].hidingPosture(),gameData['player'].rect):
+                                        visible = False
+                                        break
+                                if visible:
+                                    changeTrack(gameData)
+                                    frameTimer = 50
                 else:
                     i.rect.x -= 5
             if gameData['frameCounter'] > 0:
