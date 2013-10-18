@@ -263,25 +263,25 @@ class leatherFacePlayer(pygame.sprite.Sprite):
         self.velocity = 0
         self.rect.y = 220
         self.rect.x = 100
-        self.visible = True
+        self.hiding = False
 
     def update(self):
         keys = pygame.key.get_pressed()
-        if keys[K_LEFT] and self.visible:
+        if keys[K_LEFT] and not self.hiding:
             self.velocity = -3
-        elif keys[K_RIGHT] and self.visible:
+        elif keys[K_RIGHT] and not self.hiding:
             self.velocity = 3
         else:
             self.velocity = 0
         if keys[K_DOWN]:
-            if self.visible:                    
-                self.visible = False
+            if not self.hiding:                    
+                self.hiding = True
                 self.image = self.lyingDownImage
                 self.rect.y += 180
                 self.image.set_alpha(100)
         else:
-            if not self.visible:
-                self.visible = True
+            if self.hiding:
+                self.hiding = False
                 self.image = self.originalImage
                 self.rect.y -= 180
                 self.image.set_alpha(None)
@@ -327,11 +327,12 @@ class leatherFaceTarget(pygame.sprite.Sprite):
         self.facingRight = True
         self.timesSpotted += 1
 
-class leatherFaceDoor(pygame.sprite.Sprite):
-    def __init__(self, position):
+class leatherFaceObject(pygame.sprite.Sprite):
+    def __init__(self,image, position, hideBox):
         pygame.sprite.Sprite.__init__(self)
-        self.image, self.rect = load_image('door.png')
+        self.image, self.rect = load_image(image)
         self.rect.topleft = position
+        self.hideBox = pygame.Rect(hideBox)
 
 class pinkSpiderPlayer(pygame.sprite.Sprite):
     def __init__(self):
@@ -961,7 +962,7 @@ def changeTrack(gameData):
         pygame.draw.polygon(newBackground,(200,200,200),[(0,200),(1000,200),(1000,500),(0,500)])
         gameData['backGround'] = newBackground
         gameData['player'] = leatherFacePlayer()
-        gameData['spriteList'].add(gameData['player'],leatherFaceTarget(),leatherFaceDoor((500,220)))
+        gameData['spriteList'].add(gameData['player'],leatherFaceTarget(),leatherFaceObject('door.png',(500,220),(500,220,100,250)))
         gameData['frameCounter'] = 0
     # Change track to Pink Spider
     elif gameData['trackNumber'] == 3:
@@ -1103,7 +1104,6 @@ def main():
                         meteors.empty()
                         break
             if gameData['distance'] <= 0:
-                #changeTrack(gameData)
                 meteors.empty()
                 allsprites.empty()
                 gameData['frameCounter'] -= 1
@@ -1129,10 +1129,10 @@ def main():
                                 changeTrack(gameData)
                                 frameTimer = 50
                             gameData['frameCounter'] = 40
-                        if not i.facingRight and gameData['player'].visible:
+                        if not i.facingRight and not gameData['player'].hiding:
                             changeTrack(gameData)
                             frameTimer = 50
-                    elif type(i) == leatherFaceDoor:
+                    elif type(i) == leatherFaceObject:
                         i.rect.x += -1 * gameData['player'].velocity
                 else:
                     i.rect.x -= 5
