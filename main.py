@@ -751,6 +751,8 @@ class everFreePlayer(pygame.sprite.Sprite):
     def detachFromSurface(self, velocityProfile):
         self.touchingSurface = False
         self.velocity = velocityProfile
+        if self.slope[1] < 0:
+            self.slope = [5,5]
         self.image, temp = load_image("breedingHide.png", -1)
         
 class everFreeSurface():
