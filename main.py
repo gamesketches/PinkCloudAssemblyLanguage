@@ -803,6 +803,10 @@ class breedingGrid():
         for i in range(self.NUMCOLUMNS):
             self.columns.append(breedingColumn(i))
 
+    def update(self):
+        for i in self.columns:
+            i.update()
+
     def draw(self,screen):
         for i in range(self.NUMCOLUMNS):
             self.columns[i].drawColumn(screen)
@@ -838,7 +842,6 @@ class breedingGrid():
                     self.numBugs += 1
                     self.updateBugs()
                     return theBlock
-                    #return True
                 elif action is "drop":
                     self.columns[position + 1].addBlock(self.player.carrying)
                     self.updateBugs()
@@ -854,7 +857,6 @@ class breedingGrid():
                     self.numBugs += 1
                     self.updateBugs()
                     return theBlock
-                    #return True
                 elif action is "drop":
                     self.columns[position -1].addBlock(self.player.carrying)
                     return True
@@ -866,8 +868,8 @@ class breedingGrid():
     def updateBugs(self):
         largest = breedingColumn(0)
         for i in self.columns:
-            i.bugNumber = 0
-            if i.number >= largest.number:
+            i.numBugs = 0
+            if i.totalHeight() >= largest.totalHeight():
                 largest = i
         largest.numBugs = self.numBugs
 
@@ -877,8 +879,14 @@ class breedingColumn():
         self.height = height
         self.occupied = False
         self.number = number
-        self.bugNumber = 0
+        self.numBugs = 0
         self.blocks = []
+
+    def update(self):
+        if len(self.blocks) > 0 and self.numBugs:
+            self.blocks[0].height -= (0.005 * self.numBugs)
+            if self.blocks[0].height <= 0:
+                self.blocks.pop(0)
 
     def addBlock(self,theBlock):
         if theBlock is False:
@@ -893,9 +901,7 @@ class breedingColumn():
         
     def drawColumn(self,screen):
         lastY = 600
-        #for i in range(self.height + 1):
         for i in self.blocks:
-            #pygame.draw.rect(screen, (250,0,0), pygame.Rect((self.number + 1) * 100,600-i*100, 100, 100))
             pygame.draw.rect(screen, (250,0,0), pygame.Rect((self.number + 1) * 100, lastY-i.height,100,100))
             lastY = lastY-i.height
 
@@ -903,6 +909,12 @@ class breedingColumn():
         self.height = num
         for i in range(self.height):
             self.blocks.append(breedingBlock())
+
+    def totalHeight(self):
+        theSum = 0
+        for i in self.blocks:
+            theSum += i.height
+        return theSum
 
 class breedingBlock():
     def __init__(self,height=100):
@@ -942,8 +954,6 @@ class breedingPlayer(pygame.sprite.Sprite):
             elif keys[K_UP]:
                 if not self.carrying:
                     self.carrying = self.grid.allowAction(self.position, self.facingRight, "pickup")
-                    #if self.grid.allowAction(self.position, self.facingRight, "pickup"):
-                        #self.carrying = True
                 self.locked = True
             elif keys[K_DOWN]:
                 if self.carrying:
@@ -1083,13 +1093,9 @@ def changeTrack(gameData):
     # Change track to Breeding
     elif gameData['trackNumber'] == 7:
         gameData['grid'] = breedingGrid()
-        #gameData['grid'].columns[0].height = 4
         gameData['grid'].columns[0].changeHeight(4)
-        #gameData['grid'].columns[1].height = 3
         gameData['grid'].columns[1].changeHeight(3)
-        #gameData['grid'].columns[2].height = 2
         gameData['grid'].columns[2].changeHeight(2)
-        #gameData['grid'].columns[3].height = 1
         gameData['grid'].columns[3].changeHeight(1)
         gameData['player'] = gameData['grid'].player
         gameData['spriteList'].add(gameData['player'])
@@ -1308,6 +1314,7 @@ def main():
         # ----- Track 8, Breeding ------
         elif gameData['trackNumber'] == 8:
             screen.blit(gameData['background'], (0,0))
+            gameData['grid'].update()
             gameData['grid'].draw(screen)
         # ----- Track 9 Hurry Go Round -----
         elif gameData['trackNumber'] == 9:
