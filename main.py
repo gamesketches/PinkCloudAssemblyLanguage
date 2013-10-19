@@ -510,7 +510,8 @@ class doubtPlayer():
 class doubtEnemy(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image, self.rect = load_image("fly.png", -1)
+        self.image, self.rect = load_image("tadpole.png", -1)
+        self.originalImage = self.image
         self.rect.center = (randint(-1000,2000),randint(-600,1200))
         self.velocity = [0,0]
         self.acceleration = 0
@@ -529,8 +530,13 @@ class doubtEnemy(pygame.sprite.Sprite):
                 self.velocity[1] = self.acceleration.add(self.velocity[1])
                 if abs(self.velocity[1]) <= 0:
                     self.velocity[1] = 0
+
+        if self.velocity[1] > 0:
+            self.image = pygame.transform.rotate(self.originalImage, 15 * self.velocity[0])
+        else:
+            self.image = pygame.transform.rotate(self.originalImage, 180 + (15 * self.velocity[0]))
             
-            self.rect = self.rect.move((self.velocity[0],self.velocity[1]))
+        self.rect = self.rect.move((self.velocity[0],self.velocity[1]))
 
 class fishScratchFeverPlayer():
     def __init__(self):
