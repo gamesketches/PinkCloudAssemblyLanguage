@@ -799,6 +799,7 @@ class breedingGrid():
         self.goal.rect.topleft = (900,50)
         self.columns = []
         self.NUMCOLUMNS = 10
+        self.numBugs = 0
         for i in range(self.NUMCOLUMNS):
             self.columns.append(breedingColumn(i))
 
@@ -833,10 +834,14 @@ class breedingGrid():
         if facingRight and position < 9:
             if abs(self.columns[position].height - self.columns[position +1].height) <= 1:
                 if action is "pickup" and self.columns[position +1].height > 0:
-                    self.columns[position + 1].removeBlock()
-                    return True
+                    theBlock = self.columns[position + 1].removeBlock()
+                    self.numBugs += 1
+                    self.updateBugs()
+                    return theBlock
+                    #return True
                 elif action is "drop":
-                    self.columns[position + 1].addBlock()
+                    self.columns[position + 1].addBlock(self.player.carrying)
+                    self.updateBugs()
                     return True
                 else:
                     return False
@@ -845,33 +850,64 @@ class breedingGrid():
         elif position > 0:
             if abs(self.columns[position].height - self.columns[position -1].height) <= 1:
                 if action is "pickup" and self.columns[position -1].height > 0:
-                    self.columns[position -1].removeBlock()
-                    return True
+                    theBlock = self.columns[position -1].removeBlock()
+                    self.numBugs += 1
+                    self.updateBugs()
+                    return theBlock
+                    #return True
                 elif action is "drop":
-                    self.columns[position -1].addBlock()
+                    self.columns[position -1].addBlock(self.player.carrying)
                     return True
                 else:
                     return False
             else:
                 return False
 
+    def updateBugs(self):
+        largest = breedingColumn(0)
+        for i in self.columns:
+            i.bugNumber = 0
+            if i.number >= largest.number:
+                largest = i
+        largest.numBugs = self.numBugs
+
 
 class breedingColumn():
-    def __init__(self, number):
-        self.height = 0
+    def __init__(self, number, height=0):
+        self.height = height
         self.occupied = False
         self.number = number
+        self.bugNumber = 0
+        self.blocks = []
 
-    def addBlock(self):
+    def addBlock(self,theBlock):
+        if theBlock is False:
+            print "false block being added"
         self.height += 1
+        self.blocks.append(theBlock)
         
     def removeBlock(self):
         if self.height > 0:
             self.height -= 1
+            return self.blocks.pop(-1)
         
     def drawColumn(self,screen):
-        for i in range(self.height + 1):
-            pygame.draw.rect(screen, (250,0,0), pygame.Rect((self.number + 1) * 100,600-i*100, 100, 100))
+        lastY = 600
+        #for i in range(self.height + 1):
+        for i in self.blocks:
+            #pygame.draw.rect(screen, (250,0,0), pygame.Rect((self.number + 1) * 100,600-i*100, 100, 100))
+            pygame.draw.rect(screen, (250,0,0), pygame.Rect((self.number + 1) * 100, lastY-i.height,100,100))
+            lastY = lastY-i.height
+
+    def changeHeight(self, num):
+        self.height = num
+        for i in range(self.height):
+            self.blocks.append(breedingBlock())
+
+class breedingBlock():
+    def __init__(self,height=100):
+        self.height = height
+        
 
 class breedingPlayer(pygame.sprite.Sprite):
     def __init__(self, grid):
@@ -905,8 +941,9 @@ class breedingPlayer(pygame.sprite.Sprite):
                 self.locked = True
             elif keys[K_UP]:
                 if not self.carrying:
-                    if self.grid.allowAction(self.position, self.facingRight, "pickup"):
-                        self.carrying = True
+                    self.carrying = self.grid.allowAction(self.position, self.facingRight, "pickup")
+                    #if self.grid.allowAction(self.position, self.facingRight, "pickup"):
+                        #self.carrying = True
                 self.locked = True
             elif keys[K_DOWN]:
                 if self.carrying:
@@ -1046,10 +1083,14 @@ def changeTrack(gameData):
     # Change track to Breeding
     elif gameData['trackNumber'] == 7:
         gameData['grid'] = breedingGrid()
-        gameData['grid'].columns[0].height = 4
-        gameData['grid'].columns[1].height = 3
-        gameData['grid'].columns[2].height = 2
-        gameData['grid'].columns[3].height = 1
+        #gameData['grid'].columns[0].height = 4
+        gameData['grid'].columns[0].changeHeight(4)
+        #gameData['grid'].columns[1].height = 3
+        gameData['grid'].columns[1].changeHeight(3)
+        #gameData['grid'].columns[2].height = 2
+        gameData['grid'].columns[2].changeHeight(2)
+        #gameData['grid'].columns[3].height = 1
+        gameData['grid'].columns[3].changeHeight(1)
         gameData['player'] = gameData['grid'].player
         gameData['spriteList'].add(gameData['player'])
         gameData['backGround'].fill((0,0,0))
