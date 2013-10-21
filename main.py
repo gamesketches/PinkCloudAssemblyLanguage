@@ -800,18 +800,25 @@ class breedingGrid():
         self.columns = []
         self.NUMCOLUMNS = 10
         self.numBugs = 0
+        self.bugs = None
+        self.bugInterpolator = None
         for i in range(self.NUMCOLUMNS):
             self.columns.append(breedingColumn(i))
 
     def update(self):
         for i in self.columns:
             i.update()
+        if self.bugs:
+            self.bugs.rect.midbottom = self.bugInterpolator.pos
+            self.bugInterpolator.next()
 
     def draw(self,screen):
         for i in range(self.NUMCOLUMNS):
             self.columns[i].drawColumn(screen)
         if self.player.carrying:
             pygame.draw.rect(screen,(250,0,0),pygame.Rect(self.player.rect.left,self.player.rect.top - 100, 100, 100))
+        if self.bugs:
+            screen.blit(self.bugs.image, self.bugs.rect.topleft)
         screen.blit(self.goal.image, self.goal.rect.topleft)
 
     def allowMove(self,position, goingRight):
@@ -872,6 +879,13 @@ class breedingGrid():
             if i.totalHeight() >= largest.totalHeight():
                 largest = i
         largest.numBugs = self.numBugs
+        if self.bugs is None:
+            self.bugs = pygame.sprite.Sprite()
+            self.bugs.image, self.bugs.rect = load_image("ant.png",-1)
+            self.bugs.rect.midbottom = self.player.rect.midbottom
+            self.bugInterpolator = Interpolator(self.player.rect.bottomleft,((largest.number+1) * 100,600),1,60)
+        else:
+            self.bugInterpolator = Interpolator(self.bugs.rect.midbottom,((largest.number+1) * 100,600),1,60)
 
 
 class breedingColumn():
