@@ -63,10 +63,11 @@ class spreadBeaverNode():
         self.drawSurface = pygame.Surface((20,20))
         if color is "RED":
             self.color = (250,0,0)
+            print "a red surface"
         elif color is "GREEN":
             self.color = (0,250,0)
         elif color is "BLUE":
-            self.color = (0,0,25)
+            self.color = (0,0,250)
         elif color is "PINK":
             self.color = (255,102,204)
         elif color is "YELLOW":
@@ -137,15 +138,15 @@ class spreadBeaverGrid():
                     self.pos[0] += 1
         elif keys[K_DOWN]:
             if self.grid[self.pos[0]][self.pos[1]].hasDirection("SOUTH"):
-                if not self.grid[self.pos[0]][self.pos[1] + 1].locked:
+                if self.grid[self.pos[0]][self.pos[1]+1].locked == "UNLOCK" or not self.grid[self.pos[0]][self.pos[1] + 1].locked:
                     self.pos[1] += 1
         elif keys[K_LEFT]:
             if self.grid[self.pos[0]][self.pos[1]].hasDirection("WEST"):
-                if not self.grid[self.pos[0] - 1][self.pos[1]].locked:
+                if self.grid[self.pos[0] - 1][self.pos[1]].locked == "UNLOCK" or not self.grid[self.pos[0] - 1][self.pos[1]].locked:
                     self.pos[0] -= 1
         elif keys[K_UP]:
             if self.grid[self.pos[0]][self.pos[1]].hasDirection("NORTH"):
-                if not self.grid[self.pos[0]][self.pos[1] - 1].locked:
+                if self.grid[self.pos[0]][self.pos[1] - 1].locked == "UNLOCK" or not self.grid[self.pos[0]][self.pos[1] - 1].locked:
                     self.pos[1] -= 1
                     
         if self.grid[self.pos[0]][self.pos[1]].locked == "UNLOCK":
@@ -168,23 +169,29 @@ class spreadBeaverGrid():
             self.clearGrid()
             self.verticalGridLine([48,30],[48,20],"WHITE")
             self.horizontalGridLine([0,20],[48,20],"WHITE")
+            self.grid[48][20] = spreadBeaverNode(["SOUTH","WEST"],False,"WHITE")
+            self.grid[15][20] = spreadBeaverNode(["EAST","WEST"],True,"BLUE")
             self.verticalGridLine([40,20],[40,10],"WHITE")
+            self.grid[40][20] = spreadBeaverNode(["EAST","WEST","NORTH"],False,"WHITE")
             self.verticalGridLine([30,20],[30,25],"WHITE")
+            self.grid[30][20] = spreadBeaverNode(["EAST","WEST","SOUTH"],False,"WHITE")
             self.horizontalGridLine([20,10],[40,10],"WHITE")
+            self.grid[40][10] = spreadBeaverNode(["SOUTH","WEST"],False,"WHITE")
+            self.grid[20][10] = spreadBeaverNode(["EAST"],"UNLOCK","BLUE")
+            self.grid[25][10] = spreadBeaverNode(["EAST","WEST"],True,"RED")
             self.horizontalGridLine([10,25],[30,25],"WHITE")
+            self.grid[30][25] = spreadBeaverNode(["WEST","NORTH"],False,"WHITE")
+            self.grid[11][25] = spreadBeaverNode(["EAST"],"UNLOCK","RED")
             self.pos = [48,28]
             self.goalPos = [5,20]
             print "Passed level 2"
                 
     def draw(self,screen):
-        lock = pygame.Surface((20,20))
-        lock.convert()
-        lock.fill((0,0,200))
         for i in range(len(self.grid)):
             for k in range(len(self.grid[i])):
                 screen.blit(self.grid[i][k].drawSurface, (i * 20, k * 20))
                 if self.grid[i][k].locked:
-                    screen.blit(lock, (i * 20, k * 20))
+                    screen.blit(self.grid[i][k].drawSurface, (i * 20, k * 20))
         screen.blit(self.cursor, (self.pos[0] * 20, self.pos[1] * 20))
         screen.blit(self.goal, (self.goalPos[0] * 20, self.goalPos[1] * 20))
 
