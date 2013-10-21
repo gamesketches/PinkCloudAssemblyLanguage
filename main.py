@@ -104,6 +104,8 @@ class spreadBeaverNode():
         if self.color == color:
             if self.locked and self.locked is not "UNLOCK":
                 self.locked = False
+                self.drawSurface.fill((0,0,0))
+                self.color = (255,255,255)
                 self.drawLines()
             else:
                 self.locked = True
@@ -185,6 +187,28 @@ class spreadBeaverGrid():
             self.pos = [48,28]
             self.goalPos = [5,20]
             print "Passed level 2"
+
+        if self.pos == [5,20]:
+            self.clearGrid()
+            self.horizontalGridLine([24,25],[50,25],"WHITE")
+            self.verticalGridLine([24,0],[24,25],"WHITE")
+            self.grid[24][25] = spreadBeaverNode(["EAST","NORTH"],False,"WHITE")
+            self.horizontalGridLine([6,20],[24,20],"WHITE")
+            self.grid[6][20] = spreadBeaverNode(["EAST"],"UNLOCK","PINK")
+            self.grid[24][20] = spreadBeaverNode(["WEST","NORTH","SOUTH"],False,"WHITE")
+            self.horizontalGridLine([24,15],[40,15],"WHITE")
+            self.grid[24][15] = spreadBeaverNode(["EAST","NORTH","SOUTH"],False,"WHTIE")
+            self.grid[40][15] = spreadBeaverNode(["WEST"],"UNLOCK","GREEN")
+            self.horizontalGridLine([24,10],[4,10],"WHITE")
+            self.grid[24][10] = spreadBeaverNode(["WEST","SOUTH","NORTH"],False,"WHITE")
+            self.grid[4][10] = spreadBeaverNode(["EAST"],"UNLOCK","BLUE")
+            self.grid[20][10] = spreadBeaverNode(["EAST","WEST"],False,"PINK")
+            self.grid[24][5] = spreadBeaverNode(["NORTH","SOUTH"],True,"GREEN")
+            self.grid[24][7] = spreadBeaverNode(["NORTH","SOUTH"],True,"PINK")
+            self.grid[24][8] = spreadBeaverNode(["NORTH","SOUTH"],True,"BLUE")
+            self.pos = [48,25]
+            self.goalPos = [24,2]
+            print "passed level 3"
                 
     def draw(self,screen):
         for i in range(len(self.grid)):
