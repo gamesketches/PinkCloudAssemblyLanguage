@@ -190,9 +190,9 @@ class spreadBeaverGrid():
 
         elif self.pos == [5,20]:
             self.clearGrid()
-            self.horizontalGridLine([24,25],[50,25],"WHITE")
-            self.verticalGridLine([24,0],[24,25],"WHITE")
-            self.grid[24][25] = spreadBeaverNode(["EAST","NORTH"],False,"WHITE")
+            self.horizontalGridLine([24,26],[50,26],"WHITE")
+            self.verticalGridLine([24,0],[24,26],"WHITE")
+            self.grid[24][26] = spreadBeaverNode(["EAST","NORTH"],False,"WHITE")
             self.horizontalGridLine([6,20],[24,20],"WHITE")
             self.grid[6][20] = spreadBeaverNode(["EAST"],"UNLOCK","PINK")
             self.grid[24][20] = spreadBeaverNode(["WEST","NORTH","SOUTH"],False,"WHITE")
@@ -206,7 +206,7 @@ class spreadBeaverGrid():
             self.grid[24][5] = spreadBeaverNode(["NORTH","SOUTH"],True,"GREEN")
             self.grid[24][7] = spreadBeaverNode(["NORTH","SOUTH"],True,"PINK")
             self.grid[24][8] = spreadBeaverNode(["NORTH","SOUTH"],True,"BLUE")
-            self.pos = [48,25]
+            self.pos = [48,26]
             self.goalPos = [24,2]
             print "passed level 3"
 
@@ -242,6 +242,51 @@ class spreadBeaverGrid():
             self.pos = [5,25]
             self.goalPos = [45,25]
             print "passed level 4"
+
+        elif self.pos == [45,25]:
+            self.clearGrid()
+            self.verticalGridLine([47,30],[47,16],"WHITE")
+            self.horizontalGridLine([0,16],[47,16],"WHITE")
+            self.grid[47][16] = spreadBeaverNode(["WEST","SOUTH"],False,"WHITE")
+            self.verticalGridLine([43,16],[43,25],"YELLOW")
+            self.horizontalGridLine([36,25],[43,25],"YELLOW")
+            self.grid[43][16] = spreadBeaverNode(["WEST","SOUTH","EAST"],False,"WHITE")
+            self.grid[43][25] = spreadBeaverNode(["NORTH","WEST"],False,"YELLOW")
+            self.verticalGridLine([30,16],[30,25],"GREEN")
+            self.horizontalGridLine([30,25],[36,25],"GREEN")
+            self.grid[36][25] = spreadBeaverNode(["EAST","WEST"],"UNLOCK","PINK")
+            self.grid[30][25] = spreadBeaverNode(["EAST","NORTH"],False,"GREEN")
+            self.verticalGridLine([30,16],[30,5],"BLUE")
+            self.horizontalGridLine([23,5],[30,5],"BLUE")
+            self.grid[30][5] = spreadBeaverNode(["WEST","SOUTH"],False,"BLUE")
+            self.grid[30][16] = spreadBeaverNode(["EAST","SOUTH","WEST","NORTH"],False,"WHITE")
+            self.horizontalGridLine([19,5],[23,5],"WHITE")
+            self.verticalGridLine([19,16],[19,5],"WHITE")
+            self.grid[23][5] = spreadBeaverNode(["EAST","WEST"],"UNLOCK","GREEN")
+            self.grid[19][5] = spreadBeaverNode(["EAST","SOUTH"],False,"WHITE")
+            self.verticalGridLine([19,16],[19,25],"BLUE")
+            self.horizontalGridLine([12,25],[19,25],"RED")
+            self.grid[19][16] = spreadBeaverNode(["NORTH","SOUTH","EAST","WEST"],False,"WHITE")
+            self.grid[19][25] = spreadBeaverNode(["WEST","NORTH"],"UNLOCK","BLUE")
+            self.verticalGridLine([12,16],[12,25],"WHITE")
+            self.grid[12][25] = spreadBeaverNode(["NORTH","EAST"],"UNLOCK","RED")
+            self.verticalGridLine([12,16],[12,5],"PINK")
+            self.horizontalGridLine([8,5],[12,5],"PINK")
+            self.horizontalGridLine([6,5],[8,5],"WHITE")
+            self.verticalGridLine([6,16],[6,5],"WHITE")
+            self.grid[12][5] = spreadBeaverNode(["WEST","SOUTH"],False,"PINK")
+            self.grid[12][16] = spreadBeaverNode(["NORTH","SOUTH","EAST","WEST"],False,"WHITE")
+            self.grid[8][5] = spreadBeaverNode(["EAST","WEST"],"UNLOCK","YELLOW")
+            self.grid[6][5] = spreadBeaverNode(["EAST","SOUTH"],False,"WHITE")
+            self.grid[6][16] = spreadBeaverNode(["NORTH","EAST","WEST"],False,"WHITE")
+            self.grid[5][16] = spreadBeaverNode(["EAST","WEST"],True,"YELLOW")
+            self.grid[4][16] = spreadBeaverNode(["EAST","WEST"],True,"GREEN")
+            self.grid[3][16] = spreadBeaverNode(["EAST","WEST"],True,"PINK")
+            self.grid[2][16] = spreadBeaverNode(["EAST","WEST"],True,"RED")
+            self.grid[1][16] = spreadBeaverNode(["EAST","WEST"],True,"BLUE")
+            self.goalPos = [0,16]
+            self.pos = [47,25]
+            print "cleared level 5"
             
                 
     def draw(self,screen):
