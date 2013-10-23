@@ -216,7 +216,7 @@ class spreadBeaverGrid():
             self.grid[25][10] = spreadBeaverNode(["EAST","WEST"],True,"RED")
             self.horizontalGridLine([10,25],[30,25],"WHITE")
             self.grid[30][25] = spreadBeaverNode(["WEST","NORTH"],False,"WHITE")
-            self.grid[11][25] = spreadBeaverNode(["EAST"],"UNLOCK","RED")
+            self.grid[10][25] = spreadBeaverNode(["EAST"],"UNLOCK","RED")
             self.pos = [48,28]
             self.goalPos = [5,20]
             print "Passed level 2"
