@@ -1188,9 +1188,12 @@ class hurryGoRoundPlayer(pygame.sprite.Sprite):
             self.jumpTimer -= 1
         else:
             keys = pygame.key.get_pressed()
-            if keys[K_UP]:
+            if keys[K_DOWN]:
+                self.rect.y = 550
+            elif keys[K_UP]:
                 self.jumpTimer = 20
-            self.rect.y = 500
+            else:
+                self.rect.y = 500
 
     def draw(self,screen):
         screen.blit(self.image, (10 + self.offset,self.rect.y))
@@ -1206,7 +1209,7 @@ class hurryGoRoundObstacle(pygame.sprite.Sprite):
         self.rect.x -= 5
 
     def draw(self,screen,offset,x):
-        screen.blit(self.image,(self.rect.x,self.rect.y))
+        screen.blit(self.image,(self.rect.x - x,self.rect.y))
 
 class hurryGoRoundFootprint(pygame.sprite.Sprite):
     def __init__(self,position,flipped):
