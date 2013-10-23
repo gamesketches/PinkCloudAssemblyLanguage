@@ -1175,12 +1175,32 @@ class hurryGoRoundPlayer(pygame.sprite.Sprite):
         self.rect.x = 10
         self.rect.y = 500
         self.offset = 0
+        self.footPrintTimer =  20
 
     def update(self):
         self.rect.x += 5
+        self.footPrintTimer -= 1
+        if self.footPrintTimer < 0:
+            self.footPrintTimer = 20
 
     def draw(self,screen):
         screen.blit(self.image, (10 + self.offset,self.rect.y))
+
+class hurryGoRoundObstacle(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface((100,200))
+        self.image = self.image.convert()
+        self.image.fill((255,0,0))
+        self.rect = self.image.get_rect()
+        self.rect.x = 1100
+        self.rect.y = 400
+
+    def update(self):
+        self.rect.x -= 5
+
+    def draw(self,screen,offset,x):
+        screen.blit(self.image,(self.rect.x,self.rect.y))
 
 class hurryGoRoundFootprint(pygame.sprite.Sprite):
     def __init__(self,position,flipped):
@@ -1296,9 +1316,9 @@ def changeTrack(gameData):
     # Change track to Hurry Go Round
     elif gameData['trackNumber'] == 8:
         gameData['player'] = hurryGoRoundPlayer()
-        gameData['spriteList'].add(gameData['player'])
+        gameData['spriteList'].add(gameData['player'],hurryGoRoundObstacle())
         gameData['flipped'] = False
-        gameData['frameCounter'] = 20
+        gameData['frameCounter'] = 100
     gameData['trackNumber'] += 1
 
 def main():
@@ -1326,7 +1346,7 @@ def main():
     speed = 5
     trackNumber = 1
     allsprites = pygame.sprite.Group()
-    gameData = {'player': None,'trackNumber':trackNumber,'spriteList':allsprites,'background':background,'distance':100}
+    gameData = {'player': None,'trackNumber':trackNumber,'spriteList':allsprites,'background':background,'distance':1000}
     distanceTracker = pygame.font.Font(None, 36)
     sideScrollingSurface = pygame.Surface(screen.get_size())
     sideScrollingSurface = sideScrollingSurface.convert()
@@ -1513,19 +1533,18 @@ def main():
         elif gameData['trackNumber'] == 9:
             allsprites = pygame.sprite.Group()
             screen.blit(gameData['background'], (0,0))
-            if gameData['frameCounter'] == 0:
+            #if gameData['frameCounter'] == 0:
+            if gameData['player'].footPrintTimer == 0:
                 gameData['spriteList'].add(hurryGoRoundFootprint(gameData['player'].rect.bottomleft,gameData['flipped']))
                 gameData['flipped'] = not gameData['flipped']
-                gameData['frameCounter'] = 20
-            else:
-                gameData['frameCounter'] -= 1
+                #gameData['frameCounter'] = 20
+                gameData['player'].footPrintTimer = 20
             gameData['player'].update()
             for i in gameData['spriteList'].sprites():
                 if type(i) is hurryGoRoundPlayer:
                     i.draw(screen)
                 else:
-                    i.draw(screen,gameData['player'].offset,gameData['player'].rect.x)
-            
+                    i.draw(screen,gameData['player'].offset,gameData['player'].rect.x)        
             
         allsprites.update()
         allsprites.draw(screen)
