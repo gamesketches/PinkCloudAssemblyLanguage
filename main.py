@@ -365,21 +365,57 @@ class rocketDivePlayer(pygame.sprite.Sprite):
         self.image, self.rect = load_image('hideRocketDive.png', -1)
         self.velocity = [0,0]
         self.life = 100
+        # [0] is horizontal movement, [1] is timer [2] is vertical movement [3] is the timer for that
+        self.lastAction = [None,-1,None,-1]
 
     def update(self):
         keys = pygame.key.get_pressed()
+        if self.lastAction[0] == "LEFT":
+            if not keys[K_LEFT]:
+                self.lastAction[1] = 3
+        elif self.lastAction[0] == "RIGHT":
+            if not keys[K_RIGHT]:
+                self.lastAction[1] = 3
+        if self.lastAction[2] == "DOWN":
+            if not keys[K_DOWN]:
+                self.lastAction[3] = 3
+        elif self.lastAction[2] == "UP":
+            if not keys[K_UP]:
+                self.lastAction[3] = 3
         if keys[K_LEFT]:
-            self.velocity[0] = -3
+            if self.lastAction[0] == "LEFT" and self.lastAction[1] >= 0:
+                self.velocity[0] = -30
+                self.lastAction[0] = None
+            else:
+                self.lastAction[0] = "LEFT"
+                self.velocity[0] = -3
         elif keys[K_RIGHT]:
-            self.velocity[0] = 3
+            if self.lastAction[0] == "RIGHT" and self.lastAction[1] >= 0:
+                self.velocity[0] = 30
+                self.lastAction[0] = None
+            else:
+                self.velocity[0] = 3
+                self.lastAction[0] = "RIGHT"
         else:
             self.velocity[0] = 0
         if keys[K_DOWN]:
-            self.velocity[1] = 3
+            if self.lastAction[2] == "DOWN" and self.lastAction[3] >= 0:
+                self.velocity[1] = 30
+                self.lastAction[2] = None
+            else:
+                self.velocity[1] = 3
+                self.lastAction[2] = "DOWN"
         elif keys[K_UP]:
-            self.velocity[1] = -3
+            if self.lastAction[2] == "UP" and self.lastAction[3] >= 0:
+                self.velocity[1] = -30
+                self.lastAction[2] = None
+            else:
+                self.velocity[1] = -3
+                self.lastAction[2] = "UP"
         else:
             self.velocity[1] = 0
+        self.lastAction[1] -= 1
+        self.lastAction[3] -= 1
         self.rect.x += self.velocity[0]
         self.rect.y += self.velocity[1]
 
