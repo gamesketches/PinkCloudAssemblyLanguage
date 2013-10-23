@@ -1176,12 +1176,21 @@ class hurryGoRoundPlayer(pygame.sprite.Sprite):
         self.rect.y = 500
         self.offset = 0
         self.footPrintTimer =  20
+        self.jumpTimer = 0
 
     def update(self):
         self.rect.x += 5
         self.footPrintTimer -= 1
         if self.footPrintTimer < 0:
             self.footPrintTimer = 20
+        if self.jumpTimer:
+            self.rect.y = 400
+            self.jumpTimer -= 1
+        else:
+            keys = pygame.key.get_pressed()
+            if keys[K_UP]:
+                self.jumpTimer = 20
+            self.rect.y = 500
 
     def draw(self,screen):
         screen.blit(self.image, (10 + self.offset,self.rect.y))
@@ -1545,6 +1554,9 @@ def main():
                 else:
                     if type(i) is hurryGoRoundObstacle and gameData['player'].rect.colliderect(i.rect):
                         gameData['player'].offset += 10
+                        i.kill()
+                        if gameData['player'].offset == 100:
+                            print "you would lose here"
                     i.draw(screen,gameData['player'].offset,gameData['player'].rect.x)
             
         allsprites.update()
