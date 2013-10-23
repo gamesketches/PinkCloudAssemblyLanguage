@@ -131,25 +131,58 @@ class spreadBeaverGrid():
         self.goal = pygame.Surface((20,20))
         self.goal = self.goal.convert()
         self.goal.fill((255,255,0))
+        self.cursorMovement = [None,0]
 
     def update(self):
         keys = pygame.key.get_pressed()
         if keys[K_RIGHT]:
-            if self.grid[self.pos[0]][self.pos[1]].hasDirection("EAST"):
-                if self.grid[self.pos[0] +1][self.pos[1]].locked == "UNLOCK" or not self.grid[self.pos[0] + 1][self.pos[1]].locked:
-                    self.pos[0] += 1
+            if self.cursorMovement[0] == "EAST":
+                if self.cursorMovement[1] >= 3:
+                    if self.grid[self.pos[0]][self.pos[1]].hasDirection("EAST"):
+                        if self.grid[self.pos[0] +1][self.pos[1]].locked == "UNLOCK" or not self.grid[self.pos[0] + 1][self.pos[1]].locked:
+                            self.pos[0] += 1
+                    self.cursorMovement[1] = 0
+                else:
+                    self.cursorMovement[1] += 1
+            else:
+                self.cursorMovement[0] = "EAST"
+                self.cursorMovement[1] = 0
         elif keys[K_DOWN]:
-            if self.grid[self.pos[0]][self.pos[1]].hasDirection("SOUTH"):
-                if self.grid[self.pos[0]][self.pos[1]+1].locked == "UNLOCK" or not self.grid[self.pos[0]][self.pos[1] + 1].locked:
-                    self.pos[1] += 1
+            if self.cursorMovement[0] == "SOUTH":
+                if self.cursorMovement[1] >= 3:                            
+                    if self.grid[self.pos[0]][self.pos[1]].hasDirection("SOUTH"):
+                        if self.grid[self.pos[0]][self.pos[1]+1].locked == "UNLOCK" or not self.grid[self.pos[0]][self.pos[1] + 1].locked:
+                            self.pos[1] += 1
+                    self.cursorMovement[1] = 0
+                else:
+                    self.cursorMovement[1] += 1
+            else:
+                self.cursorMovement[0] = "SOUTH"
+                self.cursorMovement[1] = 0
         elif keys[K_LEFT]:
-            if self.grid[self.pos[0]][self.pos[1]].hasDirection("WEST"):
-                if self.grid[self.pos[0] - 1][self.pos[1]].locked == "UNLOCK" or not self.grid[self.pos[0] - 1][self.pos[1]].locked:
-                    self.pos[0] -= 1
+            if self.cursorMovement[0] == "WEST":
+                if self.cursorMovement[1] >= 3:                            
+                    if self.grid[self.pos[0]][self.pos[1]].hasDirection("WEST"):
+                        if self.grid[self.pos[0] - 1][self.pos[1]].locked == "UNLOCK" or not self.grid[self.pos[0] - 1][self.pos[1]].locked:
+                            self.pos[0] -= 1
+                    self.cursorMovement[1] = 0
+                else:
+                    self.cursorMovement[1] += 1
+            else:
+                self.cursorMovement[0] = "WEST"
+                self.cursorMovement[1] = 0
         elif keys[K_UP]:
-            if self.grid[self.pos[0]][self.pos[1]].hasDirection("NORTH"):
-                if self.grid[self.pos[0]][self.pos[1] - 1].locked == "UNLOCK" or not self.grid[self.pos[0]][self.pos[1] - 1].locked:
-                    self.pos[1] -= 1
+            if self.cursorMovement[0] == "NORTH":
+                if self.cursorMovement[1] >= 3:                            
+                    if self.grid[self.pos[0]][self.pos[1]].hasDirection("NORTH"):
+                        if self.grid[self.pos[0]][self.pos[1] - 1].locked == "UNLOCK" or not self.grid[self.pos[0]][self.pos[1] - 1].locked:
+                            self.pos[1] -= 1
+                    self.cursorMovement[1] = 0
+                else:
+                    self.cursorMovement[1] += 1
+            else:
+                self.cursorMovement[0] = "NORTH"
+                self.cursorMovement[1] = 0
                     
         if self.grid[self.pos[0]][self.pos[1]].locked == "UNLOCK":
             self.unlockGrid(self.grid[self.pos[0]][self.pos[1]].color)
