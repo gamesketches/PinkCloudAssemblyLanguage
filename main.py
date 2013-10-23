@@ -1189,12 +1189,9 @@ class hurryGoRoundPlayer(pygame.sprite.Sprite):
 class hurryGoRoundObstacle(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface((100,200))
-        self.image = self.image.convert()
-        self.image.fill((255,0,0))
-        self.rect = self.image.get_rect()
+        self.image,self.rect = load_image("leatherFaceTarget.png",-1)
         self.rect.x = 1100
-        self.rect.y = 400
+        self.rect.y = 550
 
     def update(self):
         self.rect.x -= 5
@@ -1533,17 +1530,17 @@ def main():
         elif gameData['trackNumber'] == 9:
             allsprites = pygame.sprite.Group()
             screen.blit(gameData['background'], (0,0))
-            #if gameData['frameCounter'] == 0:
             if gameData['player'].footPrintTimer == 0:
                 gameData['spriteList'].add(hurryGoRoundFootprint(gameData['player'].rect.bottomleft,gameData['flipped']))
                 gameData['flipped'] = not gameData['flipped']
-                #gameData['frameCounter'] = 20
                 gameData['player'].footPrintTimer = 20
-            gameData['player'].update()
+            gameData['spriteList'].update()
             for i in gameData['spriteList'].sprites():
                 if type(i) is hurryGoRoundPlayer:
                     i.draw(screen)
                 else:
+                    if type(i) is hurryGoRoundObstacle and gameData['player'].rect.colliderect(i.rect):
+                        gameData['player'].offset += 10
                     i.draw(screen,gameData['player'].offset,gameData['player'].rect.x)        
             
         allsprites.update()
