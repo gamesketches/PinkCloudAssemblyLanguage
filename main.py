@@ -1530,6 +1530,10 @@ def main():
         elif gameData['trackNumber'] == 9:
             allsprites = pygame.sprite.Group()
             screen.blit(gameData['background'], (0,0))
+            gameData['frameCounter'] -= 1
+            if gameData['frameCounter'] <= 0:
+                gameData['spriteList'].add(hurryGoRoundObstacle())
+                gameData['frameCounter'] = randint(100,600)
             if gameData['player'].footPrintTimer == 0:
                 gameData['spriteList'].add(hurryGoRoundFootprint(gameData['player'].rect.bottomleft,gameData['flipped']))
                 gameData['flipped'] = not gameData['flipped']
@@ -1541,7 +1545,7 @@ def main():
                 else:
                     if type(i) is hurryGoRoundObstacle and gameData['player'].rect.colliderect(i.rect):
                         gameData['player'].offset += 10
-                    i.draw(screen,gameData['player'].offset,gameData['player'].rect.x)        
+                    i.draw(screen,gameData['player'].offset,gameData['player'].rect.x)
             
         allsprites.update()
         allsprites.draw(screen)
