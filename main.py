@@ -423,8 +423,9 @@ class rocketDiveMeteor(pygame.sprite.Sprite):
     def __init__(self, loc):
         pygame.sprite.Sprite.__init__(self)
         self.image, self.rect = load_image('asteroid.png')
-        self.rect.x = loc[0]
-        self.rect.y = loc[1]
+        #self.rect.x = loc[0]
+        #self.rect.y = loc[1]
+        self.rect.topleft = loc
         self.image = pygame.transform.rotate(self.image, randint(0,360))
         self.image = pygame.transform.scale(self.image, (self.image.get_width() + randint(-100, 100), self.image.get_height() + randint(-100,100)))
 
@@ -433,6 +434,17 @@ class rocketDiveMeteor(pygame.sprite.Sprite):
         if self.rect.bottom < 0:
             self.kill()
 
+class rocketDivePowerUp(pygame.sprite.Sprite):
+    def __init__(self,loc):
+        pygame.sprite.Sprite.__init__(self)
+        self.image, self.rect = load_image('bourbon.png')
+        self.rect.center = loc
+
+    def update(self,speed):
+        self.rect.y -= speed
+        if self.rect.bottom < 0:
+            self.kill()
+        
 class leatherFacePlayer(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
