@@ -423,8 +423,6 @@ class rocketDiveMeteor(pygame.sprite.Sprite):
     def __init__(self, loc):
         pygame.sprite.Sprite.__init__(self)
         self.image, self.rect = load_image('asteroid.png')
-        #self.rect.x = loc[0]
-        #self.rect.y = loc[1]
         self.rect.topleft = loc
         self.image = pygame.transform.rotate(self.image, randint(0,360))
         self.image = pygame.transform.scale(self.image, (self.image.get_width() + randint(-100, 100), self.image.get_height() + randint(-100,100)))
@@ -1403,17 +1401,26 @@ def main():
             gameData['distance'] -= (speed / 50)
             
             if frameTimer == 0:
-                meteors.add(rocketDiveMeteor((randint(0,1000),600)))
+                if randint(0,10) < 9:
+                    meteors.add(rocketDiveMeteor((randint(0,1000),600)))
+                else:
+                    meteors.add(rocketDivePowerUp((randint(0,1000),600)))
                 frameTimer = 30 + randint(-3,20)
             for i in meteors.sprites():
                 if gameData['player'].rect.colliderect(i.rect):
-                    gameData['player'].life -= 10
-                    player1LifeMeter.update(gameData['player'].life)
+                    if type(i) is rocketDiveMeteor:                            
+                        gameData['player'].life -= 10
+                        player1LifeMeter.update(gameData['player'].life)
+                    else:
+                        gameData['player'].life += 10
+                        player1LifeMeter.update(gameData['player'].life)
                     i.kill()
                     if gameData['player'].life == 0:
                         changeTrack(gameData)
                         meteors.empty()
                         break
+            meteors.update(speed)
+            meteors.draw(screen)
             if gameData['distance'] <= 0:
                 meteors.empty()
                 allsprites.empty()
@@ -1423,8 +1430,6 @@ def main():
                     changeTrack(gameData)
             else:
                 screen.blit(distanceTracker.render(str(gameData['distance']), 1, (200,10,10)), (900,500))
-            meteors.update(speed)
-            meteors.draw(screen)
             player1LifeMeter.draw(screen)
             
         # ----- Track 3, Leather Face -------
