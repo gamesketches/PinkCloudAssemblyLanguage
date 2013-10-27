@@ -978,6 +978,20 @@ class everFreeSurface():
             return (x * (float(self.slope[1]) / self.slope[0]) + self.drawSurface.get_height() + self.position[1])
         else:
             return (x * (float(self.slope[1]) / self.slope[0])) + self.position[1]
+
+class everFreeLava():
+    def __init__(self,dimensions):
+        self.rect = pygame.Rect(dimensions)
+        self.image = pygame.Surface((self.rect.width,self.rect.height))
+        self.image = self.image.convert()
+        self.image.fill((255,0,0))
+
+    def update(self):
+        self.rect.h += 0.5
+        self.rect.y -= 0.5
+        self.image = pygame.Surface((self.rect.width,self.rect.height))
+        self.image = self.image.convert()
+        self.image.fill((255,0,0))
     
 class breedingGrid():
     def __init__(self):
@@ -1320,6 +1334,7 @@ def changeTrack(gameData):
         gameData['surfaces'].append(everFreeSurface([10,-3],(1000,650),1,500,[True,False]))
         gameData['surfaces'].append(everFreeSurface([10,3],(0,450),1,500,[True,False]))
         gameData['goal'] = pygame.Rect(0,0,100,450)
+        gameData['lava'] = everFreeLava((-100,2000,2000,1))
         newBackground = pygame.Surface((1000,600))
         newBackground = newBackground.convert()
         newBackground.fill((0,0,0))
@@ -1548,10 +1563,14 @@ def main():
                     else:
                         if not gameData['player'].rect.colliderect(i.collideableRect()):
                             gameData['player'].detachFromSurface([0,6])
+            gameData['lava'].update()
             gameData['player'].update()
             if gameData['player'].rect.colliderect(gameData['goal']):
                 changeTrack(gameData)
+            if gameData['player'].rect.colliderect(gameData['lava'].rect):
+                changeTrack(gameData)
             screen.blit(sideScrollingSurface, (500 - gameData['player'].rect.x,300 - gameData['player'].rect.y))
+            screen.blit(gameData['lava'].image, (gameData['lava'].rect.x,gameData['lava'].rect.y))
             screen.blit(gameData['player'].image, (500,300))
         # ----- Track 8, Breeding ------
         elif gameData['trackNumber'] == 8:
