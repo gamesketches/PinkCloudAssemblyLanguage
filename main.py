@@ -909,7 +909,7 @@ class everFreePlayer(pygame.sprite.Sprite):
                     self.slope = [5,5]
                     self.detachFromSurface([False,-1])
         
-        self.rect = self.rect.move(self.slope[0] * self.velocity[0], self.slope[1] * self.velocity[1])
+        self.rect = self.rect.move(self.slope[0] * self.velocity[0] * 1.5, self.slope[1] * self.velocity[1] * 1.5)
         if self.touchingSurface and self.slope[0] != 0:
             self.rect.y = self.touchingSurface.returnHeight(self.rect.centerx) - self.rect.height
 
@@ -978,7 +978,6 @@ class everFreeSurface():
             return (x * (float(self.slope[1]) / self.slope[0]) + self.drawSurface.get_height() + self.position[1])
         else:
             return (x * (float(self.slope[1]) / self.slope[0])) + self.position[1]
-        
     
 class breedingGrid():
     def __init__(self):
@@ -1311,13 +1310,16 @@ def changeTrack(gameData):
     # Change track to Ever Free
     elif gameData['trackNumber'] == 6:
         gameData['player'] = everFreePlayer()
-        gameData['player'].rect.center = (500,700)
-        gameData['surfaces'] = [everFreeSurface([10,3],(200,700),1,400, [True,False])]
-        gameData['surfaces'].append(everFreeSurface([0,5],(800,600),1,400,[False,False]))
-        gameData['surfaces'].append(everFreeSurface([0,5], (600,400),1,200,[False,False]))
-        gameData['surfaces'].append(everFreeSurface([10,-3],(1100,700),1,500, [True,False]))
-        gameData['surfaces'].append(everFreeSurface([0,5], (1700,500),1,200,[False,False]))
-        gameData['surfaces'].append(everFreeSurface([0,5],(1400,400),1,100,[False,False]))
+        gameData['player'].rect.center = (500,1200)
+        gameData['surfaces'] = [everFreeSurface([10,3],(200,1200),1,400, [True,False])]
+        gameData['surfaces'].append(everFreeSurface([0,5],(800,1100),1,400,[False,False]))
+        gameData['surfaces'].append(everFreeSurface([0,5], (600,900),1,200,[False,False]))
+        gameData['surfaces'].append(everFreeSurface([10,-3],(1100,1200),1,500, [True,False]))
+        gameData['surfaces'].append(everFreeSurface([0,5], (1700,1000),1,200,[False,False]))
+        gameData['surfaces'].append(everFreeSurface([0,5],(1400,900),1,100,[False,False]))
+        gameData['surfaces'].append(everFreeSurface([10,-3],(1000,650),1,500,[True,False]))
+        gameData['surfaces'].append(everFreeSurface([10,3],(0,450),1,500,[True,False]))
+        gameData['goal'] = pygame.Rect(0,0,100,450)
         newBackground = pygame.Surface((1000,600))
         newBackground = newBackground.convert()
         newBackground.fill((0,0,0))
@@ -1547,9 +1549,10 @@ def main():
                         if not gameData['player'].rect.colliderect(i.collideableRect()):
                             gameData['player'].detachFromSurface([0,6])
             gameData['player'].update()
+            if gameData['player'].rect.colliderect(gameData['goal']):
+                changeTrack(gameData)
             screen.blit(sideScrollingSurface, (500 - gameData['player'].rect.x,300 - gameData['player'].rect.y))
             screen.blit(gameData['player'].image, (500,300))
-            
         # ----- Track 8, Breeding ------
         elif gameData['trackNumber'] == 8:
             screen.blit(gameData['background'], (0,0))
