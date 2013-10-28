@@ -984,14 +984,15 @@ class everFreeLava():
         self.rect = pygame.Rect(dimensions)
         self.image = pygame.Surface((self.rect.width,self.rect.height))
         self.image = self.image.convert()
-        self.image.fill((255,0,0))
+        self.image.fill((250,0,0))
+        print self.image
 
     def update(self):
         self.rect.h += 0.5
         self.rect.y -= 0.5
         self.image = pygame.Surface((self.rect.width,self.rect.height))
         self.image = self.image.convert()
-        self.image.fill((255,0,0))
+        self.image.fill((250,0,0))
     
 class breedingGrid():
     def __init__(self):
@@ -1569,8 +1570,8 @@ def main():
                 changeTrack(gameData)
             if gameData['player'].rect.colliderect(gameData['lava'].rect):
                 changeTrack(gameData)
+            sideScrollingSurface.blit(gameData['lava'].image, (gameData['lava'].rect.x,gameData['lava'].rect.y))
             screen.blit(sideScrollingSurface, (500 - gameData['player'].rect.x,300 - gameData['player'].rect.y))
-            screen.blit(gameData['lava'].image, (gameData['lava'].rect.x,gameData['lava'].rect.y))
             screen.blit(gameData['player'].image, (500,300))
         # ----- Track 8, Breeding ------
         elif gameData['trackNumber'] == 8:
