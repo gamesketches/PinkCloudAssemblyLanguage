@@ -1350,17 +1350,28 @@ def changeTrack(gameData):
     # Change track to Ever Free
     elif gameData['trackNumber'] == 6:
         gameData['player'] = everFreePlayer()
-        gameData['player'].rect.center = (500,1200)
-        gameData['surfaces'] = [everFreeSurface([10,3],(200,1200),1,400, [True,False])]
-        gameData['surfaces'].append(everFreeSurface([0,5],(800,1100),1,400,[False,False]))
-        gameData['surfaces'].append(everFreeSurface([0,5], (600,900),1,200,[False,False]))
-        gameData['surfaces'].append(everFreeSurface([10,-3],(1100,1200),1,500, [True,False]))
-        gameData['surfaces'].append(everFreeSurface([0,5], (1700,1000),1,200,[False,False]))
-        gameData['surfaces'].append(everFreeSurface([0,5],(1400,900),1,100,[False,False]))
-        gameData['surfaces'].append(everFreeSurface([10,-3],(1000,650),1,500,[True,False]))
-        gameData['surfaces'].append(everFreeSurface([10,3],(0,450),1,500,[True,False]))
+        gameData['player'].rect.center = (1800,1900)
+        gameData['surfaces'] = [everFreeSurface([10,3],(300,100),1,550,[True,False])]
+        gameData['surfaces'].append(everFreeSurface([0,5],(1100,400),1,200,[False,False]))
+        gameData['surfaces'].append(everFreeSurface([10,-3],(1300,100),1,550,[True,False]))
+        gameData['surfaces'].append(everFreeSurface([0,5],(1900,0),1,500,[False,False]))
+        gameData['surfaces'].append(everFreeSurface([0,5],(1700,500),1,200,[False,False]))
+        gameData['surfaces'].append(everFreeSurface([1,3],(900,700),1,300,[True,False]))
+        gameData['surfaces'].append(everFreeSurface([3,-4],(500,800),1,250,[True,False]))
+        gameData['surfaces'].append(everFreeSurface([1,3],(200,1000),1,350,[True,False]))
+        gameData['surfaces'].append(everFreeSurface([5,0],(1300,1100),1,500,[True,False]))
+        gameData['surfaces'].append(everFreeSurface([0,5],(1900,1100),1,300,[False,False]))
+        gameData['surfaces'].append(everFreeSurface([5,0],(700,1400),1,300,[True,False]))
+        gameData['surfaces'].append(everFreeSurface([5,-3],(1300,1400),1,500,[True,False]))
+        gameData['surfaces'].append(everFreeSurface([5,0],(1100,1600),1,300,[True,False]))
+        gameData['surfaces'].append(everFreeSurface([5,0],(400,1700),1,200,[True,False]))
+        gameData['surfaces'].append(everFreeSurface([5,0],(1000,1800),1,400,[True,False]))
+        gameData['surfaces'].append(everFreeSurface([5,0],(1800,1800),1,200,[True,False]))
+        gameData['surfaces'].append(everFreeSurface([5,0],(0,1920),1,200,[True,False]))
+        gameData['surfaces'].append(everFreeSurface([12,3],(600,2000),1,600,[True,False]))
+        gameData['surfaces'].append(everFreeSurface([12,-3],(1500,2000),1,600,[True,False]))
         gameData['goal'] = pygame.Rect(0,0,100,450)
-        gameData['lava'] = everFreeLava((-100,2000,2000,1))
+        gameData['lava'] = everFreeLava((-100,3000,2000,1))
         newBackground = pygame.Surface((1000,600))
         newBackground = newBackground.convert()
         newBackground.fill((0,0,0))
@@ -1558,7 +1569,7 @@ def main():
         # ----- Track 6, Fish Scratch Fever -----
         elif gameData['trackNumber'] == 6:
             #This next line is pretty hacky, but enables the stuff in Ever Free
-            sideScrollingSurface = pygame.Surface((2000,2000))
+            sideScrollingSurface = pygame.Surface((3000,3000))
             screen.blit(gameData['backGround'],(0,0))
             allsprites = gameData['spriteList']
             curSpeed = gameData['player'].update()
@@ -1595,6 +1606,7 @@ def main():
             if gameData['player'].rect.colliderect(gameData['goal']):
                 changeTrack(gameData)
             if gameData['player'].rect.colliderect(gameData['lava'].rect):
+                print "lava"
                 changeTrack(gameData)
             sideScrollingSurface.blit(gameData['lava'].image, (gameData['lava'].rect.x,gameData['lava'].rect.y))
             screen.blit(sideScrollingSurface, (500 - gameData['player'].rect.x,300 - gameData['player'].rect.y))
