@@ -951,6 +951,7 @@ class everFreeSurface():
         self.drag = drag
         self.velocityProfile = [False,False]
         self.length = length
+        self.lineCoords = []
         if slope[0] == 0:
             self.drawSurface = pygame.Surface((5,length))
         else:
@@ -961,8 +962,21 @@ class everFreeSurface():
             pygame.draw.line(self.drawSurface,(250,250,250), (0,0),(0,self.drawSurface.get_height()))
         elif slope[1] < 0:
             pygame.draw.line(self.drawSurface,(250,250,250),(0,self.drawSurface.get_height()),(self.length,0))
+            self.assignLineCoords()
         else:
             pygame.draw.line(self.drawSurface,(250,250,250),(0,0),(self.length,self.drawSurface.get_height()))
+            self.assignLineCoords()
+
+    def assignLineCoords(self):
+        pixelArray = pygame.PixelArray(self.drawSurface)
+        for i in range(self.drawSurface.get_width()):
+            tempList = []
+            for k in range(self.drawSurface.get_height()):
+                if pixelArray[i][k] == self.drawSurface.map_rgb((250,250,250)):
+                    tempList.append(True)
+                else:
+                    tempList.append(False)
+            self.lineCoords.append(tempList)
 
     def draw(self,screen):
         screen.blit(self.drawSurface,self.position)
@@ -978,6 +992,17 @@ class everFreeSurface():
             return (x * (float(self.slope[1]) / self.slope[0]) + self.drawSurface.get_height() + self.position[1])
         else:
             return (x * (float(self.slope[1]) / self.slope[0])) + self.position[1]
+
+    def canAttach(self,rect):
+        # If the slope is 0, intersecting the rect is good enough test
+        if self.slope[0] == 0:
+            return True
+        for i in range(len(self.lineCoords)):
+            for k in range(self.drawSurface.get_height()):
+                if self.lineCoords[i][k]:
+                    if rect.collidepoint(i + self.position[0], k + self.position[1]):
+                        return True
+        return False
 
 class everFreeLava():
     def __init__(self,dimensions):
@@ -1560,7 +1585,8 @@ def main():
                 if not gameData['player'].unattachableTime:                        
                     if i != gameData['player'].touchingSurface:
                         if gameData['player'].rect.colliderect(i.collideableRect()):
-                            gameData['player'].attachToSurface(i)
+                            if i.canAttach(gameData['player'].rect):
+                                gameData['player'].attachToSurface(i)
                     else:
                         if not gameData['player'].rect.colliderect(i.collideableRect()):
                             gameData['player'].detachFromSurface([0,6])
