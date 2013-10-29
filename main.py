@@ -1494,6 +1494,7 @@ def main():
             
         # ----- Track 3, Leather Face -------
         elif gameData['trackNumber'] == 3:
+            allsprites = gameData['spriteList']
             screen.blit(gameData['backGround'], (0,0))
             for i in gameData['spriteList'].sprites():
                 if gameData['frameCounter'] == 0:
