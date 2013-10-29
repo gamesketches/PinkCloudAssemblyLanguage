@@ -970,13 +970,9 @@ class everFreeSurface():
     def assignLineCoords(self):
         pixelArray = pygame.PixelArray(self.drawSurface)
         for i in range(self.drawSurface.get_width()):
-            tempList = []
             for k in range(self.drawSurface.get_height()):
                 if pixelArray[i][k] == self.drawSurface.map_rgb((250,250,250)):
-                    tempList.append(True)
-                else:
-                    tempList.append(False)
-            self.lineCoords.append(tempList)
+                    self.lineCoords.append((i + self.position[0],k + self.position[1]))
 
     def draw(self,screen):
         screen.blit(self.drawSurface,self.position)
@@ -997,11 +993,9 @@ class everFreeSurface():
         # If the slope is 0, intersecting the rect is good enough test
         if self.slope[0] == 0:
             return True
-        for i in range(len(self.lineCoords)):
-            for k in range(self.drawSurface.get_height()):
-                if self.lineCoords[i][k]:
-                    if rect.collidepoint(i + self.position[0], k + self.position[1]):
-                        return True
+        for i in self.lineCoords:
+            if rect.collidepoint(i):
+                return True
         return False
 
 class everFreeLava():
@@ -1351,6 +1345,7 @@ def nextTrack(gameData):
     elif gameData['trackNumber'] == 6:
         gameData['player'] = everFreePlayer()
         gameData['player'].rect.center = (1800,1900)
+        gameData['sideScrollingSurface'] = pygame.Surface((3000,3000))
         gameData['surfaces'] = [everFreeSurface([10,3],(300,100),1,550,[True,False])]
         gameData['surfaces'].append(everFreeSurface([0,5],(1100,400),1,200,[False,False]))
         gameData['surfaces'].append(everFreeSurface([10,-3],(1300,100),1,550,[True,False]))
@@ -1568,8 +1563,6 @@ def main():
                 nextTrack(gameData)
         # ----- Track 6, Fish Scratch Fever -----
         elif gameData['trackNumber'] == 6:
-            #This next line is pretty hacky, but enables the stuff in Ever Free
-            sideScrollingSurface = pygame.Surface((3000,3000))
             screen.blit(gameData['backGround'],(0,0))
             allsprites = gameData['spriteList']
             curSpeed = gameData['player'].update()
@@ -1590,9 +1583,9 @@ def main():
                     nextTrack(gameData)
         # ----- Track 7, Ever Free -----
         elif gameData['trackNumber'] == 7:
-            sideScrollingSurface.blit(gameData['backGround'], (0,0))
+            gameData['sideScrollingSurface'].blit(gameData['backGround'], (0,0))
             for i in gameData['surfaces']:
-                i.draw(sideScrollingSurface)
+                i.draw(gameData['sideScrollingSurface'])
                 if not gameData['player'].unattachableTime:                        
                     if i != gameData['player'].touchingSurface:
                         if gameData['player'].rect.colliderect(i.collideableRect()):
@@ -1608,8 +1601,8 @@ def main():
             if gameData['player'].rect.colliderect(gameData['lava'].rect):
                 print "lava"
                 nextTrack(gameData)
-            sideScrollingSurface.blit(gameData['lava'].image, (gameData['lava'].rect.x,gameData['lava'].rect.y))
-            screen.blit(sideScrollingSurface, (500 - gameData['player'].rect.x,300 - gameData['player'].rect.y))
+            gameData['sideScrollingSurface'].blit(gameData['lava'].image, (gameData['lava'].rect.x,gameData['lava'].rect.y))
+            screen.blit(gameData['sideScrollingSurface'], (500 - gameData['player'].rect.x,300 - gameData['player'].rect.y))
             screen.blit(gameData['player'].image, (500,300))
         # ----- Track 8, Breeding ------
         elif gameData['trackNumber'] == 8:
