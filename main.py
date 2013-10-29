@@ -1288,8 +1288,15 @@ class Meter():
         screen.blit(self.frame, (self.x, self.y))
         screen.blit(self.bar, (self.frame.get_width() * 0.025 + self.x, self.frame.get_height() * 0.1))
 
-def nextTrack(gameData):
+def changeTrack(direction,gameData):
     gameData['spriteList'].empty()
+    if direction is "BACK":
+        if gameData['trackFrameCounter'] > 0:
+            gameData['trackNumber'] -= 2
+            gameData['trackFrameCounter'] = 50
+        else:
+            gameData['trackNumber'] -= 1
+            gameData['trackFrameCounter'] = 50
     # Change track to Rocket Dive
     if gameData['trackNumber'] == 1:
         gameData['player'] = rocketDivePlayer()
@@ -1388,6 +1395,7 @@ def nextTrack(gameData):
         gameData['flipped'] = False
         gameData['frameCounter'] = 100
     gameData['trackNumber'] += 1
+        
 
 def main():
     
@@ -1414,7 +1422,7 @@ def main():
     speed = 5
     trackNumber = 1
     allsprites = pygame.sprite.Group()
-    gameData = {'player': None,'trackNumber':trackNumber,'spriteList':allsprites,'background':background,'distance':1000}
+    gameData = {'player': None,'trackNumber':trackNumber,'spriteList':allsprites,'background':background,'distance':1000, 'trackFrameCounter':0}
     distanceTracker = pygame.font.Font(None, 36)
     sideScrollingSurface = pygame.Surface(screen.get_size())
     sideScrollingSurface = sideScrollingSurface.convert()
@@ -1433,7 +1441,10 @@ def main():
                 pygame.quit()
             elif event.type == KEYDOWN and event.key == K_p:
                 allsprites.empty()
-                nextTrack(gameData)
+                changeTrack("FORWARD",gameData)
+            elif event.type == KEYDOWN and event.key == K_o:
+                allsprites.empty()
+                changeTrack("BACK",gameData)
 
         screen.blit(background, (0,0))
         # ----- Track 1, Spread Beaver -----
@@ -1441,7 +1452,7 @@ def main():
             grid.update()
             grid.draw(screen)
             if grid.pos == grid.goalPos:
-                nextTrack(gameData)
+                changeTrack("FORWARD",gameData)
         # ----- Track 2, Rocket Dive -------
         elif gameData['trackNumber'] == 2:
             frameTimer -= 1
@@ -1465,7 +1476,7 @@ def main():
                         player1LifeMeter.update(gameData['player'].life)
                     i.kill()
                     if gameData['player'].life == 0:
-                        nextTrack(gameData)
+                        changeTrack("FORWARD",gameData)
                         meteors.empty()
                         break
             meteors.update(speed)
@@ -1476,7 +1487,7 @@ def main():
                 gameData['frameCounter'] -= 1
                 screen.blit(distanceTracker.render("Sail Away!", 1, (200,10,10)), (500,300))
                 if gameData['frameCounter'] <= 0:
-                    nextTrack(gameData)
+                    changeTrack("FORWARD",gameData)
             else:
                 screen.blit(distanceTracker.render(str(gameData['distance']), 1, (200,10,10)), (900,500))
             player1LifeMeter.draw(screen)
@@ -1493,12 +1504,12 @@ def main():
                         if i.rect.colliderect(gameData['player'].rect):
                             i.runAway()
                             if i.timesSpotted == 3:
-                                nextTrack(gameData)
+                                changeTrack("FORWARD",gameData)
                                 frameTimer = 50
                             gameData['frameCounter'] = 40
                         if not i.facingRight:
                             if not gameData['player'].hiding:
-                                nextTrack(gameData)
+                                changeTrack("FORWARD",gameData)
                                 frameTimer = 50
                             else:
                                 visible = True
@@ -1507,7 +1518,7 @@ def main():
                                         visible = False
                                         break
                                 if visible:
-                                    nextTrack(gameData)
+                                    changeTrack("FORWARD",gameData)
                                     frameTimer = 50
                 else:
                     i.rect.x -= 5
@@ -1544,7 +1555,7 @@ def main():
                 screen.blit(sideScrollingSurface, (500 - gameData['player'].rect.x,300 - gameData['player'].rect.y))
                 screen.blit(gameData['player'].image, (500,300))
                 if gameData['player'].rect.y > 600:
-                    nextTrack(gameData)
+                    changeTrack("FORWARD",gameData)
         # ----- Track 5, Doubt '97 -----
         elif gameData['trackNumber'] == 5:
             allsprites = pygame.sprite.Group()
@@ -1560,7 +1571,7 @@ def main():
                     i.kill()
                     gameData['player'].eat()
             if gameData['player'].sprite.rect.width < 5:
-                nextTrack(gameData)
+                changeTrack("FORWARD",gameData)
         # ----- Track 6, Fish Scratch Fever -----
         elif gameData['trackNumber'] == 6:
             screen.blit(gameData['backGround'],(0,0))
@@ -1571,7 +1582,7 @@ def main():
                 i.updateDistance(curSpeed)
                 if i.distance <= 0:
                     if gameData['player'].gameOverKa(i.type):
-                        nextTrack(gameData)
+                        changeTrack("FORWARD",gameData)
             gameData['frameCounter'] -= 1
             gameData['targetDistance'] -= curSpeed
             if gameData['frameCounter'] == 0 and gameData['targetDistance'] > 0:
@@ -1580,7 +1591,7 @@ def main():
             if gameData['targetDistance'] <= 0:
                 gameData['player'].beFree()
                 if gameData['player'].frameTimer <= 0:
-                    nextTrack(gameData)
+                    changeTrack("FORWARD",gameData)
         # ----- Track 7, Ever Free -----
         elif gameData['trackNumber'] == 7:
             gameData['sideScrollingSurface'].blit(gameData['backGround'], (0,0))
@@ -1597,10 +1608,10 @@ def main():
             gameData['lava'].update()
             gameData['player'].update()
             if gameData['player'].rect.colliderect(gameData['goal']):
-                nextTrack(gameData)
+                changeTrack("FORWARD",gameData)
             if gameData['player'].rect.colliderect(gameData['lava'].rect):
                 print "lava"
-                nextTrack(gameData)
+                changeTrack("FORWARD",gameData)
             gameData['sideScrollingSurface'].blit(gameData['lava'].image, (gameData['lava'].rect.x,gameData['lava'].rect.y))
             screen.blit(gameData['sideScrollingSurface'], (500 - gameData['player'].rect.x,300 - gameData['player'].rect.y))
             screen.blit(gameData['player'].image, (500,300))
