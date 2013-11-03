@@ -507,7 +507,7 @@ class leatherFaceTarget(pygame.sprite.Sprite):
         if self.state is "standing":                
             if self.facingRight:
                 self.switchTimer += 1
-                if self.switchTimer == 60:
+                if self.switchTimer == 6000:
                     self.facingRight = False
                     self.switchTimer = 0
                     self.image = pygame.transform.flip(self.image, True, False)
@@ -1307,12 +1307,17 @@ def changeTrack(direction,gameData):
         newBackground = pygame.Surface((1000,600))
         newBackground = newBackground.convert()
         newBackground.fill((0,0,0))
-        pygame.draw.polygon(newBackground,(200,200,200),[(0,200),(1000,200),(1000,500),(0,500)])
+        pygame.draw.polygon(newBackground,(200,200,200),[(0,100),(1000,100),(1000,500),(0,500)])
         gameData['backGround'] = newBackground
         gameData['player'] = leatherFacePlayer()
-        gameData['leatherFaceObjects'] = pygame.sprite.Group(leatherFaceObject('door.png',(400,220),(400,220,100,250),"standing"))
-        gameData['leatherFaceObjects'].add(leatherFaceObject('bookshelf.png',(1000,200),(800,200,120,300),"standing"))
-        gameData['spriteList'].add(gameData['player'],leatherFaceTarget(), gameData['leatherFaceObjects'])
+        target = leatherFaceTarget()
+        gameData['leatherFaceDownstairsObjects'] = pygame.sprite.Group(leatherFaceObject('door.png',(400,220),(400,220,100,250),"standing"))
+        gameData['leatherFaceDownstairsObjects'].add(leatherFaceObject('bookshelf.png',(1000,170),(800,200,120,300),"standing"))
+        gameData['leatherFaceDownstairsObjects'].add(leatherFaceObject('stairs.png',(1500,250),(0,0,0,0),"stairs"),gameData['player'],target)
+        gameData['leatherFaceUpstairsObjects'] = pygame.sprite.Group(leatherFaceObject('refridgerator.png',(1000,300),(1100,300,100,200),"standing"))
+        gameData['leatherFaceUpstairsObjects'].add(leatherFaceObject('table.png',(500,400),(500,400,300,100),"crouching"))
+        gameData['leatherFaceUpstairsObjects'].add(gameData['player'],target)
+        gameData['spriteList'].add(gameData['leatherFaceDownstairsObjects'])
         gameData['frameCounter'] = 0
     # Change track to Pink Spider
     elif gameData['trackNumber'] == 3:
@@ -1422,7 +1427,7 @@ def main():
     frameTimer = 30
     speed = 5
     trackNumber = 1
-    allsprites = pygame.sprite.Group()
+    allsprites = pygame.sprite.OrderedUpdates()
     gameData = {'player': None,'trackNumber':trackNumber,'spriteList':allsprites,'background':background,'distance':1000, 'trackFrameCounter':0}
     distanceTracker = pygame.font.Font(None, 36)
     sideScrollingSurface = pygame.Surface(screen.get_size())
@@ -1501,11 +1506,19 @@ def main():
                 if gameData['frameCounter'] == 0:
                     if type(i) == leatherFaceObject:
                         i.rect.x += -1 * gameData['player'].velocity
+                        if i.hidingType is "stairs":
+                            if i.rect.colliderect(gameData['player'].rect):
+                                if gameData['spriteList'] is gameData['leatherFaceDownstairsObjects']:
+                                    gameData['spriteList'] = gameData['leatherFaceUpstairsObjects']
+                                else:
+                                    gameData['spriteList'] = gameData['leatherFaceDownstairsObjects']
+                                gameData['player'].originalImage = pygame.transform.flip(gameData['player'].originalImage,True,False)
+                                gameData['player'].lyingDownImage = pygame.transform.flip(gameData['player'].lyingDownImage,True,False)
                     elif type(i) == leatherFaceTarget:
                         i.rect.x += -1 * gameData['player'].velocity
                         if i.rect.colliderect(gameData['player'].rect):
                             i.runAway()
-                            if i.timesSpotted == 3:
+                            if i.timesSpotted == 20:
                                 changeTrack("FORWARD",gameData)
                                 frameTimer = 50
                             gameData['frameCounter'] = 40
