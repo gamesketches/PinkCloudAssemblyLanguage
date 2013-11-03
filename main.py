@@ -457,9 +457,9 @@ class leatherFacePlayer(pygame.sprite.Sprite):
     def update(self):
         keys = pygame.key.get_pressed()
         if keys[K_LEFT] and not self.hiding:
-            self.velocity = -3
+            self.velocity = -5
         elif keys[K_RIGHT] and not self.hiding:
-            self.velocity = 3
+            self.velocity = 5
         else:
             self.velocity = 0
         if keys[K_DOWN]:
@@ -1311,6 +1311,7 @@ def changeTrack(direction,gameData):
         gameData['backGround'] = newBackground
         gameData['player'] = leatherFacePlayer()
         gameData['leatherFaceObjects'] = pygame.sprite.Group(leatherFaceObject('door.png',(400,220),(400,220,100,250),"standing"))
+        gameData['leatherFaceObjects'].add(leatherFaceObject('bookshelf.png',(1000,200),(800,200,120,300),"standing"))
         gameData['spriteList'].add(gameData['player'],leatherFaceTarget(), gameData['leatherFaceObjects'])
         gameData['frameCounter'] = 0
     # Change track to Pink Spider
@@ -1512,6 +1513,7 @@ def main():
                             if not gameData['player'].hiding:
                                 changeTrack("FORWARD",gameData)
                                 frameTimer = 50
+                                break
                             else:
                                 visible = True
                                 for i in gameData['leatherFaceObjects']:
@@ -1521,6 +1523,7 @@ def main():
                                 if visible:
                                     changeTrack("FORWARD",gameData)
                                     frameTimer = 50
+                                    break
                 else:
                     i.rect.x -= 5
             if gameData['frameCounter'] > 0:
