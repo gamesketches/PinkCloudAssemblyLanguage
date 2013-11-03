@@ -1264,6 +1264,38 @@ class hurryGoRoundFootprint(pygame.sprite.Sprite):
     def draw(self,screen, offset, x):
         screen.blit(self.image,(self.rect.x - x + offset, self.rect.y))
 
+class pinkCloudAssemblyPlayer(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image, self.rect = load_image("pinkSpiderWings.png",-1)
+        self.rect.center = (500,500)
+        self.rightWingStrength = 5
+        self.leftWingStrength = 5
+        self.velocity = [0,0]
+
+    def update(self):
+        if keys[K_LEFT]:
+            self.velocity[2] = self.leftWingStrength
+        elif keys[K_RIGHT]:
+            self.velocity[3] = self.rightWingStrength
+        else:
+            if self.velocity[2] > -5:
+                self.velocity[2] -= 2
+            if self.velocity[3] > -5:
+                self.velocity[3] -= 2
+
+        self.velocity[1] = (self.velocity[2] + self.velocity[3]) * -1
+        balance = self.velocity[2] - self.velocity[3]
+        self.image = pygame.transform.rotate(self.originalImage, 5 * balance)
+        self.velocity[0] = balance * 2
+            
+        self.rect.x += self.velocity[0]
+        if self.rect.x < 0:
+            self.rect.x = 0
+        elif self.rect.x + self.rect.width > 1000:
+            self.rect.x = 1000 - self.rect.width
+        self.rect.y += self.velocity[1]
+
 class Meter():
     def __init__(self,dimensions,barColor,frameColor,startingAmount, maxAmount):
         self.frame = pygame.Surface((dimensions[2],dimensions[3]))
@@ -1321,6 +1353,14 @@ def changeTrack(direction,gameData):
         gameData['frameCounter'] = 0
     # Change track to Pink Spider
     elif gameData['trackNumber'] == 3:
+        gameData['stars'] = []
+        for i in range(100):
+            size = randint(10,50)
+            temp = pygame.Surface((size,size))
+            temp = temp.convert()
+            temp.fill((250,250,250))
+            gameData['stars'].append((temp,(randint(0,1000),randint(0,6000) * -1)))
+            gameData['stars'][-1][0].fill((250,250,250))
         gameData['player'] = pinkSpiderPlayer()
         gameData['spriteList'].add(gameData['player'])
         gameData['backGround'], temp = load_image('spiderweb.png')
@@ -1567,6 +1607,8 @@ def main():
                     gameData['player'].rightWingStrength = 10
                     gameData['bounces'] += 1
                 gameData['player'].update()
+                for i in gameData['stars']:
+                    sideScrollingSurface.blit(i[0],i[1])
                 screen.blit(sideScrollingSurface, (500 - gameData['player'].rect.x,300 - gameData['player'].rect.y))
                 screen.blit(gameData['player'].image, (500,300))
                 if gameData['player'].rect.y > 600:
