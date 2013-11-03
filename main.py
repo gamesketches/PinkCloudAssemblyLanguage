@@ -507,7 +507,7 @@ class leatherFaceTarget(pygame.sprite.Sprite):
         if self.state is "standing":                
             if self.facingRight:
                 self.switchTimer += 1
-                if self.switchTimer == 6000:
+                if self.switchTimer == 60:
                     self.facingRight = False
                     self.switchTimer = 0
                     self.image = pygame.transform.flip(self.image, True, False)
@@ -533,7 +533,7 @@ class leatherFaceTarget(pygame.sprite.Sprite):
 class leatherFaceObject(pygame.sprite.Sprite):
     def __init__(self,image, position, hideBox, hidingType):
         pygame.sprite.Sprite.__init__(self)
-        self.image, self.rect = load_image(image)
+        self.image, self.rect = load_image(image, -1)
         self.rect.topleft = position
         self.hideBox = pygame.Rect(hideBox)
         self.hidingType = hidingType
@@ -1311,10 +1311,10 @@ def changeTrack(direction,gameData):
         gameData['backGround'] = newBackground
         gameData['player'] = leatherFacePlayer()
         target = leatherFaceTarget()
-        gameData['leatherFaceDownstairsObjects'] = pygame.sprite.Group(leatherFaceObject('door.png',(400,220),(400,220,100,250),"standing"))
+        gameData['leatherFaceDownstairsObjects'] = pygame.sprite.OrderedUpdates(leatherFaceObject('door.png',(400,220),(400,220,100,250),"standing"))
         gameData['leatherFaceDownstairsObjects'].add(leatherFaceObject('bookshelf.png',(1000,170),(800,200,120,300),"standing"))
         gameData['leatherFaceDownstairsObjects'].add(leatherFaceObject('stairs.png',(1500,250),(0,0,0,0),"stairs"),gameData['player'],target)
-        gameData['leatherFaceUpstairsObjects'] = pygame.sprite.Group(leatherFaceObject('refridgerator.png',(1000,300),(1100,300,100,200),"standing"))
+        gameData['leatherFaceUpstairsObjects'] = pygame.sprite.OrderedUpdates(leatherFaceObject('refridgerator.png',(1000,300),(1100,300,100,200),"standing"))
         gameData['leatherFaceUpstairsObjects'].add(leatherFaceObject('table.png',(500,400),(500,400,300,100),"crouching"))
         gameData['leatherFaceUpstairsObjects'].add(gameData['player'],target)
         gameData['spriteList'].add(gameData['leatherFaceDownstairsObjects'])
@@ -1512,13 +1512,11 @@ def main():
                                     gameData['spriteList'] = gameData['leatherFaceUpstairsObjects']
                                 else:
                                     gameData['spriteList'] = gameData['leatherFaceDownstairsObjects']
-                                gameData['player'].originalImage = pygame.transform.flip(gameData['player'].originalImage,True,False)
-                                gameData['player'].lyingDownImage = pygame.transform.flip(gameData['player'].lyingDownImage,True,False)
                     elif type(i) == leatherFaceTarget:
                         i.rect.x += -1 * gameData['player'].velocity
                         if i.rect.colliderect(gameData['player'].rect):
                             i.runAway()
-                            if i.timesSpotted == 20:
+                            if i.timesSpotted == 3:
                                 changeTrack("FORWARD",gameData)
                                 frameTimer = 50
                             gameData['frameCounter'] = 40
