@@ -1365,6 +1365,7 @@ def changeTrack(direction,gameData):
         gameData['leatherFaceUpstairsObjects'] = pygame.sprite.OrderedUpdates(leatherFaceObject('refridgerator.png',(1000,300),(1100,300,100,200),"standing"))
         gameData['leatherFaceUpstairsObjects'].add(leatherFaceObject('table.png',(500,400),(500,400,300,100),"crouching"))
         gameData['leatherFaceUpstairsObjects'].add(gameData['player'],target)
+        gameData['leatherFaceObjects'] = pygame.sprite.OrderedUpdates(gameData['leatherFaceDownstairsObjects'],gameData['leatherFaceUpstairsObjects'])
         gameData['spriteList'].add(gameData['leatherFaceDownstairsObjects'])
         gameData['frameCounter'] = 0
     # Change track to Pink Spider
@@ -1389,7 +1390,6 @@ def changeTrack(direction,gameData):
             gameData['spriteList'].add(doubtEnemy())
         newBackground = pygame.Surface((10000,6000))
         newBackground = newBackground.convert()
-        #newBackground.fill((0,0,0),)
         red = 67
         green = 233
         blue = 41
