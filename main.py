@@ -597,6 +597,11 @@ class pinkSpiderPlayer(pygame.sprite.Sprite):
         elif self.rect.x + self.rect.width > 1000:
             self.rect.x = 1000 - self.rect.width
         self.rect.y += self.velocity[1]
+        if self.state == "grounded":
+            if self.rect.y < 0:
+                self.rect.y = 0
+            elif self.rect.bottom > 600:
+                self.rect.bottom = 600
 
     def transform(self):
         self.image, temp = load_image("pinkSpiderWings.png", -1)
