@@ -552,6 +552,7 @@ class pinkSpiderPlayer(pygame.sprite.Sprite):
         self.rightWingStrength = 5
         self.leftWingStrength = 5
         self.velocity = [0,0]
+        self.opacity = 0
         self.rect.x = 100
         self.rect.y = 500
         self.state = "grounded"
@@ -559,6 +560,7 @@ class pinkSpiderPlayer(pygame.sprite.Sprite):
     def update(self):
         keys = pygame.key.get_pressed()
         if self.state == "grounded":
+            self.opacity += 1
             if keys[K_LEFT]:
                 self.velocity[0] = -3
             elif keys[K_RIGHT]:
@@ -570,6 +572,7 @@ class pinkSpiderPlayer(pygame.sprite.Sprite):
             else:
                 self.velocity[0] = 0
                 self.velocity[1] = 0
+            self.image.set_alpha(255 - (self.opacity / 10))
         else:
             if keys[K_LEFT]:
                 self.velocity[2] = self.leftWingStrength
@@ -1599,15 +1602,22 @@ def main():
                 frameTimer = 200
             for i in gameData['spriteList'].sprites():
                 if type(i) != pinkSpiderPlayer and gameData['player'].rect.colliderect(i.rect):
-                    i.getCaught()
                     if i.bugType is not "fly":
                         gameData['player'].transform()
                         gameData['spriteList'].remove(gameData['player'])
+                    else:
+                        if gameData['player'].opacity > 300:
+                            i.kill()
+                            gameData['player'].opacity -= 300
+                        else:
+                            i.getCaught()
             gameData['spriteList'].update()
             gameData['spriteList'].draw(sideScrollingSurface)
             sideScrollingOffset = gameData['player'].velocity
             if gameData['player'].state == "grounded":
                 screen.blit(sideScrollingSurface, (0,0))
+                if gameData['player'].opacity >= 2500:
+                    changeTrack("FORWARD",gameData)
             else:
                 if gameData['player'].rect.colliderect(gameData['bouncingRect']) and gameData['bounces'] < 3:
                     gameData['player'].leftWingStrength = 10
