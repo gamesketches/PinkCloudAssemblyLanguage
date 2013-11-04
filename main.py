@@ -416,7 +416,15 @@ class rocketDivePlayer(pygame.sprite.Sprite):
         self.lastAction[1] -= 1
         self.lastAction[3] -= 1
         self.rect.x += self.velocity[0]
+        if self.rect.x <= 0:
+            self.rect.x = 0
+        elif self.rect.right >= 1000:
+            self.rect.right = 1000
         self.rect.y += self.velocity[1]
+        if self.rect.y <= 0:
+            self.rect.y = 0
+        elif self.rect.bottom >= 600:
+            self.rect.bottom = 600
 
 class rocketDiveMeteor(pygame.sprite.Sprite):
     def __init__(self, loc):
