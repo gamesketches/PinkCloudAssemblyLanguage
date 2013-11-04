@@ -533,7 +533,7 @@ class leatherFaceTarget(pygame.sprite.Sprite):
 
     def runAway(self):
         self.state = "running"
-        self.frameTimer = 50
+        self.frameTimer = 100
         self.facingRight = True
         self.timesSpotted += 1
 
@@ -1358,14 +1358,15 @@ def changeTrack(direction,gameData):
         pygame.draw.polygon(newBackground,(200,200,200),[(0,100),(1000,100),(1000,500),(0,500)])
         gameData['backGround'] = newBackground
         gameData['player'] = leatherFacePlayer()
-        target = leatherFaceTarget()
+        gameData['target'] = leatherFaceTarget()
         gameData['leatherFaceDownstairsObjects'] = pygame.sprite.OrderedUpdates(leatherFaceObject('door.png',(400,220),(400,220,100,250),"standing"))
         gameData['leatherFaceDownstairsObjects'].add(leatherFaceObject('bookshelf.png',(1000,170),(800,200,120,300),"standing"))
-        gameData['leatherFaceDownstairsObjects'].add(leatherFaceObject('stairs.png',(1500,250),(0,0,0,0),"stairs"),gameData['player'],target)
+        gameData['leatherFaceDownstairsObjects'].add(leatherFaceObject('stairs.png',(1500,250),(0,0,0,0),"stairs"),gameData['player'],gameData['target'])
         gameData['leatherFaceUpstairsObjects'] = pygame.sprite.OrderedUpdates(leatherFaceObject('refridgerator.png',(1000,300),(1100,300,100,200),"standing"))
         gameData['leatherFaceUpstairsObjects'].add(leatherFaceObject('table.png',(500,400),(500,400,300,100),"crouching"))
-        gameData['leatherFaceUpstairsObjects'].add(gameData['player'],target)
+        gameData['leatherFaceUpstairsObjects'].add(gameData['player'],gameData['target'])
         gameData['leatherFaceObjects'] = pygame.sprite.OrderedUpdates(gameData['leatherFaceDownstairsObjects'],gameData['leatherFaceUpstairsObjects'])
+        gameData['leatherFaceObjects'].remove(gameData['player'],gameData['target'])
         gameData['spriteList'].add(gameData['leatherFaceDownstairsObjects'])
         gameData['frameCounter'] = 0
     # Change track to Pink Spider
@@ -1571,8 +1572,12 @@ def main():
                             if i.rect.colliderect(gameData['player'].rect):
                                 if gameData['spriteList'] is gameData['leatherFaceDownstairsObjects']:
                                     gameData['spriteList'] = gameData['leatherFaceUpstairsObjects']
+                                    gameData['spriteList'].add(gameData['target'])
+                                    gameData['frameCounter'] = 50
                                 else:
                                     gameData['spriteList'] = gameData['leatherFaceDownstairsObjects']
+                            elif i.rect.colliderect(gameData['target'].rect):
+                                gameData['target'].kill()
                     elif type(i) == leatherFaceTarget:
                         i.rect.x += -1 * gameData['player'].velocity
                         if i.rect.colliderect(gameData['player'].rect):
