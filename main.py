@@ -63,7 +63,6 @@ class spreadBeaverNode():
         self.drawSurface = pygame.Surface((20,20))
         if color is "RED":
             self.color = (250,0,0)
-            print "a red surface"
         elif color is "GREEN":
             self.color = (0,250,0)
         elif color is "BLUE":
@@ -289,14 +288,14 @@ class spreadBeaverGrid():
             self.horizontalGridLine([30,25],[36,25],"GREEN")
             self.grid[36][25] = spreadBeaverNode(["EAST","WEST"],"UNLOCK","PINK")
             self.grid[30][25] = spreadBeaverNode(["EAST","NORTH"],False,"GREEN")
-            self.verticalGridLine([30,16],[30,5],"BLUE")
-            self.horizontalGridLine([23,5],[30,5],"BLUE")
-            self.grid[30][5] = spreadBeaverNode(["WEST","SOUTH"],False,"BLUE")
+            self.verticalGridLine([30,16],[30,6],"BLUE")
+            self.horizontalGridLine([23,6],[30,6],"BLUE")
+            self.grid[30][6] = spreadBeaverNode(["WEST","SOUTH"],False,"BLUE")
             self.grid[30][16] = spreadBeaverNode(["EAST","SOUTH","WEST","NORTH"],False,"WHITE")
-            self.horizontalGridLine([19,5],[23,5],"WHITE")
-            self.verticalGridLine([19,16],[19,5],"WHITE")
-            self.grid[23][5] = spreadBeaverNode(["EAST","WEST"],"UNLOCK","GREEN")
-            self.grid[19][5] = spreadBeaverNode(["EAST","SOUTH"],False,"WHITE")
+            self.horizontalGridLine([19,6],[23,6],"WHITE")
+            self.verticalGridLine([19,16],[19,6],"WHITE")
+            self.grid[23][6] = spreadBeaverNode(["EAST","WEST"],"UNLOCK","GREEN")
+            self.grid[19][6] = spreadBeaverNode(["EAST","SOUTH"],False,"WHITE")
             self.verticalGridLine([19,16],[19,25],"BLUE")
             self.horizontalGridLine([12,25],[19,25],"RED")
             self.grid[19][16] = spreadBeaverNode(["NORTH","SOUTH","EAST","WEST"],False,"WHITE")
@@ -636,7 +635,6 @@ class pinkSpiderFly(pygame.sprite.Sprite):
         self.caught = True
         self.image, temp = load_image('wrappedFly.png', -1)
         self.wiggleTime = 10
-
 
 class doubtPlayer():
     def __init__(self):
