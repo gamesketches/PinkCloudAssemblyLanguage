@@ -1268,12 +1268,14 @@ class pinkCloudAssemblyPlayer(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.image, self.rect = load_image("pinkSpiderWings.png",-1)
+        self.originalImage = self.image
         self.rect.center = (500,500)
         self.rightWingStrength = 5
         self.leftWingStrength = 5
-        self.velocity = [0,0]
+        self.velocity = [0,0,0,0]
 
     def update(self):
+        keys = pygame.key.get_pressed()
         if keys[K_LEFT]:
             self.velocity[2] = self.leftWingStrength
         elif keys[K_RIGHT]:
@@ -1440,6 +1442,11 @@ def changeTrack(direction,gameData):
         gameData['spriteList'].add(gameData['player'],hurryGoRoundObstacle())
         gameData['flipped'] = False
         gameData['frameCounter'] = 100
+    elif gameData['trackNumber'] == 9:
+        gameData['player'] = pinkCloudAssemblyPlayer()
+        gameData['spriteList'].add(gameData['player'])
+    elif gameData['trackNumber'] == 10:
+        gameData['trackNumber'] = 0
     gameData['trackNumber'] += 1
         
 
@@ -1700,7 +1707,12 @@ def main():
                         if gameData['player'].offset == 100:
                             print "you would lose here"
                     i.draw(screen,gameData['player'].offset,gameData['player'].rect.x)
-            
+        # ----- Track 10 Pink Cloud Assembly -----
+        elif gameData['trackNumber'] == 10:
+            allsprites = pygame.sprite.Group()
+            screen.blit(gameData['background'], (0,0))
+            gameData['player'].update()
+            screen.blit(gameData['player'].image,gameData['player'].rect.center)
         allsprites.update()
         allsprites.draw(screen)
         pygame.display.flip()
