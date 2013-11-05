@@ -1047,6 +1047,7 @@ class breedingGrid():
         if self.bugs:
             self.bugs.rect.midbottom = self.bugInterpolator.pos
             self.bugInterpolator.next()
+        self.player.rect.bottom = 600 - self.columns[self.player.position].totalHeight()
 
     def draw(self,screen):
         for i in range(self.NUMCOLUMNS):
@@ -1061,7 +1062,7 @@ class breedingGrid():
         if goingRight:
             if position < 9:
                 if abs(self.columns[position].height - self.columns[position + 1].height) <= 1:
-                    self.player.rect.bottom = 600 - self.columns[position +1].height * 100
+                    self.player.rect.bottom = 600 - self.columns[position +1].totalHeight()
                     return True
                 else:
                     return False
@@ -1070,7 +1071,7 @@ class breedingGrid():
         else:
             if position > 0:
                 if abs(self.columns[position].height - self.columns[position -1].height) <= 1:
-                    self.player.rect.bottom = 600 - self.columns[position -1].height * 100
+                    self.player.rect.bottom = 600 - self.columns[position -1].totalHeight()
                     return True
                 else:
                     return False
