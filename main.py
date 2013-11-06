@@ -1237,7 +1237,7 @@ class hurryGoRoundPlayer(pygame.sprite.Sprite):
         self.jumpTimer = 0
 
     def update(self):
-        self.rect.x += 5
+        #self.rect.x += 5
         self.footPrintTimer -= 1
         if self.footPrintTimer < 0:
             self.footPrintTimer = 20
@@ -1287,7 +1287,10 @@ class hurryGoRoundFootprint(pygame.sprite.Sprite):
         self.rect.midbottom = position
 
     def draw(self,screen, offset, x):
+        self.rect.x -= 5
         screen.blit(self.image,(self.rect.x - x + offset, self.rect.y))
+        if self.rect.right < 0:
+            self.kill()
 
 class pinkCloudAssemblyPlayer(pygame.sprite.Sprite):
     def __init__(self):
@@ -1731,9 +1734,9 @@ def main():
             gameData['frameCounter'] -= 1
             if gameData['frameCounter'] <= 0:
                 gameData['spriteList'].add(hurryGoRoundObstacle(gameData['seasonCounter']))
-                gameData['frameCounter'] = randint(100,600)
+                gameData['frameCounter'] = randint(100,400)
             if gameData['player'].footPrintTimer == 0:
-                gameData['spriteList'].add(hurryGoRoundFootprint(gameData['player'].rect.bottomleft,gameData['flipped']))
+                gameData['spriteList'].add(hurryGoRoundFootprint((gameData['player'].rect.x,600),gameData['flipped']))
                 gameData['flipped'] = not gameData['flipped']
                 gameData['player'].footPrintTimer = 20
                 gameData['seasonCounter'] += 0.3
