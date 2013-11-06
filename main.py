@@ -1257,9 +1257,19 @@ class hurryGoRoundPlayer(pygame.sprite.Sprite):
         screen.blit(self.image, (10 + self.offset,self.rect.y))
 
 class hurryGoRoundObstacle(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, time):
         pygame.sprite.Sprite.__init__(self)
-        self.image,self.rect = load_image("leatherFaceTarget.png",-1)
+        if time <= 25:
+            self.image,self.rect = load_image("doubtFrog.png",-1)
+            self.image = pygame.transform.rotate(self.image, -90)
+        elif time < 25 and time <= 50:
+            self.image, self.rect = load_image("turkey.png",-1)
+        elif time > 50 and time <= 75:
+            self.image, self.rect = load_image("snowman.png",-1)
+        elif time > 75 and time <= 100:
+            self.image, self.rect = load_image("rabbit.png",-1)
+        else:
+            self.image,self.rect = load_image("leatherFaceTarget.png",-1)
         self.rect.x = 1100
         self.rect.y = 550
 
@@ -1455,12 +1465,15 @@ def changeTrack(direction,gameData):
     # Change track to Hurry Go Round
     elif gameData['trackNumber'] == 8:
         gameData['player'] = hurryGoRoundPlayer()
-        gameData['spriteList'].add(gameData['player'],hurryGoRoundObstacle())
+        gameData['spriteList'].add(gameData['player'],hurryGoRoundObstacle(0.0))
         gameData['flipped'] = False
         gameData['frameCounter'] = 100
+        gameData['seasonCounter'] = 0.0
+    # Change Track to Pink Cloud Assembly
     elif gameData['trackNumber'] == 9:
         gameData['player'] = pinkCloudAssemblyPlayer()
         gameData['spriteList'].add(gameData['player'])
+    # Set game back to beginning
     elif gameData['trackNumber'] == 10:
         gameData['trackNumber'] = 0
     gameData['trackNumber'] += 1
@@ -1717,12 +1730,13 @@ def main():
             screen.blit(gameData['background'], (0,0))
             gameData['frameCounter'] -= 1
             if gameData['frameCounter'] <= 0:
-                gameData['spriteList'].add(hurryGoRoundObstacle())
+                gameData['spriteList'].add(hurryGoRoundObstacle(gameData['seasonCounter']))
                 gameData['frameCounter'] = randint(100,600)
             if gameData['player'].footPrintTimer == 0:
                 gameData['spriteList'].add(hurryGoRoundFootprint(gameData['player'].rect.bottomleft,gameData['flipped']))
                 gameData['flipped'] = not gameData['flipped']
                 gameData['player'].footPrintTimer = 20
+                gameData['seasonCounter'] += 0.3
             gameData['spriteList'].update()
             for i in gameData['spriteList'].sprites():
                 if type(i) is hurryGoRoundPlayer:
