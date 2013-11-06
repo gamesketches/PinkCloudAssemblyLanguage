@@ -1237,7 +1237,7 @@ class hurryGoRoundPlayer(pygame.sprite.Sprite):
         self.jumpTimer = 0
 
     def update(self):
-        #self.rect.x += 5
+        #self.rect.x = self.offset
         self.footPrintTimer -= 1
         if self.footPrintTimer < 0:
             self.footPrintTimer = 20
@@ -1254,7 +1254,7 @@ class hurryGoRoundPlayer(pygame.sprite.Sprite):
                 self.rect.y = 500
 
     def draw(self,screen):
-        screen.blit(self.image, (10 + self.offset,self.rect.y))
+        screen.blit(self.image, (self.rect.x,self.rect.y))
 
 class hurryGoRoundObstacle(pygame.sprite.Sprite):
     def __init__(self, time):
@@ -1271,13 +1271,13 @@ class hurryGoRoundObstacle(pygame.sprite.Sprite):
         else:
             self.image,self.rect = load_image("leatherFaceTarget.png",-1)
         self.rect.x = 1100
-        self.rect.y = 550
+        self.rect.bottom = 600
 
     def update(self):
         self.rect.x -= 5
 
-    def draw(self,screen,offset,x):
-        screen.blit(self.image,(self.rect.x - x,self.rect.y))
+    def draw(self,screen):
+        screen.blit(self.image,(self.rect.x,self.rect.y))
 
 class hurryGoRoundFootprint(pygame.sprite.Sprite):
     def __init__(self,position,flipped):
@@ -1286,9 +1286,9 @@ class hurryGoRoundFootprint(pygame.sprite.Sprite):
         self.image = pygame.transform.flip(self.image,False,flipped)
         self.rect.midbottom = position
 
-    def draw(self,screen, offset, x):
+    def draw(self,screen):
         self.rect.x -= 5
-        screen.blit(self.image,(self.rect.x - x + offset, self.rect.y))
+        screen.blit(self.image,(self.rect.x, self.rect.y))
         if self.rect.right < 0:
             self.kill()
 
@@ -1746,11 +1746,13 @@ def main():
                     i.draw(screen)
                 else:
                     if type(i) is hurryGoRoundObstacle and gameData['player'].rect.colliderect(i.rect):
+                        print gameData['player'].rect
                         gameData['player'].offset += 10
+                        gameData['player'].rect.x += gameData['player'].offset
                         i.kill()
                         if gameData['player'].offset == 100:
                             print "you would lose here"
-                    i.draw(screen,gameData['player'].offset,gameData['player'].rect.x)
+                    i.draw(screen)
         # ----- Track 10 Pink Cloud Assembly -----
         elif gameData['trackNumber'] == 10:
             allsprites = pygame.sprite.Group()
