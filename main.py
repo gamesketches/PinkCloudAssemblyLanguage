@@ -698,12 +698,19 @@ class doubtPlayer():
             elif self.slope['x'] > 0:
                 self.slope['x'] -= 0.3
         self.sprite.rect = self.sprite.rect.move(self.slope['x'],self.slope['y'])
+        print self.offset
         if self.sprite.rect.bottom > 6000:
             self.sprite.rect.bottom = 6000
         self.offset[0] += self.slope['x']
         self.offset[1] -= self.slope['y']
         if self.offset[1] < -3600:
             self.offset[1] = -3600
+        elif self.offset[1] > 2200:
+            self.offset[1] = 2200
+        if self.offset[0] > 4400:
+            self.offset[0] = 4400
+        elif self.offset[0] < -5400:
+            self.offset[0] = -5400
         self.trueWidth -= 0.03
         self.trueHeight -= 0.03
         self.sprite.rect.width = self.trueWidth
@@ -1408,7 +1415,7 @@ def changeTrack(direction,gameData):
         gameData['player'] = doubtPlayer()
         for i in range(6):
             gameData['spriteList'].add(doubtEnemy())
-        newBackground = pygame.Surface((10000,6060))
+        newBackground = pygame.Surface((10000,6130))
         newBackground = newBackground.convert()
         red = 67
         green = 233
@@ -1420,9 +1427,22 @@ def changeTrack(direction,gameData):
             blue -= 3
         gravelImg, temp = load_image("gravel.png", -1)
         rotation = [0,90,180,270]
-        for i in range(60):
+        for i in range(100):
             gravelImg = pygame.transform.rotate(gravelImg, choice(rotation))
             newBackground.blit(gravelImg, (i * 100, 6000))
+        tankCorner, temp = load_image("tankCorner.png", -1)
+        tankPipe, temp = load_image("tankFrame.png")
+        for i in range(100):
+            newBackground.blit(tankPipe,(i*100,0))
+            newBackground.blit(tankPipe,(i*100,6100))
+        tankPipe = pygame.transform.rotate(tankPipe,90)
+        for i in range(61):
+            newBackground.blit(tankPipe,(0,i * 100))
+            newBackground.blit(tankPipe,(9970,i * 100))
+        newBackground.blit(tankCorner,(9940,6070))
+        newBackground.blit(pygame.transform.flip(tankCorner,True,False),(0,6070))
+        newBackground.blit(pygame.transform.flip(tankCorner,True,True),(0,0))
+        newBackground.blit(pygame.transform.flip(tankCorner,False,True),(9940,0))
         gameData['backGround'] = newBackground
         gameData['frameCounter'] = 0
     # Change track to Fish Scratch Fever    
