@@ -698,8 +698,12 @@ class doubtPlayer():
             elif self.slope['x'] > 0:
                 self.slope['x'] -= 0.3
         self.sprite.rect = self.sprite.rect.move(self.slope['x'],self.slope['y'])
+        if self.sprite.rect.bottom > 6000:
+            self.sprite.rect.bottom = 6000
         self.offset[0] += self.slope['x']
         self.offset[1] -= self.slope['y']
+        if self.offset[1] < -3600:
+            self.offset[1] = -3600
         self.trueWidth -= 0.03
         self.trueHeight -= 0.03
         self.sprite.rect.width = self.trueWidth
