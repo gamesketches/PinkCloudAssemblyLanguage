@@ -1,6 +1,7 @@
 import pygame, sys, os, math
 from pygame.locals import *
 from random import randint
+from random import choice
 from interpolator import *
 
 if not pygame.font: print 'Warning, fonts disabled'
@@ -699,8 +700,8 @@ class doubtPlayer():
         self.sprite.rect = self.sprite.rect.move(self.slope['x'],self.slope['y'])
         self.offset[0] += self.slope['x']
         self.offset[1] -= self.slope['y']
-        self.trueWidth -= 0.01
-        self.trueHeight -= 0.01
+        self.trueWidth -= 0.03
+        self.trueHeight -= 0.03
         self.sprite.rect.width = self.trueWidth
         self.sprite.rect.height = self.trueHeight
         self.sprite.image = pygame.transform.scale(self.sprite.image,(self.sprite.rect.width, self.sprite.rect.height))
@@ -1403,7 +1404,7 @@ def changeTrack(direction,gameData):
         gameData['player'] = doubtPlayer()
         for i in range(6):
             gameData['spriteList'].add(doubtEnemy())
-        newBackground = pygame.Surface((10000,6000))
+        newBackground = pygame.Surface((10000,6060))
         newBackground = newBackground.convert()
         red = 67
         green = 233
@@ -1413,7 +1414,13 @@ def changeTrack(direction,gameData):
             red -= 5
             green -= 20
             blue -= 3
+        gravelImg, temp = load_image("gravel.png", -1)
+        rotation = [0,90,180,270]
+        for i in range(60):
+            gravelImg = pygame.transform.rotate(gravelImg, choice(rotation))
+            newBackground.blit(gravelImg, (i * 100, 6000))
         gameData['backGround'] = newBackground
+        gameData['frameCounter'] = 0
     # Change track to Fish Scratch Fever    
     elif gameData['trackNumber'] == 5: 
         newBackground = pygame.Surface((1000,600))
@@ -1667,6 +1674,10 @@ def main():
         elif gameData['trackNumber'] == 5:
             allsprites = pygame.sprite.Group()
             #screen.blit(gameData['backGround'], (0,0))
+            gameData['frameCounter'] += 1
+            if gameData['frameCounter'] >= 300:
+                gameData['spriteList'].add(doubtEnemy())
+                gameData['frameCounter'] = 0
             gameData['spriteList'].update()
             gameData['player'].update()
             offset = gameData['player'].offset
@@ -1734,7 +1745,7 @@ def main():
             gameData['frameCounter'] -= 1
             if gameData['frameCounter'] <= 0:
                 gameData['spriteList'].add(hurryGoRoundObstacle(gameData['seasonCounter']))
-                gameData['frameCounter'] = randint(100,400)
+                gameData['frameCounter'] = randint(100,300)
             if gameData['player'].footPrintTimer == 0:
                 gameData['spriteList'].add(hurryGoRoundFootprint((gameData['player'].rect.x,600),gameData['flipped']))
                 gameData['flipped'] = not gameData['flipped']
@@ -1746,12 +1757,11 @@ def main():
                     i.draw(screen)
                 else:
                     if type(i) is hurryGoRoundObstacle and gameData['player'].rect.colliderect(i.rect):
-                        print gameData['player'].rect
                         gameData['player'].offset += 10
                         gameData['player'].rect.x += gameData['player'].offset
                         i.kill()
-                        if gameData['player'].offset == 100:
-                            print "you would lose here"
+                        if gameData['player'].offset == 1000:
+                            changeTrack(gameData)
                     i.draw(screen)
         # ----- Track 10 Pink Cloud Assembly -----
         elif gameData['trackNumber'] == 10:
