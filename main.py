@@ -1046,7 +1046,7 @@ class breedingGrid():
     def __init__(self):
         self.player = breedingPlayer(self)
         self.goal = pygame.sprite.Sprite()
-        self.goal.image, self.goal.rect = load_image("magmaBall.png")
+        self.goal.image, self.goal.rect = load_image("carrot.png", -1)
         self.goal.rect.topleft = (900,50)
         self.columns = []
         self.NUMCOLUMNS = 10
