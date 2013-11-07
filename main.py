@@ -64,25 +64,30 @@ class spreadBeaverNode():
         self.drawSurface = pygame.Surface((20,20))
         if color is "RED":
             self.color = (250,0,0)
+            self.drawSurface, temp = load_image("redLock.png",-1)
         elif color is "GREEN":
             self.color = (0,250,0)
+            self.drawSurface, temp = load_image("greenLock.png",-1)
         elif color is "BLUE":
             self.color = (0,0,250)
+            self.drawSurface, temp = load_image("blueLock.png",-1)
         elif color is "PURPLE":
             self.color = (128,0,128)
+            self.drawSurface, temp = load_image("purpleLock.png",-1)
         elif color is "YELLOW":
             self.color = (255,255,0)
         else:
             self.color = (255,255,255)
         if lock is False:
             self.locked = False
+            self.drawSurface.fill((0,0,0))
             self.drawLines()
         elif lock is "UNLOCK":
             self.locked = "UNLOCK"
             self.drawSurface.fill(self.color)
         else:
             self.locked = True
-            self.drawSurface.fill(self.color)
+            #self.drawSurface.fill(self.color)
             
     def hasDirection(self,direction):
         if direction in self.directions:
@@ -233,7 +238,7 @@ class spreadBeaverGrid():
             self.grid[24][15] = spreadBeaverNode(["EAST","NORTH","SOUTH"],False,"WHTIE")
             self.grid[40][15] = spreadBeaverNode(["WEST"],"UNLOCK","GREEN")
             self.horizontalGridLine([24,10],[4,10],"PURPLE")
-            self.grid[24][10] = spreadBeaverNode(["WEST","SOUTH","NORTH"],False,"PURPLE")
+            self.grid[24][10] = spreadBeaverNode(["WEST","SOUTH","NORTH"],False,"WHITE")
             self.grid[4][10] = spreadBeaverNode(["EAST"],"UNLOCK","BLUE")
             self.grid[20][10] = spreadBeaverNode(["EAST","WEST"],False,"PURPLE")
             self.grid[24][5] = spreadBeaverNode(["NORTH","SOUTH"],True,"GREEN")
@@ -698,7 +703,6 @@ class doubtPlayer():
             elif self.slope['x'] > 0:
                 self.slope['x'] -= 0.3
         self.sprite.rect = self.sprite.rect.move(self.slope['x'],self.slope['y'])
-        print self.offset
         if self.sprite.rect.bottom > 6000:
             self.sprite.rect.bottom = 6000
         self.offset[0] += self.slope['x']
