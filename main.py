@@ -87,7 +87,6 @@ class spreadBeaverNode():
             self.drawSurface.fill(self.color)
         else:
             self.locked = True
-            #self.drawSurface.fill(self.color)
             
     def hasDirection(self,direction):
         if direction in self.directions:
@@ -1667,7 +1666,7 @@ def main():
                     gameData['spriteList'].add(pinkSpiderFly("butterfly"))
                 else:
                     gameData['spriteList'].add(pinkSpiderFly("fly"))
-                frameTimer = 200
+                frameTimer = 200 + randint(0,200)
             for i in gameData['spriteList'].sprites():
                 if type(i) != pinkSpiderPlayer and gameData['player'].rect.colliderect(i.rect):
                     if i.bugType is not "fly":
@@ -1701,7 +1700,6 @@ def main():
         # ----- Track 5, Doubt '97 -----
         elif gameData['trackNumber'] == 5:
             allsprites = pygame.sprite.Group()
-            #screen.blit(gameData['backGround'], (0,0))
             gameData['frameCounter'] += 1
             if gameData['frameCounter'] >= 300:
                 gameData['spriteList'].add(doubtEnemy())
