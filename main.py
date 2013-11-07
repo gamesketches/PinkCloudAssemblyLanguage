@@ -1076,6 +1076,7 @@ class breedingGrid():
         if self.bugs:
             screen.blit(self.bugs.image, self.bugs.rect.topleft)
         screen.blit(self.goal.image, self.goal.rect.topleft)
+        pygame.draw.line(screen,(250,250,250),(self.goal.rect.x + 53,0),(self.goal.rect.x + 53,self.goal.rect.y + 13))
 
     def allowMove(self,position, goingRight):
         if goingRight:
