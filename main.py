@@ -1063,6 +1063,10 @@ class breedingGrid():
             self.bugs.rect.midbottom = self.bugInterpolator.pos
             self.bugInterpolator.next()
         self.player.rect.bottom = 600 - self.columns[self.player.position].totalHeight()
+        totalHeight = 0
+        for i in self.columns:
+            totalHeight += i.totalHeight()
+        self.goal.rect.y = totalHeight /  5
 
     def draw(self,screen):
         for i in range(self.NUMCOLUMNS):
@@ -1764,6 +1768,8 @@ def main():
             screen.blit(gameData['background'], (0,0))
             gameData['grid'].update()
             gameData['grid'].draw(screen)
+            if gameData['grid'].player.rect.colliderect(gameData['grid'].goal.rect):
+                changeTrack("FORWARD",gameData)
         # ----- Track 9 Hurry Go Round -----
         elif gameData['trackNumber'] == 9:
             allsprites = pygame.sprite.Group()
@@ -1787,7 +1793,7 @@ def main():
                         gameData['player'].rect.x += gameData['player'].offset
                         i.kill()
                         if gameData['player'].offset == 1000:
-                            changeTrack(gameData)
+                            changeTrack("FORWARD",gameData)
                     i.draw(screen)
         # ----- Track 10 Pink Cloud Assembly -----
         elif gameData['trackNumber'] == 10:
