@@ -1312,6 +1312,23 @@ class hurryGoRoundFootprint(pygame.sprite.Sprite):
         if self.rect.right < 0:
             self.kill()
 
+class hurryGoRoundTree(pygame.sprite.Sprite):
+    def __init__(self,time):
+        pygame.sprite.Sprite.__init__(self)
+        if time <= 25:
+            self.image, self.rect = load_image("bareTree.png",-1)
+        else:
+            self.image, self.rect = load_image("snowyTree.png",-1)
+        self.rect.x = 1100
+
+    def update(self):
+        self.rect.x -= 5
+        if self.rect.right < 0:
+            self.kill()
+
+    def draw(self,screen):
+        screen.blit(self.image,self.rect.topleft)
+
 class pinkCloudAssemblyPlayer(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
@@ -1775,6 +1792,9 @@ def main():
         elif gameData['trackNumber'] == 9:
             allsprites = pygame.sprite.Group()
             screen.blit(gameData['background'], (0,0))
+            treeKa = randint(0,100)
+            if treeKa < 1:
+                gameData['spriteList'].add(hurryGoRoundTree(gameData['seasonCounter']))
             gameData['frameCounter'] -= 1
             if gameData['frameCounter'] <= 0:
                 gameData['spriteList'].add(hurryGoRoundObstacle(gameData['seasonCounter']))
