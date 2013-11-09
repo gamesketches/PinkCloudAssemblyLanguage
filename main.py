@@ -514,6 +514,7 @@ class leatherFaceTarget(pygame.sprite.Sprite):
         self.switchTimer = 0
         self.state = "standing"
         self.timesSpotted = 0
+        self.exclamation,temp = load_image('exclamationMark.png', -1)
 
     def update(self):
         if self.state is "standing":                
@@ -535,12 +536,21 @@ class leatherFaceTarget(pygame.sprite.Sprite):
                 self.state = "standing"
             else:
                 self.rect.x += 5
+        elif self.state is "surprised":
+            self.frameTimer -= 1
+            if self.frameTimer <= 0:
+                self.state = "running"
+                self.frameTimer = 50
+                self.facingRight = True
+                self.image = pygame.transform.flip(self.image,True,False)
 
     def runAway(self):
-        self.state = "running"
-        self.frameTimer = 100
-        self.facingRight = True
-        self.timesSpotted += 1
+        #self.state = "running"
+        if self.state is not "surprised":                
+            self.state = "surprised"
+            self.frameTimer = 50
+        #self.facingRight = True
+        #self.timesSpotted += 1
 
 class leatherFaceObject(pygame.sprite.Sprite):
     def __init__(self,image, position, hideBox, hidingType):
@@ -555,6 +565,18 @@ class leatherFaceObject(pygame.sprite.Sprite):
             return True
         else:
             return False
+
+class leatherFaceExclamationMark(pygame.sprite.Sprite):
+    def __init__(self,position):
+        pygame.sprite.Sprite.__init__(self)
+        self.image, self.rect = load_image('exclamationMark.png', -1)
+        self.rect.topleft = (position[0] - 50, position[1] - 30)
+        self.frameCounter = 50
+
+    def update(self):
+        self.frameCounter -= 1
+        if self.frameCounter <= 0:
+            self.kill()
 
 class pinkSpiderPlayer(pygame.sprite.Sprite):
     def __init__(self):
@@ -1654,16 +1676,21 @@ def main():
                     elif type(i) == leatherFaceTarget:
                         i.rect.x += -1 * gameData['player'].velocity
                         if i.rect.colliderect(gameData['player'].rect):
-                            i.runAway()
-                            if i.timesSpotted == 3:
+                            #i.runAway()
+                            if i.timesSpotted == 1:
                                 changeTrack("FORWARD",gameData)
                                 frameTimer = 50
-                            gameData['frameCounter'] = 40
+                            #gameData['frameCounter'] = 40
+                            gameData['frameCounter'] = 90
                         if not i.facingRight:
                             if not gameData['player'].hiding:
-                                changeTrack("FORWARD",gameData)
+                                #changeTrack("FORWARD",gameData)
+                                #gameData['frameCounter'] = 40
+                                gameData['frameCounter'] = 90
+                                i.runAway()
+                                gameData['spriteList'].add(leatherFaceExclamationMark(gameData['target'].rect.topleft))
                                 frameTimer = 50
-                                break
+                                #break
                             else:
                                 visible = True
                                 for i in gameData['leatherFaceObjects']:
@@ -1671,9 +1698,13 @@ def main():
                                         visible = False
                                         break
                                 if visible:
-                                    changeTrack("FORWARD",gameData)
+                                    i.runAway()
+                                    #changeTrack("FORWARD",gameData)
+                                    #gameData['frameCounter'] = 40
+                                    gameData['frameCounter'] = 90
+                                    gameData['spriteList'].add(leatherFaceExclamationMark(gameData['target'].rect.topleft))
                                     frameTimer = 50
-                                    break
+                                    #break
                 else:
                     i.rect.x -= 5
             if gameData['frameCounter'] > 0:
