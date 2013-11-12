@@ -672,14 +672,24 @@ class pinkSpiderFly(pygame.sprite.Sprite):
         self.wiggleTime = 10
 
 class pinkSpiderBird(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self,position,velocity,duration):
         pygame.sprite.Sprite.__init__(self)
         self.image, self.rect = load_image("pinkSpiderBird.png", -1)
-        self.image = pygame.transform.rotate(self.image,90)
+        if velocity[0] < 0:
+            self.image = pygame.transform.flip(self.image, True, False)
+        elif velocity[1] > 0:
+            self.image = pygame.transform.rotate(self.image, -90)
+        elif velocity[1] < 0:
+            self.image = pygame.transform.rotate(self.image, 90)
+        self.rect.center = position
+        self.life = duration
+        self.velocity = velocity
 
     def update(self):
-        self.rect.y -= 8
-        if self.rect.bottom < 0:
+        self.rect.x += self.velocity[0]
+        self.rect.y += self.velocity[1]
+        self.life -= 1
+        if self.life <= 0:
             self.kill()
             
 class doubtPlayer():
@@ -1464,9 +1474,7 @@ def changeTrack(direction,gameData):
             position = (randint(0,1000),randint(-6000,0))
             gameData['stars'].append((temp,position))
         gameData['player'] = pinkSpiderPlayer()
-        birdo = pinkSpiderBird()
-        birdo.rect.topleft = (500,700)
-        gameData['spriteList'].add(gameData['player'],birdo)
+        gameData['spriteList'].add(gameData['player'],pinkSpiderBird((500,700),(0,-5),200))
         gameData['backGround'], temp = load_image('spiderweb.png')
         gameData['bouncingRect'] = pygame.Rect(0,590,1000,10)
         gameData['bounces'] = 0
