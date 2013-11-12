@@ -674,13 +674,20 @@ class pinkSpiderFly(pygame.sprite.Sprite):
 class pinkSpiderBird(pygame.sprite.Sprite):
     def __init__(self,position,velocity,duration):
         pygame.sprite.Sprite.__init__(self)
-        self.image, self.rect = load_image("pinkSpiderBird.png", -1)
+        self.image, self.rect = load_image("pinkSpiderBirdAnimation.png", -1)
         if velocity[0] < 0:
             self.image = pygame.transform.flip(self.image, True, False)
+            self.images = [self.image.subsurface((0,0),(200,350)),self.image.subsurface((0,350),(200,350))]
         elif velocity[1] > 0:
             self.image = pygame.transform.rotate(self.image, -90)
+            self.images = [self.image.subsurface((0,0),(350,200)),self.image.subsurface((350,0),(350,200))]
         elif velocity[1] < 0:
             self.image = pygame.transform.rotate(self.image, 90)
+            self.images = [self.image.subsurface((0,0),(350,200)),self.image.subsurface((350,0),(350,200))]
+        else:
+            self.images = [self.image.subsurface((0,0),(200,350)),self.image.subsurface((0,350),(200,350))]
+        self.animationFrame = 0
+        self.image = self.images[self.animationFrame]
         self.rect.center = position
         self.life = duration
         self.velocity = velocity
@@ -689,6 +696,8 @@ class pinkSpiderBird(pygame.sprite.Sprite):
         self.rect.x += self.velocity[0]
         self.rect.y += self.velocity[1]
         self.life -= 1
+        self.animationFrame = not self.animationFrame
+        self.image = self.images[self.animationFrame]
         if self.life <= 0:
             self.kill()
             
