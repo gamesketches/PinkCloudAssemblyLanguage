@@ -671,6 +671,17 @@ class pinkSpiderFly(pygame.sprite.Sprite):
         self.image, temp = load_image('wrappedFly.png', -1)
         self.wiggleTime = 10
 
+class pinkSpiderBird(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image, self.rect = load_image("pinkSpiderBird.png", -1)
+        self.image = pygame.transform.rotate(self.image,90)
+
+    def update(self):
+        self.rect.y -= 8
+        if self.rect.bottom < 0:
+            self.kill()
+            
 class doubtPlayer():
     def __init__(self):
         self.tail = []
@@ -1453,7 +1464,9 @@ def changeTrack(direction,gameData):
             position = (randint(0,1000),randint(-6000,0))
             gameData['stars'].append((temp,position))
         gameData['player'] = pinkSpiderPlayer()
-        gameData['spriteList'].add(gameData['player'])
+        birdo = pinkSpiderBird()
+        birdo.rect.topleft = (500,700)
+        gameData['spriteList'].add(gameData['player'],birdo)
         gameData['backGround'], temp = load_image('spiderweb.png')
         gameData['bouncingRect'] = pygame.Rect(0,590,1000,10)
         gameData['bounces'] = 0
@@ -1502,7 +1515,7 @@ def changeTrack(direction,gameData):
         gameData['player'] = fishScratchFeverPlayer()
         gameData['spriteList'].add(fishScratchFeverObstacle())
         gameData['frameCounter'] = 130
-        gameData['targetDistance'] = 1000
+        gameData['targetDistance'] = 3000
     # Change track to Ever Free
     elif gameData['trackNumber'] == 6:
         gameData['player'] = everFreePlayer()
@@ -1676,16 +1689,12 @@ def main():
                     elif type(i) == leatherFaceTarget:
                         i.rect.x += -1 * gameData['player'].velocity
                         if i.rect.colliderect(gameData['player'].rect):
-                            #i.runAway()
-                            if i.timesSpotted == 1:
-                                changeTrack("FORWARD",gameData)
-                                frameTimer = 50
-                            #gameData['frameCounter'] = 40
+                            changeTrack("FORWARD", gameData)
+                            frameTimer = 50
                             gameData['frameCounter'] = 90
+                            break
                         if not i.facingRight:
                             if not gameData['player'].hiding:
-                                #changeTrack("FORWARD",gameData)
-                                #gameData['frameCounter'] = 40
                                 gameData['frameCounter'] = 90
                                 i.runAway()
                                 gameData['spriteList'].add(leatherFaceExclamationMark(gameData['target'].rect.topleft))
@@ -1699,8 +1708,6 @@ def main():
                                         break
                                 if visible:
                                     i.runAway()
-                                    #changeTrack("FORWARD",gameData)
-                                    #gameData['frameCounter'] = 40
                                     gameData['frameCounter'] = 90
                                     gameData['spriteList'].add(leatherFaceExclamationMark(gameData['target'].rect.topleft))
                                     frameTimer = 50
