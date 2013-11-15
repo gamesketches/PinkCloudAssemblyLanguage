@@ -588,7 +588,8 @@ class pinkSpiderPlayer(pygame.sprite.Sprite):
         self.velocity = [0,0]
         self.opacity = 0
         self.rect.x = 100
-        self.rect.y = 500
+        #self.rect.y = 500
+        self.rect.y = 1700
         self.state = "grounded"
 
     def update(self):
@@ -634,8 +635,10 @@ class pinkSpiderPlayer(pygame.sprite.Sprite):
         if self.state == "grounded":
             if self.rect.y < 0:
                 self.rect.y = 0
-            elif self.rect.bottom > 600:
-                self.rect.bottom = 600
+            #elif self.rect.bottom > 600:
+             #   self.rect.bottom = 600
+            elif self.rect.bottom > 1800:
+                self.rect.bottom = 1800
 
     def transform(self):
         self.image, temp = load_image("pinkSpiderWings.png", -1)
@@ -651,8 +654,9 @@ class pinkSpiderFly(pygame.sprite.Sprite):
         else:
             self.image, self.rect = load_image('butterfly.png', -1)
         self.image = pygame.transform.rotate(self.image, randint(0,360))
-        self.rect.x = randint(0,1000)
-        self.rect.y = randint(0,600)
+        self.rect.x = randint(100,900)
+        #self.rect.y = randint(0,600)
+        self.rect.y = randint(1200,1800)
         self.velocity = [5,0]
         self.caught = False
         self.frameTimer = 0
@@ -1477,7 +1481,8 @@ def changeTrack(direction,gameData):
         gameData['frameCounter'] = 0
     # Change track to Pink Spider
     elif gameData['trackNumber'] == 3:
-        sideScrollingSurface = pygame.Surface((1000,600))
+        #sideScrollingSurface = pygame.Surface((1000,600))
+        sideScrollingSurface = pygame.Surface((1000,1800))
         sideScrollingSurface = sideScrollingSurface.convert()
         sideScrollingSurface.fill((0,0,0))
         gameData['sideScrollingSurface'] = sideScrollingSurface
@@ -1487,12 +1492,15 @@ def changeTrack(direction,gameData):
             temp = pygame.Surface((size,size))
             temp = temp.convert()
             temp.fill((250,250,250))
-            position = (randint(0,1000),randint(-6000,0))
+            #position = (randint(0,1000),randint(-6000,0))
+            position = (randint(0,1000),randint(0,1000))
             gameData['stars'].append((temp,position))
         gameData['player'] = pinkSpiderPlayer()
-        gameData['spriteList'].add(gameData['player'],pinkSpiderBird((500,700),(0,-5),200))
+        #gameData['spriteList'].add(gameData['player'],pinkSpiderBird((500,700),(0,-5),200))
+        gameData['spriteList'].add(gameData['player'],pinkSpiderBird((500,1900),(0,-5),200))
         gameData['backGround'], temp = load_image('spiderweb.png')
-        gameData['bouncingRect'] = pygame.Rect(0,590,1000,10)
+        #gameData['bouncingRect'] = pygame.Rect(0,590,1000,10)
+        gameData['bouncingRect'] = pygame.Rect(0,590,2000,10)
         gameData['bounces'] = 0
     # Change track to Doubt '97
     elif gameData['trackNumber'] == 4:
@@ -1739,8 +1747,8 @@ def main():
         # ----- Track 4, Pink Spider -------
         elif gameData['trackNumber'] == 4:
             allsprites = pygame.sprite.Group()
-            #sideScrollingSurface.blit(gameData['backGround'], (0,0))
-            gameData['sideScrollingSurface'].blit(gameData['backGround'], (0,0))
+            #gameData['sideScrollingSurface'].blit(gameData['backGround'], (0,0))
+            gameData['sideScrollingSurface'].blit(gameData['backGround'], (0,1200))
             frameTimer -= 1
             if frameTimer == 0:
                 if randint(0,5) == 1:
@@ -1753,7 +1761,8 @@ def main():
                     if i.bugType is not "fly":
                         gameData['player'].transform()
                         gameData['spriteList'].remove(gameData['player'])
-                        gameData['spriteList'].add(pinkSpiderBird((-100,-500),(3,0),300))
+                        #gameData['spriteList'].add(pinkSpiderBird((-100,-500),(3,0),300))
+                        gameData['spriteList'].add(pinkSpiderBird((-100,700),(3,0),300))
                     else:
                         if gameData['player'].opacity > 300:
                             i.kill()
@@ -1764,7 +1773,8 @@ def main():
             gameData['spriteList'].draw(gameData['sideScrollingSurface'])
             sideScrollingOffset = gameData['player'].velocity
             if gameData['player'].state == "grounded":
-                screen.blit(gameData['sideScrollingSurface'], (0,0))
+                #screen.blit(gameData['sideScrollingSurface'], (0,0))
+                screen.blit(gameData['sideScrollingSurface'], (0,-1200))
                 if gameData['player'].opacity >= 2500:
                     changeTrack("FORWARD",gameData)
             else:
@@ -1777,7 +1787,8 @@ def main():
                     gameData['sideScrollingSurface'].blit(i[0],i[1])
                 screen.blit(gameData['sideScrollingSurface'], (500 - gameData['player'].rect.x,300 - gameData['player'].rect.y))
                 screen.blit(gameData['player'].image, (500,300))
-                if gameData['player'].rect.y > 600:
+                #if gameData['player'].rect.y > 600:
+                if gameData['player'].rect.y > 1800:
                     changeTrack("FORWARD",gameData)
         # ----- Track 5, Doubt '97 -----
         elif gameData['trackNumber'] == 5:
