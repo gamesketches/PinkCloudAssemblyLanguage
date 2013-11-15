@@ -1450,7 +1450,7 @@ def changeTrack(direction,gameData):
             gameData['trackNumber'] -= 1
             gameData['trackFrameCounter'] = 50
         if gameData['trackNumber'] < 0:
-			gameData['trackNumber'] = 10
+            gameData['trackNumber'] = 10
     # Change track to Rocket Dive
     if gameData['trackNumber'] == 1:
         gameData['player'] = rocketDivePlayer()
@@ -1477,6 +1477,10 @@ def changeTrack(direction,gameData):
         gameData['frameCounter'] = 0
     # Change track to Pink Spider
     elif gameData['trackNumber'] == 3:
+        sideScrollingSurface = pygame.Surface((1000,600))
+        sideScrollingSurface = sideScrollingSurface.convert()
+        sideScrollingSurface.fill((0,0,0))
+        gameData['sideScrollingSurface'] = sideScrollingSurface
         gameData['stars'] = []
         for i in range(100):
             size = randint(10,50)
@@ -1621,9 +1625,6 @@ def main():
     allsprites = pygame.sprite.OrderedUpdates()
     gameData = {'grid': spreadBeaverGrid(),'player': None,'trackNumber':trackNumber,'spriteList':allsprites,'background':background,'distance':1000, 'trackFrameCounter':0}
     distanceTracker = pygame.font.Font(None, 36)
-    sideScrollingSurface = pygame.Surface(screen.get_size())
-    sideScrollingSurface = sideScrollingSurface.convert()
-    sideScrollingSurface.fill((0,0,0))
     
     going = True
     while going:
@@ -1738,7 +1739,8 @@ def main():
         # ----- Track 4, Pink Spider -------
         elif gameData['trackNumber'] == 4:
             allsprites = pygame.sprite.Group()
-            sideScrollingSurface.blit(gameData['backGround'], (0,0))
+            #sideScrollingSurface.blit(gameData['backGround'], (0,0))
+            gameData['sideScrollingSurface'].blit(gameData['backGround'], (0,0))
             frameTimer -= 1
             if frameTimer == 0:
                 if randint(0,5) == 1:
@@ -1759,10 +1761,10 @@ def main():
                         else:
                             i.getCaught()
             gameData['spriteList'].update()
-            gameData['spriteList'].draw(sideScrollingSurface)
+            gameData['spriteList'].draw(gameData['sideScrollingSurface'])
             sideScrollingOffset = gameData['player'].velocity
             if gameData['player'].state == "grounded":
-                screen.blit(sideScrollingSurface, (0,0))
+                screen.blit(gameData['sideScrollingSurface'], (0,0))
                 if gameData['player'].opacity >= 2500:
                     changeTrack("FORWARD",gameData)
             else:
@@ -1772,8 +1774,8 @@ def main():
                     gameData['bounces'] += 1
                 gameData['player'].update()
                 for i in gameData['stars']:
-                    sideScrollingSurface.blit(i[0],i[1])
-                screen.blit(sideScrollingSurface, (500 - gameData['player'].rect.x,300 - gameData['player'].rect.y))
+                    gameData['sideScrollingSurface'].blit(i[0],i[1])
+                screen.blit(gameData['sideScrollingSurface'], (500 - gameData['player'].rect.x,300 - gameData['player'].rect.y))
                 screen.blit(gameData['player'].image, (500,300))
                 if gameData['player'].rect.y > 600:
                     changeTrack("FORWARD",gameData)
