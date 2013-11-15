@@ -1302,6 +1302,7 @@ class hurryGoRoundPlayer(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.image, self.rect = load_image("breedingHide.png", -1)
+        self.image = pygame.transform.flip(self.image,True,False)
         self.rect.x = 10
         self.rect.y = 500
         self.offset = 0
@@ -1448,6 +1449,8 @@ def changeTrack(direction,gameData):
         else:
             gameData['trackNumber'] -= 1
             gameData['trackFrameCounter'] = 50
+        if gameData['trackNumber'] < 0:
+			gameData['trackNumber'] = 10
     # Change track to Rocket Dive
     if gameData['trackNumber'] == 1:
         gameData['player'] = rocketDivePlayer()
@@ -1587,6 +1590,7 @@ def changeTrack(direction,gameData):
     # Set game back to beginning
     elif gameData['trackNumber'] == 10:
         gameData['trackNumber'] = 0
+        gameData['grid'] = spreadBeaverGrid()
     gameData['trackNumber'] += 1
         
 
@@ -1615,13 +1619,11 @@ def main():
     speed = 5
     trackNumber = 1
     allsprites = pygame.sprite.OrderedUpdates()
-    gameData = {'player': None,'trackNumber':trackNumber,'spriteList':allsprites,'background':background,'distance':1000, 'trackFrameCounter':0}
+    gameData = {'grid': spreadBeaverGrid(),'player': None,'trackNumber':trackNumber,'spriteList':allsprites,'background':background,'distance':1000, 'trackFrameCounter':0}
     distanceTracker = pygame.font.Font(None, 36)
     sideScrollingSurface = pygame.Surface(screen.get_size())
     sideScrollingSurface = sideScrollingSurface.convert()
     sideScrollingSurface.fill((0,0,0))
-
-    grid = spreadBeaverGrid()
     
     going = True
     while going:
@@ -1642,9 +1644,9 @@ def main():
         screen.blit(background, (0,0))
         # ----- Track 1, Spread Beaver -----
         if gameData['trackNumber'] == 1:
-            grid.update()
-            grid.draw(screen)
-            if grid.pos == grid.goalPos:
+            gameData['grid'].update()
+            gameData['grid'].draw(screen)
+            if gameData['grid'].pos == gameData['grid'].goalPos:
                 changeTrack("FORWARD",gameData)
         # ----- Track 2, Rocket Dive -------
         elif gameData['trackNumber'] == 2:
@@ -1745,10 +1747,11 @@ def main():
                     gameData['spriteList'].add(pinkSpiderFly("fly"))
                 frameTimer = 200 + randint(0,200)
             for i in gameData['spriteList'].sprites():
-                if type(i) != pinkSpiderPlayer and gameData['player'].rect.colliderect(i.rect):
+                if type(i) != pinkSpiderPlayer and type(i) != pinkSpiderBird and gameData['player'].rect.colliderect(i.rect):
                     if i.bugType is not "fly":
                         gameData['player'].transform()
                         gameData['spriteList'].remove(gameData['player'])
+                        gameData['spriteList'].add(pinkSpiderBird((-100,-500),(3,0),300))
                     else:
                         if gameData['player'].opacity > 300:
                             i.kill()
