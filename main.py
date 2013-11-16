@@ -1433,6 +1433,16 @@ class pinkCloudAssemblyPlayer(pygame.sprite.Sprite):
             self.rect.x = 1000 - self.rect.width
         self.rect.y += self.velocity[1]
 
+class pinkCloudAssemblyStairs(pygame.sprite.Sprite):
+    def __init__(self,pos):
+        pygame.sprite.Sprite.__init__(self)
+        self.image, self.rect = load_image("stairwayToHeaven.png", -1)
+        self.rect.topleft = pos
+
+    def update(self):
+        if self.rect.y > 1000:
+            self.kill()
+
 class Meter():
     def __init__(self,dimensions,barColor,frameColor,startingAmount, maxAmount):
         self.frame = pygame.Surface((dimensions[2],dimensions[3]))
@@ -1613,6 +1623,8 @@ def changeTrack(direction,gameData):
     # Change Track to Pink Cloud Assembly
     elif gameData['trackNumber'] == 9:
         gameData['player'] = pinkCloudAssemblyPlayer()
+        gameData['stairCaseList'] = pygame.sprite.Group(pinkCloudAssemblyStairs((500,500)),pinkCloudAssemblyStairs((500,300)),pinkCloudAssemblyStairs((500,100)))
+        gameData['stairCaseList'] = pygame.sprite.Group(pinkCloudAssemblyStairs((500,-100)))
         gameData['spriteList'].add(gameData['player'])
     # Set game back to beginning
     elif gameData['trackNumber'] == 10:
@@ -1917,6 +1929,19 @@ def main():
             allsprites = pygame.sprite.Group()
             screen.blit(gameData['background'], (0,0))
             gameData['player'].update()
+            aboveScreen = False
+            belowScreen = False
+            for i in gameData['stairCaseList'].sprites():
+                i.rect.y += gameData['player'].velocity[1]
+                if i.rect.y < 0:
+                    aboveScreen = True
+                if i.rect.bottom > 600:
+                    belowScreen = True
+                screen.blit(i.image, i.rect.topleft)
+            if not aboveScreen:
+                gameData['stairCaseList'].add(pinkCloudAssemblyStairs((500,-199)))
+            if not belowScreen:
+                gameData['stairCaseList'].add(pinkCloudAssemblyStairs((500,600)))
             screen.blit(gameData['player'].image,gameData['player'].rect.center)
         allsprites.update()
         allsprites.draw(screen)
