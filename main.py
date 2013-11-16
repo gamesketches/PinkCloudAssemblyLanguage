@@ -1720,7 +1720,7 @@ def main():
                             elif i.rect.colliderect(gameData['target'].rect):
                                 gameData['target'].kill()
                         elif i.hidingType is "window":
-                            if i.rect.colliderect(gameData['target'].rect):
+                            if i.rect.x < gameData['target'].rect.right:
                                 changeTrack("FORWARD", gameData)
                                 frameTimer = 50
                                 gameData['frameCounter'] = 90
