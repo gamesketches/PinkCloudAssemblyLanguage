@@ -520,7 +520,7 @@ class leatherFaceTarget(pygame.sprite.Sprite):
         if self.state is "standing":                
             if self.facingRight:
                 self.switchTimer += 1
-                if self.switchTimer == 60:
+                if self.switchTimer == 35:
                     self.facingRight = False
                     self.switchTimer = 0
                     self.image = pygame.transform.flip(self.image, True, False)
@@ -545,12 +545,9 @@ class leatherFaceTarget(pygame.sprite.Sprite):
                 self.image = pygame.transform.flip(self.image,True,False)
 
     def runAway(self):
-        #self.state = "running"
         if self.state is not "surprised":                
             self.state = "surprised"
-            self.frameTimer = 50
-        #self.facingRight = True
-        #self.timesSpotted += 1
+            self.frameTimer = 20
 
 class leatherFaceObject(pygame.sprite.Sprite):
     def __init__(self,image, position, hideBox, hidingType):
@@ -1491,19 +1488,16 @@ def changeTrack(direction,gameData):
             temp = pygame.Surface((size,size))
             temp = temp.convert()
             temp.fill((250,250,250))
-            #position = (randint(0,1000),randint(-6000,0))
             position = (randint(0,1000),randint(0,1000))
             gameData['stars'].append((temp,position))
         gameData['player'] = pinkSpiderPlayer()
-        #gameData['spriteList'].add(gameData['player'],pinkSpiderBird((500,700),(0,-5),200))
         gameData['spriteList'].add(gameData['player'],pinkSpiderBird((500,1900),(0,-5),200))
         gameData['backGround'] = pygame.Surface((1000, 1800))
         gameData['backGround'] = gameData['backGround'].convert()
         gameData['backGround'].fill((0,0,0))
         webImage, temp = load_image('spiderweb.png')
         gameData['backGround'].blit(webImage,(0,1200))
-        #gameData['bouncingRect'] = pygame.Rect(0,590,1000,10)
-        gameData['bouncingRect'] = pygame.Rect(0,590,2000,10)
+        gameData['bouncingRect'] = pygame.Rect(0,1790,1000,10)
         gameData['bounces'] = 0
     # Change track to Doubt '97
     elif gameData['trackNumber'] == 4:
@@ -1712,6 +1706,8 @@ def main():
                                 if gameData['spriteList'] is gameData['leatherFaceDownstairsObjects']:
                                     gameData['spriteList'] = gameData['leatherFaceUpstairsObjects']
                                     gameData['spriteList'].add(gameData['target'])
+                                    gameData['target'].rect.x += 100
+                                    gameData['player'].rect.x -= 100
                                     gameData['frameCounter'] = 50
                                 else:
                                     gameData['spriteList'] = gameData['leatherFaceDownstairsObjects']
@@ -1729,28 +1725,27 @@ def main():
                                 gameData['frameCounter'] = 90
                                 i.runAway()
                                 gameData['spriteList'].add(leatherFaceExclamationMark(gameData['target'].rect.topleft))
-                                frameTimer = 50
+                                frameTimer = 40
                                 #break
                             else:
                                 visible = True
-                                for i in gameData['leatherFaceObjects']:
-                                    if i.checkHidingSpot(gameData['player'].hidingPosture(),gameData['player'].rect):
+                                for j in gameData['leatherFaceObjects']:
+                                    if j.checkHidingSpot(gameData['player'].hidingPosture(),gameData['player'].rect):
                                         visible = False
                                         break
                                 if visible:
                                     i.runAway()
                                     gameData['frameCounter'] = 90
                                     gameData['spriteList'].add(leatherFaceExclamationMark(gameData['target'].rect.topleft))
-                                    frameTimer = 50
+                                    frameTimer = 40
                                     #break
                 else:
-                    i.rect.x -= 5
+                    i.rect.x -= 3
             if gameData['frameCounter'] > 0:
                 gameData['frameCounter'] -= 1
         # ----- Track 4, Pink Spider -------
         elif gameData['trackNumber'] == 4:
             allsprites = pygame.sprite.Group()
-            #gameData['sideScrollingSurface'].blit(gameData['backGround'], (0,0))
             gameData['sideScrollingSurface'].blit(gameData['backGround'], (0,0))
             frameTimer -= 1
             if frameTimer == 0:
@@ -1764,7 +1759,6 @@ def main():
                     if i.bugType is not "fly":
                         gameData['player'].transform()
                         gameData['spriteList'].remove(gameData['player'])
-                        #gameData['spriteList'].add(pinkSpiderBird((-100,-500),(3,0),300))
                         gameData['spriteList'].add(pinkSpiderBird((-100,700),(3,0),300))
                     else:
                         if gameData['player'].opacity > 300:
@@ -1776,7 +1770,6 @@ def main():
             gameData['spriteList'].draw(gameData['sideScrollingSurface'])
             sideScrollingOffset = gameData['player'].velocity
             if gameData['player'].state == "grounded":
-                #screen.blit(gameData['sideScrollingSurface'], (0,0))
                 screen.blit(gameData['sideScrollingSurface'], (0,-1200))
                 if gameData['player'].opacity >= 2500:
                     changeTrack("FORWARD",gameData)
@@ -1784,6 +1777,7 @@ def main():
                 if gameData['player'].rect.colliderect(gameData['bouncingRect']) and gameData['bounces'] < 3:
                     gameData['player'].leftWingStrength = 10
                     gameData['player'].rightWingStrength = 10
+                    gameData['player'].rect.bottom = gameData['bouncingRect'].y - 1
                     gameData['bounces'] += 1
                 gameData['player'].update()
                 for i in gameData['stars']:
