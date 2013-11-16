@@ -1481,7 +1481,6 @@ def changeTrack(direction,gameData):
         gameData['frameCounter'] = 0
     # Change track to Pink Spider
     elif gameData['trackNumber'] == 3:
-        #sideScrollingSurface = pygame.Surface((1000,600))
         sideScrollingSurface = pygame.Surface((1000,1800))
         sideScrollingSurface = sideScrollingSurface.convert()
         sideScrollingSurface.fill((0,0,0))
@@ -1498,7 +1497,11 @@ def changeTrack(direction,gameData):
         gameData['player'] = pinkSpiderPlayer()
         #gameData['spriteList'].add(gameData['player'],pinkSpiderBird((500,700),(0,-5),200))
         gameData['spriteList'].add(gameData['player'],pinkSpiderBird((500,1900),(0,-5),200))
-        gameData['backGround'], temp = load_image('spiderweb.png')
+        gameData['backGround'] = pygame.Surface((1000, 1800))
+        gameData['backGround'] = gameData['backGround'].convert()
+        gameData['backGround'].fill((0,0,0))
+        webImage, temp = load_image('spiderweb.png')
+        gameData['backGround'].blit(webImage,(0,1200))
         #gameData['bouncingRect'] = pygame.Rect(0,590,1000,10)
         gameData['bouncingRect'] = pygame.Rect(0,590,2000,10)
         gameData['bounces'] = 0
@@ -1748,7 +1751,7 @@ def main():
         elif gameData['trackNumber'] == 4:
             allsprites = pygame.sprite.Group()
             #gameData['sideScrollingSurface'].blit(gameData['backGround'], (0,0))
-            gameData['sideScrollingSurface'].blit(gameData['backGround'], (0,1200))
+            gameData['sideScrollingSurface'].blit(gameData['backGround'], (0,0))
             frameTimer -= 1
             if frameTimer == 0:
                 if randint(0,5) == 1:
