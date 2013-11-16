@@ -1459,11 +1459,12 @@ def changeTrack(direction,gameData):
         gameData['frameCounter'] = 100
     # Change track to Leather Face
     if gameData['trackNumber'] == 2:
-        newBackground = pygame.Surface((1000,600))
+        newBackground = pygame.Surface((1500,600))
         newBackground = newBackground.convert()
         newBackground.fill((0,0,0))
-        pygame.draw.polygon(newBackground,(200,200,200),[(0,100),(1000,100),(1000,500),(0,500)])
+        pygame.draw.polygon(newBackground,(200,200,200),[(0,100),(1500,100),(1500,500),(0,500)])
         gameData['backGround'] = newBackground
+        gameData['backGroundPos'] = 0
         gameData['player'] = leatherFacePlayer()
         gameData['target'] = leatherFaceTarget()
         gameData['leatherFaceDownstairsObjects'] = pygame.sprite.OrderedUpdates(leatherFaceObject('door.png',(400,220),(400,220,100,250),"standing"))
@@ -1471,6 +1472,7 @@ def changeTrack(direction,gameData):
         gameData['leatherFaceDownstairsObjects'].add(leatherFaceObject('stairs.png',(1500,250),(0,0,0,0),"stairs"),gameData['player'],gameData['target'])
         gameData['leatherFaceUpstairsObjects'] = pygame.sprite.OrderedUpdates(leatherFaceObject('refridgerator.png',(1000,300),(1100,300,100,200),"standing"))
         gameData['leatherFaceUpstairsObjects'].add(leatherFaceObject('table.png',(500,400),(500,400,300,100),"crouching"))
+        gameData['leatherFaceUpstairsObjects'].add(leatherFaceObject('window.png',(1300,300),(0,0,0,0),"window"))
         gameData['leatherFaceUpstairsObjects'].add(gameData['player'],gameData['target'])
         gameData['leatherFaceObjects'] = pygame.sprite.OrderedUpdates(gameData['leatherFaceDownstairsObjects'],gameData['leatherFaceUpstairsObjects'])
         gameData['leatherFaceObjects'].remove(gameData['player'],gameData['target'])
@@ -1696,12 +1698,15 @@ def main():
         # ----- Track 3, Leather Face -------
         elif gameData['trackNumber'] == 3:
             allsprites = gameData['spriteList']
-            screen.blit(gameData['backGround'], (0,0))
+            screen.blit(gameData['backGround'], (gameData['backGroundPos'],0))
             for i in gameData['spriteList'].sprites():
                 if gameData['frameCounter'] == 0:
                     if type(i) == leatherFaceObject:
                         i.rect.x += -1 * gameData['player'].velocity
                         if i.hidingType is "stairs":
+                            gameData['backGroundPos'] = i.rect.right - 1500
+                            if gameData['backGroundPos'] > 0:
+                                gameData['backGroundPos'] = 0
                             if i.rect.colliderect(gameData['player'].rect):
                                 if gameData['spriteList'] is gameData['leatherFaceDownstairsObjects']:
                                     gameData['spriteList'] = gameData['leatherFaceUpstairsObjects']
@@ -1709,10 +1714,17 @@ def main():
                                     gameData['target'].rect.x += 100
                                     gameData['player'].rect.x -= 100
                                     gameData['frameCounter'] = 50
+                                    gameData['backGroundPos'] = 0
                                 else:
                                     gameData['spriteList'] = gameData['leatherFaceDownstairsObjects']
                             elif i.rect.colliderect(gameData['target'].rect):
                                 gameData['target'].kill()
+                        elif i.hidingType is "window":
+                            if i.rect.colliderect(gameData['target'].rect):
+                                changeTrack("FORWARD", gameData)
+                                frameTimer = 50
+                                gameData['frameCounter'] = 90
+                                break
                     elif type(i) == leatherFaceTarget:
                         i.rect.x += -1 * gameData['player'].velocity
                         if i.rect.colliderect(gameData['player'].rect):
