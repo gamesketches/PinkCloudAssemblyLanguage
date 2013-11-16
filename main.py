@@ -1336,19 +1336,35 @@ class hurryGoRoundObstacle(pygame.sprite.Sprite):
         if time <= 25:
             self.image,self.rect = load_image("doubtFrog.png",-1)
             self.image = pygame.transform.rotate(self.image, -90)
+            self.rect = self.image.get_rect()
+            self.image = pygame.transform.scale(self.image,(self.rect.w,self.rect.h - 30))
+            self.rect = self.image.get_rect()
+            self.frameCounter = -1
         elif time < 25 and time <= 50:
             self.image, self.rect = load_image("turkey.png",-1)
+            self.frameCounter = -1
         elif time > 50 and time <= 75:
             self.image, self.rect = load_image("snowman.png",-1)
+            self.frameCounter = -1
         elif time > 75 and time <= 100:
             self.image, self.rect = load_image("rabbit.png",-1)
+            self.frameCounter = 60
         else:
             self.image,self.rect = load_image("leatherFaceTarget.png",-1)
+            self.frameCounter = 60
         self.rect.x = 1100
         self.rect.bottom = 600
 
     def update(self):
         self.rect.x -= 5
+        if self.frameCounter > -1:
+            self.frameCounter -= 1
+            if self.frameCounter == 0:
+                if self.rect.bottom == 600:
+                    self.rect.bottom = 500
+                else:
+                    self.rect.bottom = 600
+                self.frameCounter = 30
 
     def draw(self,screen):
         screen.blit(self.image,(self.rect.x,self.rect.y))
