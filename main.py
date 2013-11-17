@@ -1971,10 +1971,11 @@ def main():
             allsprites = pygame.sprite.Group()
             screen.blit(gameData['background'], (0,0))
             gameData['player'].update()
+            if gameData['player'].distance > 1000:
+                changeTrack("FORWARD",gameData)
             aboveScreen = False
             belowScreen = False
             for i in gameData['stairCaseList'].sprites():
-                #i.rect.y += gameData['player'].velocity[1]
                 i.rect.y += gameData['player'].velocity
                 if i.rect.y < 0:
                     aboveScreen = True
@@ -1985,7 +1986,6 @@ def main():
                 gameData['stairCaseList'].add(pinkCloudAssemblyStairs((500,-199)))
             if not belowScreen:
                 gameData['stairCaseList'].add(pinkCloudAssemblyStairs((500,600)))
-            #screen.blit(gameData['player'].image,gameData['player'].rect.center)
             screen.blit(gameData['player'].image,(500,300))
         allsprites.update()
         allsprites.draw(screen)
