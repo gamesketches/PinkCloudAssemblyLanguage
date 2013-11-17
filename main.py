@@ -517,7 +517,7 @@ class leatherFaceTarget(pygame.sprite.Sprite):
         self.exclamation,temp = load_image('exclamationMark.png', -1)
 
     def update(self):
-        if self.state is "standing":                
+        if self.state is "standing":
             if self.facingRight:
                 self.switchTimer += 1
                 if self.switchTimer == 35:
@@ -555,10 +555,14 @@ class leatherFaceObject(pygame.sprite.Sprite):
         self.image, self.rect = load_image(image, -1)
         self.rect.topleft = position
         self.hideBox = pygame.Rect(hideBox)
+        self.hideSurface = pygame.Surface((self.hideBox.w,self.hideBox.h))
+        self.hideSurface.convert()
+        self.hideSurface.fill((0,0,0))
+        self.hideSurface.set_alpha(50)
         self.hidingType = hidingType
 
     def checkHidingSpot(self,state,hitBox):
-        if self.rect.colliderect(hitBox) and state == self.hidingType:
+        if self.hideBox.colliderect(hitBox) and state == self.hidingType:
             return True
         else:
             return False
@@ -1308,22 +1312,28 @@ class hurryGoRoundPlayer(pygame.sprite.Sprite):
         self.rect.y = 500
         self.offset = 0
         self.footPrintTimer =  20
-        self.jumpTimer = 0
+        self.jumpTimer = False
 
     def update(self):
         #self.rect.x = self.offset
         self.footPrintTimer -= 1
         if self.footPrintTimer < 0:
             self.footPrintTimer = 20
-        if self.jumpTimer:
+        if self.jumpTimer > 0:
             self.rect.y = 400
             self.jumpTimer -= 1
+            if self.jumpTimer <= 0:
+                self.rect.bottom = 600
+                self.jumpTimer = -20
         else:
             keys = pygame.key.get_pressed()
+            if self.jumpTimer < 0:
+                self.jumpTimer += 1
             if keys[K_DOWN]:
                 self.rect.y = 550
             elif keys[K_UP]:
-                self.jumpTimer = 20
+                if self.jumpTimer == 0:
+                    self.jumpTimer = 60
             else:
                 self.rect.y = 500
 
@@ -1340,13 +1350,17 @@ class hurryGoRoundObstacle(pygame.sprite.Sprite):
             self.image = pygame.transform.scale(self.image,(self.rect.w,self.rect.h - 30))
             self.rect = self.image.get_rect()
             self.frameCounter = -1
-        elif time < 25 and time <= 50:
-            self.image, self.rect = load_image("turkey.png",-1)
+        elif time > 25 and time <= 50:
+            self.image, self.rect = load_image("leatherFaceTarget.png",-1)
             self.frameCounter = -1
+            self.image = pygame.transform.flip(self.image, True,False)
         elif time > 50 and time <= 75:
-            self.image, self.rect = load_image("snowman.png",-1)
+            self.image, self.rect = load_image("turkey.png", -1)
             self.frameCounter = -1
         elif time > 75 and time <= 100:
+            self.image, self.rect = load_image("snowman.png",-1)
+            self.frameCounter = -1
+        elif time > 100 and time <= 125:
             self.image, self.rect = load_image("rabbit.png",-1)
             self.frameCounter = 60
         else:
@@ -1386,9 +1400,17 @@ class hurryGoRoundTree(pygame.sprite.Sprite):
     def __init__(self,time):
         pygame.sprite.Sprite.__init__(self)
         if time <= 25:
+            self.image, self.rect = load_image("summerTree.png", -1)
+        elif time <= 50:
+            if randint(0,1):
+                self.image, self.rect = load_image("fallTree.png",-1)
+            else:
+                self.image, self.rect = load_image("fallTreeRed.png",-1)
+        elif time <= 75:
             self.image, self.rect = load_image("bareTree.png",-1)
         else:
             self.image, self.rect = load_image("snowyTree.png",-1)
+        self.image = pygame.transform.flip(self.image, randint(0,1),False)
         self.rect.x = 1100
 
     def update(self):
@@ -1488,17 +1510,17 @@ def changeTrack(direction,gameData):
         newBackground = pygame.Surface((1500,600))
         newBackground = newBackground.convert()
         newBackground.fill((0,0,0))
-        pygame.draw.polygon(newBackground,(200,200,200),[(0,100),(1500,100),(1500,500),(0,500)])
+        pygame.draw.polygon(newBackground,(200,200,200),[(0,100),(1500,100),(1500,470),(0,470)])
         gameData['backGround'] = newBackground
         gameData['backGroundPos'] = 0
         gameData['player'] = leatherFacePlayer()
         gameData['target'] = leatherFaceTarget()
         gameData['leatherFaceDownstairsObjects'] = pygame.sprite.OrderedUpdates(leatherFaceObject('door.png',(400,220),(400,220,100,250),"standing"))
-        gameData['leatherFaceDownstairsObjects'].add(leatherFaceObject('bookshelf.png',(1000,170),(800,200,120,300),"standing"))
+        gameData['leatherFaceDownstairsObjects'].add(leatherFaceObject('bookshelf.png',(800,170),(700,200,100,300),"standing"))
         gameData['leatherFaceDownstairsObjects'].add(leatherFaceObject('stairs.png',(1500,250),(0,0,0,0),"stairs"),gameData['player'],gameData['target'])
-        gameData['leatherFaceUpstairsObjects'] = pygame.sprite.OrderedUpdates(leatherFaceObject('refridgerator.png',(1000,300),(1100,300,100,200),"standing"))
-        gameData['leatherFaceUpstairsObjects'].add(leatherFaceObject('table.png',(500,400),(500,400,300,100),"crouching"))
-        gameData['leatherFaceUpstairsObjects'].add(leatherFaceObject('window.png',(1300,300),(0,0,0,0),"window"))
+        gameData['leatherFaceUpstairsObjects'] = pygame.sprite.OrderedUpdates(leatherFaceObject('refridgerator.png',(1000,270),(900,300,100,200),"standing"))
+        gameData['leatherFaceUpstairsObjects'].add(leatherFaceObject('table.png',(500,370),(500,400,300,100),"lyingDown"))
+        gameData['leatherFaceUpstairsObjects'].add(leatherFaceObject('window.png',(1500,300),(0,0,0,0),"window"))
         gameData['leatherFaceUpstairsObjects'].add(gameData['player'],gameData['target'])
         gameData['leatherFaceObjects'] = pygame.sprite.OrderedUpdates(gameData['leatherFaceDownstairsObjects'],gameData['leatherFaceUpstairsObjects'])
         gameData['leatherFaceObjects'].remove(gameData['player'],gameData['target'])
@@ -1733,6 +1755,7 @@ def main():
                 if gameData['frameCounter'] == 0:
                     if type(i) == leatherFaceObject:
                         i.rect.x += -1 * gameData['player'].velocity
+                        i.hideBox.x += -1 * gameData['player'].velocity
                         if i.hidingType is "stairs":
                             gameData['backGroundPos'] = i.rect.right - 1500
                             if gameData['backGroundPos'] > 0:
@@ -1741,7 +1764,6 @@ def main():
                                 if gameData['spriteList'] is gameData['leatherFaceDownstairsObjects']:
                                     gameData['spriteList'] = gameData['leatherFaceUpstairsObjects']
                                     gameData['spriteList'].add(gameData['target'])
-                                    gameData['target'].rect.x += 100
                                     gameData['player'].rect.x -= 100
                                     gameData['frameCounter'] = 50
                                     gameData['backGroundPos'] = 0
@@ -1749,12 +1771,15 @@ def main():
                                     gameData['spriteList'] = gameData['leatherFaceDownstairsObjects']
                             elif i.rect.colliderect(gameData['target'].rect):
                                 gameData['target'].kill()
+                                gameData['target'].rect.x += 100
                         elif i.hidingType is "window":
                             if i.rect.x < gameData['target'].rect.right:
                                 changeTrack("FORWARD", gameData)
                                 frameTimer = 50
                                 gameData['frameCounter'] = 90
                                 break
+                        else:
+                            screen.blit(i.hideSurface,i.hideBox.topleft)
                     elif type(i) == leatherFaceTarget:
                         i.rect.x += -1 * gameData['player'].velocity
                         if i.rect.colliderect(gameData['player'].rect):
@@ -1783,6 +1808,12 @@ def main():
                                     #break
                 else:
                     i.rect.x -= 3
+                    if type(i) == leatherFaceObject:
+                        i.hideBox.x -= 3
+                        screen.blit(i.hideSurface,i.hideBox.topleft)
+            if gameData['target'].rect.colliderect(gameData['player'].rect):
+                changeTrack("FORWARD", gameData)
+                frameTimer = 50
             if gameData['frameCounter'] > 0:
                 gameData['frameCounter'] -= 1
         # ----- Track 4, Pink Spider -------
