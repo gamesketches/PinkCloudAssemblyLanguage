@@ -1515,7 +1515,7 @@ def changeTrack(direction,gameData):
         gameData['sideScrollingSurface'] = sideScrollingSurface
         gameData['stars'] = []
         for i in range(100):
-            size = randint(10,50)
+            size = randint(10,25)
             temp = pygame.Surface((size,size))
             temp = temp.convert()
             temp.fill((250,250,250))
@@ -1811,6 +1811,9 @@ def main():
                             gameData['player'].opacity -= 300
                         else:
                             i.getCaught()
+            
+            for i in gameData['stars']:
+                gameData['sideScrollingSurface'].blit(i[0],i[1])
             gameData['spriteList'].update()
             gameData['spriteList'].draw(gameData['sideScrollingSurface'])
             sideScrollingOffset = gameData['player'].velocity
@@ -1825,11 +1828,8 @@ def main():
                     gameData['player'].rect.bottom = gameData['bouncingRect'].y - 1
                     gameData['bounces'] += 1
                 gameData['player'].update()
-                for i in gameData['stars']:
-                    gameData['sideScrollingSurface'].blit(i[0],i[1])
                 screen.blit(gameData['sideScrollingSurface'], (500 - gameData['player'].rect.x,300 - gameData['player'].rect.y))
                 screen.blit(gameData['player'].image, (500,300))
-                #if gameData['player'].rect.y > 600:
                 if gameData['player'].rect.y > 1800:
                     changeTrack("FORWARD",gameData)
         # ----- Track 5, Doubt '97 -----
