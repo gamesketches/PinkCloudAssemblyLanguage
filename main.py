@@ -1315,7 +1315,6 @@ class hurryGoRoundPlayer(pygame.sprite.Sprite):
         self.jumpTimer = False
 
     def update(self):
-        #self.rect.x = self.offset
         self.footPrintTimer -= 1
         if self.footPrintTimer < 0:
             self.footPrintTimer = 20
@@ -1352,7 +1351,7 @@ class hurryGoRoundObstacle(pygame.sprite.Sprite):
             self.frameCounter = -1
         elif time > 25 and time <= 50:
             self.image, self.rect = load_image("leatherFaceTarget.png",-1)
-            self.frameCounter = -1
+            self.frameCounter = 70
             self.image = pygame.transform.flip(self.image, True,False)
         elif time > 50 and time <= 75:
             self.image, self.rect = load_image("turkey.png", -1)
@@ -1362,10 +1361,10 @@ class hurryGoRoundObstacle(pygame.sprite.Sprite):
             self.frameCounter = -1
         elif time > 100 and time <= 125:
             self.image, self.rect = load_image("rabbit.png",-1)
-            self.frameCounter = 60
+            self.frameCounter = 70
         else:
             self.image,self.rect = load_image("leatherFaceTarget.png",-1)
-            self.frameCounter = 60
+            self.frameCounter = 70
         self.rect.x = 1100
         self.rect.bottom = 600
 
@@ -1378,7 +1377,10 @@ class hurryGoRoundObstacle(pygame.sprite.Sprite):
                     self.rect.bottom = 500
                 else:
                     self.rect.bottom = 600
-                self.frameCounter = 30
+                self.frameCounter = 60
+
+        if self.rect.right < 0:
+            self.kill()
 
     def draw(self,screen):
         screen.blit(self.image,(self.rect.x,self.rect.y))
@@ -1397,19 +1399,25 @@ class hurryGoRoundFootprint(pygame.sprite.Sprite):
             self.kill()
 
 class hurryGoRoundTree(pygame.sprite.Sprite):
-    def __init__(self,time):
+    def __init__(self,time,images):
         pygame.sprite.Sprite.__init__(self)
         if time <= 25:
-            self.image, self.rect = load_image("summerTree.png", -1)
+            #self.image, self.rect = load_image("summerTree.png", -1)
+            self.image = images[0]
         elif time <= 50:
             if randint(0,1):
-                self.image, self.rect = load_image("fallTree.png",-1)
+                #self.image, self.rect = load_image("fallTree.png",-1)
+                self.image = images[1]
             else:
-                self.image, self.rect = load_image("fallTreeRed.png",-1)
+                #self.image, self.rect = load_image("fallTreeRed.png",-1)
+                self.image = images[2]
         elif time <= 75:
-            self.image, self.rect = load_image("bareTree.png",-1)
+            #self.image, self.rect = load_image("bareTree.png",-1)
+            self.image = images[3]
         else:
-            self.image, self.rect = load_image("snowyTree.png",-1)
+            #self.image, self.rect = load_image("snowyTree.png",-1)
+            self.image = images[4]
+        self.rect = self.image.get_rect()
         self.image = pygame.transform.flip(self.image, randint(0,1),False)
         self.rect.x = 1100
 
@@ -1644,6 +1652,12 @@ def changeTrack(direction,gameData):
         gameData['flipped'] = False
         gameData['frameCounter'] = 100
         gameData['seasonCounter'] = 0.0
+        gameData['treeImages'] = [0,0,0,0,0]
+        gameData['treeImages'][0],temp = load_image("summerTree.png",-1)
+        gameData['treeImages'][1],temp = load_image("fallTree.png",-1)
+        gameData['treeImages'][2],temp = load_image("fallTreeRed.png",-1)
+        gameData['treeImages'][3],temp = load_image("bareTree.png",-1)
+        gameData['treeImages'][4],temp = load_image("snowyTree.png",-1)
     # Change Track to Pink Cloud Assembly
     elif gameData['trackNumber'] == 9:
         gameData['player'] = pinkCloudAssemblyPlayer()
@@ -1936,7 +1950,7 @@ def main():
             screen.blit(gameData['background'], (0,0))
             treeKa = randint(0,100)
             if treeKa < 1:
-                gameData['spriteList'].add(hurryGoRoundTree(gameData['seasonCounter']))
+                gameData['spriteList'].add(hurryGoRoundTree(gameData['seasonCounter'],gameData['treeImages']))
             gameData['frameCounter'] -= 1
             if gameData['frameCounter'] <= 0:
                 gameData['spriteList'].add(hurryGoRoundObstacle(gameData['seasonCounter']))
