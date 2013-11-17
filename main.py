@@ -937,9 +937,14 @@ class fishScratchFeverObstacle(pygame.sprite.Sprite):
             self.image, self.rect = load_image("bear.png", -1)
             self.rect.topleft = (200, 230)
         else:
-            self.image, self.rect = load_image("log.png", -1)
-            self.type = "log"
-            self.rect.topleft = (470, 340)
+            self.image, self.rect = load_image("summerTree.png", -1)
+            if randint(0,1):
+                self.type = "leftTree"
+                self.rect.topleft = (500, -100)
+            else:
+                self.type = "rightTree"
+                self.rect.topleft = (500,-100)
+            
         self.originalImage = self.image
 
     def updateDistance(self, speed):
@@ -960,6 +965,10 @@ class fishScratchFeverObstacle(pygame.sprite.Sprite):
             self.rect.centerx = 500
         if self.type is "bear":
             self.rect.centerx -= 5
+        if self.type is "leftTree":
+            self.rect.centerx -= 20
+        if self.type is "rightTree":
+            self.rect.centerx += 20
 
 class everFreePlayer(pygame.sprite.Sprite):
     def __init__(self):
@@ -1433,35 +1442,41 @@ class pinkCloudAssemblyPlayer(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.image, self.rect = load_image("pinkSpiderWings.png",-1)
-        self.originalImage = self.image
-        self.rect.center = (500,500)
-        self.rightWingStrength = 5
-        self.leftWingStrength = 5
-        self.velocity = [0,0,0,0]
+#        self.originalImage = self.image
+        self.rect.center = (500,300)
+        self.velocity = 0
+#        self.rightWingStrength = 5
+#        self.leftWingStrength = 5
+#        self.velocity = [0,0,0,0]
 
     def update(self):
         keys = pygame.key.get_pressed()
-        if keys[K_LEFT]:
-            self.velocity[2] = self.leftWingStrength
-        elif keys[K_RIGHT]:
-            self.velocity[3] = self.rightWingStrength
-        else:
-            if self.velocity[2] > -5:
-                self.velocity[2] -= 2
-            if self.velocity[3] > -5:
-                self.velocity[3] -= 2
+        if keys[K_UP]:
+            self.velocity = 4
+        elif keys[K_DOWN]:
+            self.velocity = -4
+#        if keys[K_LEFT]:
+#            self.velocity[2] = self.leftWingStrength
+#        elif keys[K_RIGHT]:
+#            self.velocity[3] = self.rightWingStrength
+#        else:
+#            if self.velocity[2] > -5:
+#                self.velocity[2] -= 2
+#            if self.velocity[3] > -5:
+#                self.velocity[3] -= 2
 
-        self.velocity[1] = (self.velocity[2] + self.velocity[3]) * -1
-        balance = self.velocity[2] - self.velocity[3]
-        self.image = pygame.transform.rotate(self.originalImage, 5 * balance)
-        self.velocity[0] = balance * 2
+#        self.velocity[1] = (self.velocity[2] + self.velocity[3]) * -1
+#        balance = self.velocity[2] - self.velocity[3]
+#        self.image = pygame.transform.rotate(self.originalImage, 5 * balance)
+#        self.velocity[0] = balance * 2
             
-        self.rect.x += self.velocity[0]
-        if self.rect.x < 0:
-            self.rect.x = 0
-        elif self.rect.x + self.rect.width > 1000:
-            self.rect.x = 1000 - self.rect.width
-        self.rect.y += self.velocity[1]
+#        self.rect.x += self.velocity[0]
+#        if self.rect.x < 0:
+#            self.rect.x = 0
+#        elif self.rect.x + self.rect.width > 1000:
+#            self.rect.x = 1000 - self.rect.width
+#        self.rect.y += self.velocity[1]
+        self.rect.y += self.velocity
 
 class pinkCloudAssemblyStairs(pygame.sprite.Sprite):
     def __init__(self,pos):
@@ -1980,7 +1995,8 @@ def main():
             aboveScreen = False
             belowScreen = False
             for i in gameData['stairCaseList'].sprites():
-                i.rect.y += gameData['player'].velocity[1]
+                #i.rect.y += gameData['player'].velocity[1]
+                i.rect.y += gameData['player'].velocity
                 if i.rect.y < 0:
                     aboveScreen = True
                 if i.rect.bottom > 600:
@@ -1990,7 +2006,8 @@ def main():
                 gameData['stairCaseList'].add(pinkCloudAssemblyStairs((500,-199)))
             if not belowScreen:
                 gameData['stairCaseList'].add(pinkCloudAssemblyStairs((500,600)))
-            screen.blit(gameData['player'].image,gameData['player'].rect.center)
+            #screen.blit(gameData['player'].image,gameData['player'].rect.center)
+            screen.blit(gameData['player'].image,(500,300))
         allsprites.update()
         allsprites.draw(screen)
         pygame.display.flip()
