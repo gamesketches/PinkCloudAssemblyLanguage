@@ -585,14 +585,13 @@ class pinkSpiderPlayer(pygame.sprite.Sprite):
         self.velocity = [0,0]
         self.opacity = 0
         self.rect.x = 100
-        #self.rect.y = 500
         self.rect.y = 1700
         self.state = "grounded"
 
     def update(self):
         keys = pygame.key.get_pressed()
         if self.state == "grounded":
-            self.opacity += 1
+            self.opacity += 2
             if keys[K_LEFT]:
                 self.velocity[0] = -3
             elif keys[K_RIGHT]:
@@ -632,8 +631,6 @@ class pinkSpiderPlayer(pygame.sprite.Sprite):
         if self.state == "grounded":
             if self.rect.y < 0:
                 self.rect.y = 0
-            #elif self.rect.bottom > 600:
-             #   self.rect.bottom = 600
             elif self.rect.bottom > 1800:
                 self.rect.bottom = 1800
 
@@ -1823,8 +1820,8 @@ def main():
                     changeTrack("FORWARD",gameData)
             else:
                 if gameData['player'].rect.colliderect(gameData['bouncingRect']) and gameData['bounces'] < 3:
-                    gameData['player'].leftWingStrength = 10
-                    gameData['player'].rightWingStrength = 10
+                    gameData['player'].leftWingStrength = 6
+                    gameData['player'].rightWingStrength = 6
                     gameData['player'].rect.bottom = gameData['bouncingRect'].y - 1
                     gameData['bounces'] += 1
                 gameData['player'].update()
