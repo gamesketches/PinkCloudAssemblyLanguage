@@ -1442,12 +1442,9 @@ class pinkCloudAssemblyPlayer(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.image, self.rect = load_image("pinkSpiderWings.png",-1)
-#        self.originalImage = self.image
         self.rect.center = (500,300)
         self.velocity = 0
-#        self.rightWingStrength = 5
-#        self.leftWingStrength = 5
-#        self.velocity = [0,0,0,0]
+        self.distance = 0
 
     def update(self):
         keys = pygame.key.get_pressed()
@@ -1455,28 +1452,10 @@ class pinkCloudAssemblyPlayer(pygame.sprite.Sprite):
             self.velocity = 4
         elif keys[K_DOWN]:
             self.velocity = -4
-#        if keys[K_LEFT]:
-#            self.velocity[2] = self.leftWingStrength
-#        elif keys[K_RIGHT]:
-#            self.velocity[3] = self.rightWingStrength
-#        else:
-#            if self.velocity[2] > -5:
-#                self.velocity[2] -= 2
-#            if self.velocity[3] > -5:
-#                self.velocity[3] -= 2
-
-#        self.velocity[1] = (self.velocity[2] + self.velocity[3]) * -1
-#        balance = self.velocity[2] - self.velocity[3]
-#        self.image = pygame.transform.rotate(self.originalImage, 5 * balance)
-#        self.velocity[0] = balance * 2
-            
-#        self.rect.x += self.velocity[0]
-#        if self.rect.x < 0:
-#            self.rect.x = 0
-#        elif self.rect.x + self.rect.width > 1000:
-#            self.rect.x = 1000 - self.rect.width
-#        self.rect.y += self.velocity[1]
+        else:
+            self.velocity = 0
         self.rect.y += self.velocity
+        self.distance += self.velocity
 
 class pinkCloudAssemblyStairs(pygame.sprite.Sprite):
     def __init__(self,pos):
