@@ -1800,7 +1800,7 @@ def main():
                     gameData['spriteList'].add(pinkSpiderFly("fly"))
                 frameTimer = 200 + randint(0,200)
             for i in gameData['spriteList'].sprites():
-                if type(i) != pinkSpiderPlayer and type(i) != pinkSpiderBird and gameData['player'].rect.colliderect(i.rect):
+                if type(i) != pinkSpiderPlayer and gameData['player'].state is "grounded" and type(i) != pinkSpiderBird and gameData['player'].rect.colliderect(i.rect):
                     if i.bugType is not "fly":
                         gameData['player'].transform()
                         gameData['spriteList'].remove(gameData['player'])
