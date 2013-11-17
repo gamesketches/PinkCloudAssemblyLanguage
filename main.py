@@ -963,7 +963,8 @@ class fishScratchFeverObstacle(pygame.sprite.Sprite):
 class everFreePlayer(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image, self.rect = load_image("breedingHide.png", -1)
+        self.originalImage, self.rect = load_image("breedingHide.png", -1)
+        self.image = self.originalImage
         self.velocity = [False,True]
         self.slope = [0,5]
         self.touchingSurface = False
@@ -973,8 +974,10 @@ class everFreePlayer(pygame.sprite.Sprite):
         keys = pygame.key.get_pressed()
         if keys[K_RIGHT]:
             self.velocity[0] = True
+            self.image = pygame.transform.flip(self.originalImage,True,False)
         elif keys[K_LEFT]:
             self.velocity[0] = -1
+            self.image = self.originalImage
         else:
             self.velocity[0] = False
         if keys[K_UP]:
@@ -1597,7 +1600,9 @@ def changeTrack(direction,gameData):
         gameData['surfaces'].append(everFreeSurface([5,0],(0,1920),1,200,[True,False]))
         gameData['surfaces'].append(everFreeSurface([12,3],(600,2000),1,600,[True,False]))
         gameData['surfaces'].append(everFreeSurface([12,-3],(1500,2000),1,600,[True,False]))
-        gameData['goal'] = pygame.Rect(0,0,100,450)
+        #gameData['goal'] = pygame.Rect(0,0,100,450)
+        gameData['goal'] = pygame.sprite.Sprite()
+        gameData['goal'].image,gameData['goal'].rect = load_image('wings.png',-1)
         gameData['lava'] = everFreeLava((-100,3000,2000,1))
         newBackground = pygame.Surface((1000,600))
         newBackground = newBackground.convert()
@@ -1887,6 +1892,7 @@ def main():
                 print "lava"
                 changeTrack("FORWARD",gameData)
             gameData['sideScrollingSurface'].blit(gameData['lava'].image, (gameData['lava'].rect.x,gameData['lava'].rect.y))
+            gameData['sideScrollingSurface'].blit(gameData['goal'].image,gameData['goal'].rect.topleft)
             screen.blit(gameData['sideScrollingSurface'], (500 - gameData['player'].rect.x,300 - gameData['player'].rect.y))
             screen.blit(gameData['player'].image, (500,300))
         # ----- Track 8, Breeding ------
