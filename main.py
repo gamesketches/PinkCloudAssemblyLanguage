@@ -999,16 +999,11 @@ class fishScratchFeverObstacle(pygame.sprite.Sprite):
             math.ceil(self.rect.height)
             if self.rect.height > self.originalImage.get_height():
                 self.rect.height = self.originalImage.get_height()
-            self.image = pygame.transform.scale(self.image,(int(self.rect.w),int(self.rect.h)))
+            self.image = pygame.transform.scale(self.originalImage,(int(self.rect.w),int(self.rect.h)))
             self.rect.center = self.interpolator.pos
             nextPos = self.interpolator.next()
             if nextPos == None:
                 self.kill()
-        #else:
-        #    self.rect.center = self.interpolator.pos
-        #    nextPos = self.interpolator.next()
-        #    if nextPos == None:
-        #        self.kill()
 
 class everFreePlayer(pygame.sprite.Sprite):
     def __init__(self):
