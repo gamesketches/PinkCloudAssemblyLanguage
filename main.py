@@ -1491,6 +1491,32 @@ class Meter():
         screen.blit(self.frame, (self.x, self.y))
         screen.blit(self.bar, (self.frame.get_width() * 0.025 + self.x, self.frame.get_height() * 0.1))
 
+class cdHUD(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image,self.rect = load_image("cdHUD.png")
+        self.rect.topleft = (0,600)
+        self.trackDisplay = pygame.font.Font(None, 36)
+        self.trackNumber = 1
+        self.stopButton = pygame.Rect(405,605,42,40)
+        self.backButton = pygame.Rect(467,610,28,29)
+        self.playButton = pygame.Rect(518,609,26,31)
+        self.forwardButton = pygame.Rect(565,613,32,23)
+
+    def draw(self,screen):
+        screen.blit(self.image,self.rect.topleft)
+        screen.blit(self.trackDisplay.render(str(self.trackNumber), 1, (191,218,2)), (630,610))
+
+    def interpretInput(self,pos):
+        if self.stopButton.collidepoint(pos):
+            return "STOP"
+        elif self.backButton.collidepoint(pos):
+            return "BACK"
+        elif self.playButton.collidepoint(pos):
+            return "PLAY"
+        elif self.forwardButton.collidepoint(pos):
+            return "FORWARD"
+
 def changeTrack(direction,gameData):
     gameData['spriteList'].empty()
     if direction is "BACK":
@@ -1669,9 +1695,9 @@ def main():
     
     #Initialize Everything
     pygame.init()
-    screen = pygame.display.set_mode((1000, 600))
+    screen = pygame.display.set_mode((1000, 650))
     pygame.display.set_caption('Pink Cloud Assembly Language')
-    pygame.mouse.set_visible(0)
+    pygame.mouse.set_visible(1)
 
     #Create the background
     background = pygame.Surface(screen.get_size())
@@ -1686,6 +1712,7 @@ def main():
     clock = pygame.time.Clock()
     player1LifeMeter = Meter((800,0,200,60), (0,255,0),(200,200,200), 100, 100)
     meteors = pygame.sprite.Group(rocketDiveMeteor((300,600)))
+    theCDHUD = cdHUD()
     frameTimer = 30
     speed = 5
     trackNumber = 1
@@ -1708,6 +1735,18 @@ def main():
             elif event.type == KEYDOWN and event.key == K_o:
                 allsprites.empty()
                 changeTrack("BACK",gameData)
+            elif event.type == MOUSEBUTTONDOWN:
+                response = theCDHUD.interpretInput(event.pos)
+                if response is "STOP":
+                    pygame.quit()
+                elif response is "BACK":
+                    allsprites.empty()
+                    changeTrack("BACK",gameData)
+                elif response is "PAUSE":
+                    1+1 #LOL DO SOMETHING
+                elif response is "FORWARD":
+                    allsprites.empty()
+                    changeTrack("FORWARD",gameData)
 
         screen.blit(background, (0,0))
         # ----- Track 1, Spread Beaver -----
@@ -1971,7 +2010,7 @@ def main():
             allsprites = pygame.sprite.Group()
             screen.blit(gameData['background'], (0,0))
             gameData['player'].update()
-            if gameData['player'].distance > 1000:
+            if gameData['player'].distance > 1000000:
                 changeTrack("FORWARD",gameData)
             aboveScreen = False
             belowScreen = False
@@ -1989,6 +2028,8 @@ def main():
             screen.blit(gameData['player'].image,(500,300))
         allsprites.update()
         allsprites.draw(screen)
+        theCDHUD.trackNumber = gameData['trackNumber']
+        theCDHUD.draw(screen)
         pygame.display.flip()
 
 if __name__ == '__main__':
