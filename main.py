@@ -2002,7 +2002,7 @@ def main():
                         gameData['player'].offset += 10
                         gameData['player'].rect.x += gameData['player'].offset
                         i.kill()
-                        if gameData['player'].offset == 1000:
+                        if gameData['player'].rect.x >= 1000:
                             changeTrack("FORWARD",gameData)
                     i.draw(screen)
         # ----- Track 10 Pink Cloud Assembly -----
@@ -2028,6 +2028,7 @@ def main():
             screen.blit(gameData['player'].image,(500,300))
         allsprites.update()
         allsprites.draw(screen)
+        gameData['trackFrameCounter'] -= 1
         theCDHUD.trackNumber = gameData['trackNumber']
         theCDHUD.draw(screen)
         pygame.display.flip()
