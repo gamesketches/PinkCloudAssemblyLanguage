@@ -115,6 +115,7 @@ class spreadBeaverNode():
                 self.locked = True
                 self.color = (0,0,0)
                 self.drawSurface.fill(self.color)
+                
 
 class spreadBeaverGrid():
     def __init__(self):
@@ -137,11 +138,19 @@ class spreadBeaverGrid():
         self.goal.fill((255,255,0))
         self.cursorMovement = [None,0]
 
+    def deadOnTheWater(self):
+        #I have no idea why this doesn't work
+        x = self.pos[0]
+        y = self.pos[1]
+        if self.grid[x+1][y].color == self.grid[x-1][y].color and self.grid[x][y-1].color == self.grid[x][y+1].color and self.grid[x+1][y].color == self.grid[x][y+1].color and self.grid[x+1][y].color == (0,0,0):
+            return True
+        return False
+
     def update(self):
         keys = pygame.key.get_pressed()
         if keys[K_RIGHT]:
             if self.cursorMovement[0] == "EAST":
-                if self.cursorMovement[1] >= 3:
+                if self.cursorMovement[1] >= 4:
                     if self.grid[self.pos[0]][self.pos[1]].hasDirection("EAST"):
                         if self.grid[self.pos[0] +1][self.pos[1]].locked == "UNLOCK" or not self.grid[self.pos[0] + 1][self.pos[1]].locked:
                             self.pos[0] += 1
@@ -153,7 +162,7 @@ class spreadBeaverGrid():
                 self.cursorMovement[1] = 0
         elif keys[K_DOWN]:
             if self.cursorMovement[0] == "SOUTH":
-                if self.cursorMovement[1] >= 3:                            
+                if self.cursorMovement[1] >= 4:                            
                     if self.grid[self.pos[0]][self.pos[1]].hasDirection("SOUTH"):
                         if self.grid[self.pos[0]][self.pos[1]+1].locked == "UNLOCK" or not self.grid[self.pos[0]][self.pos[1] + 1].locked:
                             self.pos[1] += 1
@@ -165,7 +174,7 @@ class spreadBeaverGrid():
                 self.cursorMovement[1] = 0
         elif keys[K_LEFT]:
             if self.cursorMovement[0] == "WEST":
-                if self.cursorMovement[1] >= 3:                            
+                if self.cursorMovement[1] >= 4:                            
                     if self.grid[self.pos[0]][self.pos[1]].hasDirection("WEST"):
                         if self.grid[self.pos[0] - 1][self.pos[1]].locked == "UNLOCK" or not self.grid[self.pos[0] - 1][self.pos[1]].locked:
                             self.pos[0] -= 1
@@ -177,7 +186,7 @@ class spreadBeaverGrid():
                 self.cursorMovement[1] = 0
         elif keys[K_UP]:
             if self.cursorMovement[0] == "NORTH":
-                if self.cursorMovement[1] >= 3:                            
+                if self.cursorMovement[1] >= 4:                            
                     if self.grid[self.pos[0]][self.pos[1]].hasDirection("NORTH"):
                         if self.grid[self.pos[0]][self.pos[1] - 1].locked == "UNLOCK" or not self.grid[self.pos[0]][self.pos[1] - 1].locked:
                             self.pos[1] -= 1
@@ -1714,6 +1723,7 @@ def main():
     player1LifeMeter = Meter((800,0,200,60), (0,255,0),(200,200,200), 100, 100)
     meteors = pygame.sprite.Group(rocketDiveMeteor((300,600)))
     theCDHUD = cdHUD()
+    paused = False
     frameTimer = 30
     speed = 5
     trackNumber = 1
@@ -1743,292 +1753,294 @@ def main():
                 elif response is "BACK":
                     allsprites.empty()
                     changeTrack("BACK",gameData)
-                elif response is "PAUSE":
-                    1+1 #LOL DO SOMETHING
+                elif response is "PLAY":
+                    paused = not paused
                 elif response is "FORWARD":
                     allsprites.empty()
                     changeTrack("FORWARD",gameData)
-
-        screen.blit(background, (0,0))
-        # ----- Track 1, Spread Beaver -----
-        if gameData['trackNumber'] == 1:
-            gameData['grid'].update()
-            gameData['grid'].draw(screen)
-            if gameData['grid'].pos == gameData['grid'].goalPos:
-                changeTrack("FORWARD",gameData)
-        # ----- Track 2, Rocket Dive -------
-        elif gameData['trackNumber'] == 2:
-            frameTimer -= 1
-
-            speed += 0.005
-            gameData['distance'] -= (speed / 50)
-            
-            if frameTimer == 0:
-                if randint(0,10) < 9:
-                    meteors.add(rocketDiveMeteor((randint(0,1000),600)))
-                else:
-                    meteors.add(rocketDivePowerUp((randint(0,1000),600)))
-                frameTimer = 30 + randint(-3,20)
-            for i in meteors.sprites():
-                if gameData['player'].rect.colliderect(i.rect):
-                    if type(i) is rocketDiveMeteor:                            
-                        gameData['player'].life -= 10
-                        player1LifeMeter.update(gameData['player'].life)
-                    else:
-                        gameData['player'].life += 10
-                        player1LifeMeter.update(gameData['player'].life)
-                    i.kill()
-                    if gameData['player'].life == 0:
-                        changeTrack("FORWARD",gameData)
-                        meteors.empty()
-                        break
-            meteors.update(speed)
-            meteors.draw(screen)
-            if gameData['distance'] <= 0:
-                meteors.empty()
-                allsprites.empty()
-                gameData['frameCounter'] -= 1
-                screen.blit(distanceTracker.render("Sail Away!", 1, (200,10,10)), (500,300))
-                if gameData['frameCounter'] <= 0:
+        if not paused:
+            screen.blit(background, (0,0))
+            # ----- Track 1, Spread Beaver -----
+            if gameData['trackNumber'] == 1:
+                gameData['grid'].update()
+                gameData['grid'].draw(screen)
+                #if gameData['grid'].deadOnTheWater():
+                #    changeTrack("FORWARD",gameData)
+                if gameData['grid'].pos == gameData['grid'].goalPos:
                     changeTrack("FORWARD",gameData)
-            else:
-                screen.blit(distanceTracker.render(str(gameData['distance']), 1, (200,10,10)), (900,500))
-            player1LifeMeter.draw(screen)
-            
-        # ----- Track 3, Leather Face -------
-        elif gameData['trackNumber'] == 3:
-            allsprites = gameData['spriteList']
-            screen.blit(gameData['backGround'], (gameData['backGroundPos'],0))
-            for i in gameData['spriteList'].sprites():
-                if gameData['frameCounter'] == 0:
-                    if type(i) == leatherFaceObject:
-                        i.rect.x += -1 * gameData['player'].velocity
-                        i.hideBox.x += -1 * gameData['player'].velocity
-                        if i.hidingType is "stairs":
-                            gameData['backGroundPos'] = i.rect.right - 1500
-                            if gameData['backGroundPos'] > 0:
-                                gameData['backGroundPos'] = 0
-                            if i.rect.colliderect(gameData['player'].rect):
-                                if gameData['spriteList'] is gameData['leatherFaceDownstairsObjects']:
-                                    gameData['spriteList'] = gameData['leatherFaceUpstairsObjects']
-                                    gameData['spriteList'].add(gameData['target'])
-                                    gameData['player'].rect.x -= 100
-                                    gameData['frameCounter'] = 50
+            # ----- Track 2, Rocket Dive -------
+            elif gameData['trackNumber'] == 2:
+                frameTimer -= 1
+
+                speed += 0.005
+                gameData['distance'] -= (speed / 50)
+                
+                if frameTimer == 0:
+                    if randint(0,10) < 9:
+                        meteors.add(rocketDiveMeteor((randint(0,1000),600)))
+                    else:
+                        meteors.add(rocketDivePowerUp((randint(0,1000),600)))
+                    frameTimer = 30 + randint(-3,20)
+                for i in meteors.sprites():
+                    if gameData['player'].rect.colliderect(i.rect):
+                        if type(i) is rocketDiveMeteor:                            
+                            gameData['player'].life -= 10
+                            player1LifeMeter.update(gameData['player'].life)
+                        else:
+                            gameData['player'].life += 10
+                            player1LifeMeter.update(gameData['player'].life)
+                        i.kill()
+                        if gameData['player'].life == 0:
+                            changeTrack("FORWARD",gameData)
+                            meteors.empty()
+                            break
+                meteors.update(speed)
+                meteors.draw(screen)
+                if gameData['distance'] <= 0:
+                    meteors.empty()
+                    allsprites.empty()
+                    gameData['frameCounter'] -= 1
+                    screen.blit(distanceTracker.render("Sail Away!", 1, (200,10,10)), (500,300))
+                    if gameData['frameCounter'] <= 0:
+                        changeTrack("FORWARD",gameData)
+                else:
+                    screen.blit(distanceTracker.render(str(gameData['distance']), 1, (200,10,10)), (900,500))
+                player1LifeMeter.draw(screen)
+                
+            # ----- Track 3, Leather Face -------
+            elif gameData['trackNumber'] == 3:
+                allsprites = gameData['spriteList']
+                screen.blit(gameData['backGround'], (gameData['backGroundPos'],0))
+                for i in gameData['spriteList'].sprites():
+                    if gameData['frameCounter'] == 0:
+                        if type(i) == leatherFaceObject:
+                            i.rect.x += -1 * gameData['player'].velocity
+                            i.hideBox.x += -1 * gameData['player'].velocity
+                            if i.hidingType is "stairs":
+                                gameData['backGroundPos'] = i.rect.right - 1500
+                                if gameData['backGroundPos'] > 0:
                                     gameData['backGroundPos'] = 0
-                                else:
-                                    gameData['spriteList'] = gameData['leatherFaceDownstairsObjects']
-                            elif i.rect.colliderect(gameData['target'].rect):
-                                gameData['target'].kill()
-                                gameData['target'].rect.x += 100
-                        elif i.hidingType is "window":
-                            if i.rect.x < gameData['target'].rect.right:
+                                if i.rect.colliderect(gameData['player'].rect):
+                                    if gameData['spriteList'] is gameData['leatherFaceDownstairsObjects']:
+                                        gameData['spriteList'] = gameData['leatherFaceUpstairsObjects']
+                                        gameData['spriteList'].add(gameData['target'])
+                                        gameData['player'].rect.x -= 100
+                                        gameData['frameCounter'] = 50
+                                        gameData['backGroundPos'] = 0
+                                    else:
+                                        gameData['spriteList'] = gameData['leatherFaceDownstairsObjects']
+                                elif i.rect.colliderect(gameData['target'].rect):
+                                    gameData['target'].kill()
+                                    gameData['target'].rect.x += 100
+                            elif i.hidingType is "window":
+                                if i.rect.x < gameData['target'].rect.right:
+                                    changeTrack("FORWARD", gameData)
+                                    frameTimer = 50
+                                    gameData['frameCounter'] = 90
+                                    break
+                            else:
+                                screen.blit(i.hideSurface,i.hideBox.topleft)
+                        elif type(i) == leatherFaceTarget:
+                            i.rect.x += -1 * gameData['player'].velocity
+                            if i.rect.colliderect(gameData['player'].rect):
                                 changeTrack("FORWARD", gameData)
                                 frameTimer = 50
                                 gameData['frameCounter'] = 90
                                 break
-                        else:
-                            screen.blit(i.hideSurface,i.hideBox.topleft)
-                    elif type(i) == leatherFaceTarget:
-                        i.rect.x += -1 * gameData['player'].velocity
-                        if i.rect.colliderect(gameData['player'].rect):
-                            changeTrack("FORWARD", gameData)
-                            frameTimer = 50
-                            gameData['frameCounter'] = 90
-                            break
-                        if not i.facingRight:
-                            if not gameData['player'].hiding:
-                                gameData['frameCounter'] = 90
-                                i.runAway()
-                                gameData['spriteList'].add(leatherFaceExclamationMark(gameData['target'].rect.topleft))
-                                frameTimer = 40
-                                #break
-                            else:
-                                visible = True
-                                for j in gameData['leatherFaceObjects']:
-                                    if j.checkHidingSpot(gameData['player'].hidingPosture(),gameData['player'].rect):
-                                        visible = False
-                                        break
-                                if visible:
-                                    i.runAway()
+                            if not i.facingRight:
+                                if not gameData['player'].hiding:
                                     gameData['frameCounter'] = 90
+                                    i.runAway()
                                     gameData['spriteList'].add(leatherFaceExclamationMark(gameData['target'].rect.topleft))
                                     frameTimer = 40
                                     #break
-                else:
-                    i.rect.x -= 3
-                    if type(i) == leatherFaceObject:
-                        i.hideBox.x -= 3
-                        screen.blit(i.hideSurface,i.hideBox.topleft)
-            if gameData['target'].rect.colliderect(gameData['player'].rect):
-                changeTrack("FORWARD", gameData)
-                frameTimer = 50
-            if gameData['frameCounter'] > 0:
-                gameData['frameCounter'] -= 1
-        # ----- Track 4, Pink Spider -------
-        elif gameData['trackNumber'] == 4:
-            allsprites = pygame.sprite.Group()
-            gameData['sideScrollingSurface'].blit(gameData['backGround'], (0,0))
-            frameTimer -= 1
-            if frameTimer == 0:
-                if randint(0,5) == 1:
-                    gameData['spriteList'].add(pinkSpiderFly("butterfly"))
-                else:
-                    gameData['spriteList'].add(pinkSpiderFly("fly"))
-                frameTimer = 200 + randint(0,200)
-            for i in gameData['spriteList'].sprites():
-                if type(i) != pinkSpiderPlayer and gameData['player'].state is "grounded" and type(i) != pinkSpiderBird and gameData['player'].rect.colliderect(i.rect):
-                    if i.bugType is not "fly":
-                        gameData['player'].transform()
-                        gameData['spriteList'].remove(gameData['player'])
-                        gameData['spriteList'].add(pinkSpiderBird((-100,700),(3,0),300))
+                                else:
+                                    visible = True
+                                    for j in gameData['leatherFaceObjects']:
+                                        if j.checkHidingSpot(gameData['player'].hidingPosture(),gameData['player'].rect):
+                                            visible = False
+                                            break
+                                    if visible:
+                                        i.runAway()
+                                        gameData['frameCounter'] = 90
+                                        gameData['spriteList'].add(leatherFaceExclamationMark(gameData['target'].rect.topleft))
+                                        frameTimer = 40
+                                        #break
                     else:
-                        if gameData['player'].opacity > 300:
-                            i.kill()
-                            gameData['player'].opacity -= 300
+                        i.rect.x -= 3
+                        if type(i) == leatherFaceObject:
+                            i.hideBox.x -= 3
+                            screen.blit(i.hideSurface,i.hideBox.topleft)
+                if gameData['target'].rect.colliderect(gameData['player'].rect):
+                    changeTrack("FORWARD", gameData)
+                    frameTimer = 50
+                if gameData['frameCounter'] > 0:
+                    gameData['frameCounter'] -= 1
+            # ----- Track 4, Pink Spider -------
+            elif gameData['trackNumber'] == 4:
+                allsprites = pygame.sprite.Group()
+                gameData['sideScrollingSurface'].blit(gameData['backGround'], (0,0))
+                frameTimer -= 1
+                if frameTimer == 0:
+                    if randint(0,5) == 1:
+                        gameData['spriteList'].add(pinkSpiderFly("butterfly"))
+                    else:
+                        gameData['spriteList'].add(pinkSpiderFly("fly"))
+                    frameTimer = 200 + randint(0,200)
+                for i in gameData['spriteList'].sprites():
+                    if type(i) != pinkSpiderPlayer and gameData['player'].state is "grounded" and type(i) != pinkSpiderBird and gameData['player'].rect.colliderect(i.rect):
+                        if i.bugType is not "fly":
+                            gameData['player'].transform()
+                            gameData['spriteList'].remove(gameData['player'])
+                            gameData['spriteList'].add(pinkSpiderBird((-100,700),(3,0),300))
                         else:
-                            i.getCaught()
-            
-            for i in gameData['stars']:
-                gameData['sideScrollingSurface'].blit(i[0],i[1])
-            gameData['spriteList'].update()
-            gameData['spriteList'].draw(gameData['sideScrollingSurface'])
-            sideScrollingOffset = gameData['player'].velocity
-            if gameData['player'].state == "grounded":
-                screen.blit(gameData['sideScrollingSurface'], (0,-1200))
-                if gameData['player'].opacity >= 2500:
-                    changeTrack("FORWARD",gameData)
-            else:
-                if gameData['player'].rect.colliderect(gameData['bouncingRect']) and gameData['bounces'] < 3:
-                    gameData['player'].leftWingStrength = 6
-                    gameData['player'].rightWingStrength = 6
-                    gameData['player'].rect.bottom = gameData['bouncingRect'].y - 1
-                    gameData['bounces'] += 1
+                            if gameData['player'].opacity > 300:
+                                i.kill()
+                                gameData['player'].opacity -= 300
+                            else:
+                                i.getCaught()
+                
+                for i in gameData['stars']:
+                    gameData['sideScrollingSurface'].blit(i[0],i[1])
+                gameData['spriteList'].update()
+                gameData['spriteList'].draw(gameData['sideScrollingSurface'])
+                sideScrollingOffset = gameData['player'].velocity
+                if gameData['player'].state == "grounded":
+                    screen.blit(gameData['sideScrollingSurface'], (0,-1200))
+                    if gameData['player'].opacity >= 2500:
+                        changeTrack("FORWARD",gameData)
+                else:
+                    if gameData['player'].rect.colliderect(gameData['bouncingRect']) and gameData['bounces'] < 3:
+                        gameData['player'].leftWingStrength = 6
+                        gameData['player'].rightWingStrength = 6
+                        gameData['player'].rect.bottom = gameData['bouncingRect'].y - 1
+                        gameData['bounces'] += 1
+                    gameData['player'].update()
+                    screen.blit(gameData['sideScrollingSurface'], (500 - gameData['player'].rect.x,300 - gameData['player'].rect.y))
+                    screen.blit(gameData['player'].image, (500,300))
+                    if gameData['player'].rect.y > 1800:
+                        changeTrack("FORWARD",gameData)
+            # ----- Track 5, Doubt '97 -----
+            elif gameData['trackNumber'] == 5:
+                allsprites = pygame.sprite.Group()
+                gameData['frameCounter'] += 1
+                if gameData['frameCounter'] >= 300:
+                    gameData['spriteList'].add(doubtEnemy())
+                    gameData['frameCounter'] = 0
+                gameData['spriteList'].update()
                 gameData['player'].update()
+                offset = gameData['player'].offset
+                screen.blit(gameData['backGround'], (-5000 - offset[0],-2000 + offset[1]))
+                screen.blit(gameData['player'].sprite.image, (500,300))
+                for i in gameData['spriteList'].sprites():
+                    screen.blit(i.image, (i.rect.x - offset[0], i.rect.y + offset[1]))
+                    if i.rect.colliderect(gameData['player'].sprite.rect):
+                        i.kill()
+                        gameData['player'].eat()
+                if gameData['player'].sprite.rect.width < 5:
+                    changeTrack("FORWARD",gameData)
+            # ----- Track 6, Fish Scratch Fever -----
+            elif gameData['trackNumber'] == 6:
+                screen.blit(gameData['backGround'],(0,0))
+                allsprites = gameData['spriteList']
+                curSpeed = gameData['player'].update()
+                gameData['player'].draw(screen)
+                for i in allsprites.sprites():
+                    i.updateDistance(curSpeed)
+                    if i.distance <= 0:
+                        if gameData['player'].gameOverKa(i.type):
+                            changeTrack("FORWARD",gameData)
+                gameData['frameCounter'] -= 1
+                gameData['targetDistance'] -= curSpeed
+                if gameData['frameCounter'] == 0 and gameData['targetDistance'] > 0:
+                    gameData['spriteList'].add(fishScratchFeverObstacle())
+                    gameData['frameCounter'] = 130
+                if gameData['targetDistance'] <= 0:
+                    gameData['player'].beFree()
+                    if gameData['player'].frameTimer <= 0:
+                        changeTrack("FORWARD",gameData)
+            # ----- Track 7, Ever Free -----
+            elif gameData['trackNumber'] == 7:
+                gameData['sideScrollingSurface'].blit(gameData['backGround'], (0,0))
+                for i in gameData['surfaces']:
+                    i.draw(gameData['sideScrollingSurface'])
+                    if not gameData['player'].unattachableTime:                        
+                        if i != gameData['player'].touchingSurface:
+                            if gameData['player'].rect.colliderect(i.collideableRect()):
+                                if i.canAttach(gameData['player'].rect):
+                                    gameData['player'].attachToSurface(i)
+                        else:
+                            if not gameData['player'].rect.colliderect(i.collideableRect()):
+                                gameData['player'].detachFromSurface([0,6])
+                gameData['lava'].update()
+                gameData['player'].update()
+                if gameData['player'].rect.colliderect(gameData['goal']):
+                    changeTrack("FORWARD",gameData)
+                if gameData['player'].rect.colliderect(gameData['lava'].rect):
+                    print "lava"
+                    changeTrack("FORWARD",gameData)
+                gameData['sideScrollingSurface'].blit(gameData['lava'].image, (gameData['lava'].rect.x,gameData['lava'].rect.y))
+                gameData['sideScrollingSurface'].blit(gameData['goal'].image,gameData['goal'].rect.topleft)
                 screen.blit(gameData['sideScrollingSurface'], (500 - gameData['player'].rect.x,300 - gameData['player'].rect.y))
                 screen.blit(gameData['player'].image, (500,300))
-                if gameData['player'].rect.y > 1800:
+            # ----- Track 8, Breeding ------
+            elif gameData['trackNumber'] == 8:
+                screen.blit(gameData['background'], (0,0))
+                gameData['grid'].update()
+                gameData['grid'].draw(screen)
+                if gameData['grid'].player.rect.colliderect(gameData['grid'].goal.rect):
                     changeTrack("FORWARD",gameData)
-        # ----- Track 5, Doubt '97 -----
-        elif gameData['trackNumber'] == 5:
-            allsprites = pygame.sprite.Group()
-            gameData['frameCounter'] += 1
-            if gameData['frameCounter'] >= 300:
-                gameData['spriteList'].add(doubtEnemy())
-                gameData['frameCounter'] = 0
-            gameData['spriteList'].update()
-            gameData['player'].update()
-            offset = gameData['player'].offset
-            screen.blit(gameData['backGround'], (-5000 - offset[0],-2000 + offset[1]))
-            screen.blit(gameData['player'].sprite.image, (500,300))
-            for i in gameData['spriteList'].sprites():
-                screen.blit(i.image, (i.rect.x - offset[0], i.rect.y + offset[1]))
-                if i.rect.colliderect(gameData['player'].sprite.rect):
-                    i.kill()
-                    gameData['player'].eat()
-            if gameData['player'].sprite.rect.width < 5:
-                changeTrack("FORWARD",gameData)
-        # ----- Track 6, Fish Scratch Fever -----
-        elif gameData['trackNumber'] == 6:
-            screen.blit(gameData['backGround'],(0,0))
-            allsprites = gameData['spriteList']
-            curSpeed = gameData['player'].update()
-            gameData['player'].draw(screen)
-            for i in allsprites.sprites():
-                i.updateDistance(curSpeed)
-                if i.distance <= 0:
-                    if gameData['player'].gameOverKa(i.type):
-                        changeTrack("FORWARD",gameData)
-            gameData['frameCounter'] -= 1
-            gameData['targetDistance'] -= curSpeed
-            if gameData['frameCounter'] == 0 and gameData['targetDistance'] > 0:
-                gameData['spriteList'].add(fishScratchFeverObstacle())
-                gameData['frameCounter'] = 130
-            if gameData['targetDistance'] <= 0:
-                gameData['player'].beFree()
-                if gameData['player'].frameTimer <= 0:
-                    changeTrack("FORWARD",gameData)
-        # ----- Track 7, Ever Free -----
-        elif gameData['trackNumber'] == 7:
-            gameData['sideScrollingSurface'].blit(gameData['backGround'], (0,0))
-            for i in gameData['surfaces']:
-                i.draw(gameData['sideScrollingSurface'])
-                if not gameData['player'].unattachableTime:                        
-                    if i != gameData['player'].touchingSurface:
-                        if gameData['player'].rect.colliderect(i.collideableRect()):
-                            if i.canAttach(gameData['player'].rect):
-                                gameData['player'].attachToSurface(i)
+            # ----- Track 9 Hurry Go Round -----
+            elif gameData['trackNumber'] == 9:
+                allsprites = pygame.sprite.Group()
+                screen.blit(gameData['background'], (0,0))
+                treeKa = randint(0,100)
+                if treeKa < 1:
+                    gameData['spriteList'].add(hurryGoRoundTree(gameData['seasonCounter'],gameData['treeImages']))
+                gameData['frameCounter'] -= 1
+                if gameData['frameCounter'] <= 0:
+                    gameData['spriteList'].add(hurryGoRoundObstacle(gameData['seasonCounter']))
+                    gameData['frameCounter'] = randint(100,300)
+                if gameData['player'].footPrintTimer == 0:
+                    gameData['spriteList'].add(hurryGoRoundFootprint((gameData['player'].rect.x,600),gameData['flipped']))
+                    gameData['flipped'] = not gameData['flipped']
+                    gameData['player'].footPrintTimer = 20
+                    gameData['seasonCounter'] += 0.3
+                gameData['spriteList'].update()
+                for i in gameData['spriteList'].sprites():
+                    if type(i) is hurryGoRoundPlayer:
+                        i.draw(screen)
                     else:
-                        if not gameData['player'].rect.colliderect(i.collideableRect()):
-                            gameData['player'].detachFromSurface([0,6])
-            gameData['lava'].update()
-            gameData['player'].update()
-            if gameData['player'].rect.colliderect(gameData['goal']):
-                changeTrack("FORWARD",gameData)
-            if gameData['player'].rect.colliderect(gameData['lava'].rect):
-                print "lava"
-                changeTrack("FORWARD",gameData)
-            gameData['sideScrollingSurface'].blit(gameData['lava'].image, (gameData['lava'].rect.x,gameData['lava'].rect.y))
-            gameData['sideScrollingSurface'].blit(gameData['goal'].image,gameData['goal'].rect.topleft)
-            screen.blit(gameData['sideScrollingSurface'], (500 - gameData['player'].rect.x,300 - gameData['player'].rect.y))
-            screen.blit(gameData['player'].image, (500,300))
-        # ----- Track 8, Breeding ------
-        elif gameData['trackNumber'] == 8:
-            screen.blit(gameData['background'], (0,0))
-            gameData['grid'].update()
-            gameData['grid'].draw(screen)
-            if gameData['grid'].player.rect.colliderect(gameData['grid'].goal.rect):
-                changeTrack("FORWARD",gameData)
-        # ----- Track 9 Hurry Go Round -----
-        elif gameData['trackNumber'] == 9:
-            allsprites = pygame.sprite.Group()
-            screen.blit(gameData['background'], (0,0))
-            treeKa = randint(0,100)
-            if treeKa < 1:
-                gameData['spriteList'].add(hurryGoRoundTree(gameData['seasonCounter'],gameData['treeImages']))
-            gameData['frameCounter'] -= 1
-            if gameData['frameCounter'] <= 0:
-                gameData['spriteList'].add(hurryGoRoundObstacle(gameData['seasonCounter']))
-                gameData['frameCounter'] = randint(100,300)
-            if gameData['player'].footPrintTimer == 0:
-                gameData['spriteList'].add(hurryGoRoundFootprint((gameData['player'].rect.x,600),gameData['flipped']))
-                gameData['flipped'] = not gameData['flipped']
-                gameData['player'].footPrintTimer = 20
-                gameData['seasonCounter'] += 0.3
-            gameData['spriteList'].update()
-            for i in gameData['spriteList'].sprites():
-                if type(i) is hurryGoRoundPlayer:
-                    i.draw(screen)
-                else:
-                    if type(i) is hurryGoRoundObstacle and gameData['player'].rect.colliderect(i.rect):
-                        gameData['player'].offset += 10
-                        gameData['player'].rect.x += gameData['player'].offset
-                        i.kill()
-                        if gameData['player'].rect.x >= 1000:
-                            changeTrack("FORWARD",gameData)
-                    i.draw(screen)
-        # ----- Track 10 Pink Cloud Assembly -----
-        elif gameData['trackNumber'] == 10:
-            allsprites = pygame.sprite.Group()
-            screen.blit(gameData['background'], (0,0))
-            gameData['player'].update()
-            if gameData['player'].distance > 1000000:
-                changeTrack("FORWARD",gameData)
-            aboveScreen = False
-            belowScreen = False
-            for i in gameData['stairCaseList'].sprites():
-                i.rect.y += gameData['player'].velocity
-                if i.rect.y < 0:
-                    aboveScreen = True
-                if i.rect.bottom > 600:
-                    belowScreen = True
-                screen.blit(i.image, i.rect.topleft)
-            if not aboveScreen:
-                gameData['stairCaseList'].add(pinkCloudAssemblyStairs((500,-199)))
-            if not belowScreen:
-                gameData['stairCaseList'].add(pinkCloudAssemblyStairs((500,600)))
-            screen.blit(gameData['player'].image,(500,300))
-        allsprites.update()
-        allsprites.draw(screen)
+                        if type(i) is hurryGoRoundObstacle and gameData['player'].rect.colliderect(i.rect):
+                            gameData['player'].offset += 10
+                            gameData['player'].rect.x += gameData['player'].offset
+                            i.kill()
+                            if gameData['player'].rect.x >= 1000:
+                                changeTrack("FORWARD",gameData)
+                        i.draw(screen)
+            # ----- Track 10 Pink Cloud Assembly -----
+            elif gameData['trackNumber'] == 10:
+                allsprites = pygame.sprite.Group()
+                screen.blit(gameData['background'], (0,0))
+                gameData['player'].update()
+                if gameData['player'].distance > 1000000:
+                    changeTrack("FORWARD",gameData)
+                aboveScreen = False
+                belowScreen = False
+                for i in gameData['stairCaseList'].sprites():
+                    i.rect.y += gameData['player'].velocity
+                    if i.rect.y < 0:
+                        aboveScreen = True
+                    if i.rect.bottom > 600:
+                        belowScreen = True
+                    screen.blit(i.image, i.rect.topleft)
+                if not aboveScreen:
+                    gameData['stairCaseList'].add(pinkCloudAssemblyStairs((500,-199)))
+                if not belowScreen:
+                    gameData['stairCaseList'].add(pinkCloudAssemblyStairs((500,600)))
+                screen.blit(gameData['player'].image,(500,300))
+            allsprites.update()
+            allsprites.draw(screen)
         gameData['trackFrameCounter'] -= 1
         theCDHUD.trackNumber = gameData['trackNumber']
         theCDHUD.draw(screen)
