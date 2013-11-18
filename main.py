@@ -1532,6 +1532,7 @@ def changeTrack(direction,gameData):
     if gameData['trackNumber'] == 1:
         gameData['player'] = rocketDivePlayer()
         gameData['spriteList'].add(gameData['player'])
+        gameData['distance'] = 1000
         gameData['frameCounter'] = 100
     # Change track to Leather Face
     if gameData['trackNumber'] == 2:
@@ -1717,7 +1718,7 @@ def main():
     speed = 5
     trackNumber = 1
     allsprites = pygame.sprite.OrderedUpdates()
-    gameData = {'grid': spreadBeaverGrid(),'player': None,'trackNumber':trackNumber,'spriteList':allsprites,'background':background,'distance':1000, 'trackFrameCounter':0}
+    gameData = {'grid': spreadBeaverGrid(),'player': None,'trackNumber':trackNumber,'spriteList':allsprites,'background':background, 'trackFrameCounter':0}
     distanceTracker = pygame.font.Font(None, 36)
     
     going = True
