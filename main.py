@@ -822,7 +822,7 @@ class doubtEnemy(pygame.sprite.Sprite):
 class fishScratchFeverPlayer():
     def __init__(self):
         self.fishNum = 4
-        self.speed = 1
+        self.speed = 0.01
         self.state = "neutral"
         self.frameTimer = 0
         self.fishPic, temp = load_image("salmon.png", -1)
@@ -903,6 +903,7 @@ class fishScratchFeverPlayer():
                 return False
             else:
                 self.fishNum -= 1
+                self.speed -= 2
                 if self.fishNum <= 0:
                     return True
                 else:
@@ -913,6 +914,7 @@ class fishScratchFeverPlayer():
             else:
                 
                 self.fishNum -= 1
+                self.speed -= 2
                 if self.fishNum <= 0:
                     return True
                 else:
@@ -935,25 +937,29 @@ class fishScratchFeverPlayer():
             
         
 class fishScratchFeverObstacle(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self,speed):
         pygame.sprite.Sprite.__init__(self)
         typeList = {0:"log",1:"bear",2:"food",3:"Dam"}
         self.type = typeList[randint(0,3)]
         self.distance = 100
+        print speed
         if self.type == "log":
             self.image, self.rect = load_image("log.png", -1)
             self.rect.topleft = (470, 340)
         elif self.type == "bear":
             self.image, self.rect = load_image("bear.png", -1)
             self.rect.topleft = (200, 230)
+            self.interpolator = Interpolator((400,230),(-200,500),self.distance/speed/60,60)
         else:
             self.image, self.rect = load_image("summerTree.png", -1)
             if randint(0,1):
                 self.type = "leftTree"
-                self.rect.topleft = (500, -100)
+                self.rect.topleft = (300, -100)
+                self.interpolator = Interpolator((300,0),(-100,300),self.distance/speed/60,60)
             else:
                 self.type = "rightTree"
                 self.rect.topleft = (500,-100)
+                self.interpolator = Interpolator((500,0),(1000,300),self.distance/speed/60,60)
             
         self.originalImage = self.image
 
@@ -973,12 +979,11 @@ class fishScratchFeverObstacle(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.originalImage, (scaleWidth, scaleHeight))
         if self.type is "log":
             self.rect.centerx = 500
-        if self.type is "bear":
-            self.rect.centerx -= 5
-        if self.type is "leftTree":
-            self.rect.centerx -= 20
-        if self.type is "rightTree":
-            self.rect.centerx += 20
+        else:
+            self.rect.center = self.interpolator.pos
+            nextPos = self.interpolator.next()
+            if nextPos == None:
+                self.kill()
 
 class everFreePlayer(pygame.sprite.Sprite):
     def __init__(self):
@@ -1631,7 +1636,6 @@ def changeTrack(direction,gameData):
         pygame.draw.polygon(newBackground,(20,40,200),[(0,600),(470,340),(530,340),(1000,600)])
         gameData['backGround'] = newBackground
         gameData['player'] = fishScratchFeverPlayer()
-        gameData['spriteList'].add(fishScratchFeverObstacle())
         gameData['frameCounter'] = 130
         gameData['targetDistance'] = 3000
     # Change track to Ever Free
@@ -1993,7 +1997,7 @@ def main():
                 gameData['frameCounter'] -= 1
                 gameData['targetDistance'] -= curSpeed
                 if gameData['frameCounter'] == 0 and gameData['targetDistance'] > 0:
-                    gameData['spriteList'].add(fishScratchFeverObstacle())
+                    gameData['spriteList'].add(fishScratchFeverObstacle(curSpeed))
                     gameData['frameCounter'] = 130
                 if gameData['targetDistance'] <= 0:
                     gameData['player'].beFree()
