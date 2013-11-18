@@ -1609,7 +1609,7 @@ def changeTrack(direction,gameData):
         gameData['backGround'] = gameData['backGround'].convert()
         gameData['backGround'].fill((0,0,0))
         webImage, temp = load_image('spiderweb.png')
-        gameData['backGround'].blit(webImage,(0,1200))
+        gameData['backGround'].blit(webImage,(500,1200))
         gameData['bouncingRect'] = pygame.Rect(500,1790,1000,10)
         gameData['bounces'] = 0
     # Change track to Doubt '97
@@ -1922,7 +1922,7 @@ def main():
             # ----- Track 4, Pink Spider -------
             elif gameData['trackNumber'] == 4:
                 allsprites = pygame.sprite.Group()
-                gameData['sideScrollingSurface'].blit(gameData['backGround'], (500,0))
+                gameData['sideScrollingSurface'].blit(gameData['backGround'], (0,0))
                 frameTimer -= 1
                 if frameTimer == 0:
                     if randint(0,5) == 1:
