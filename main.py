@@ -82,6 +82,8 @@ class spreadBeaverNode():
             self.locked = False
             self.drawSurface.fill((0,0,0))
             self.drawLines()
+            if len(directions) == 0:
+                self.locked = True
         elif lock is "UNLOCK":
             self.locked = "UNLOCK"
             self.drawSurface.fill(self.color)
@@ -139,11 +141,13 @@ class spreadBeaverGrid():
         self.cursorMovement = [None,0]
 
     def deadOnTheWater(self):
-        #I have no idea why this doesn't work
         x = self.pos[0]
         y = self.pos[1]
-        if self.grid[x+1][y].color == self.grid[x-1][y].color and self.grid[x][y-1].color == self.grid[x][y+1].color and self.grid[x+1][y].color == self.grid[x][y+1].color and self.grid[x+1][y].color == (0,0,0):
-            return True
+        if self.grid[x+1][y].locked or not self.grid[x+1][y].hasDirection("EAST"):
+            if self.grid[x-1][y].locked or not self.grid[x-1][y].hasDirection("WEST"):
+                if self.grid[x][y+1].locked or not self.grid[x][y+1].hasDirection("NORTH"):
+                    if self.grid[x][y-1].locked or not self.grid[x][y-1].hasDirection("SOUTH"):
+                        return True
         return False
 
     def update(self):
@@ -637,7 +641,7 @@ class pinkSpiderPlayer(pygame.sprite.Sprite):
             
         self.rect.x += self.velocity[0]
         if self.rect.x < 500:
-            self.rect.x = 0
+            self.rect.x = 500
         elif self.rect.x + self.rect.width > 1500:
             self.rect.x = 1500 - self.rect.width
         self.rect.y += self.velocity[1]
@@ -1790,8 +1794,13 @@ def main():
             if gameData['trackNumber'] == 1:
                 gameData['grid'].update()
                 gameData['grid'].draw(screen)
-                #if gameData['grid'].deadOnTheWater():
-                #    changeTrack("FORWARD",gameData)
+                if gameData['grid'].deadOnTheWater():
+                    if pauseTimer == -1:
+                        pauseTimer = 40
+                        paused = True
+                        endMessage = "You got stuck :("
+                    if pauseTimer == 0:
+                        changeTrack("FORWARD",gameData)
                 if gameData['grid'].pos == gameData['grid'].goalPos:
                     if pauseTimer == -1:
                         pauseTimer = 40
