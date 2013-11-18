@@ -942,26 +942,37 @@ class fishScratchFeverObstacle(pygame.sprite.Sprite):
         typeList = {0:"log",1:"bear",2:"food",3:"Dam"}
         self.type = typeList[randint(0,3)]
         self.distance = 100
-        print speed
+        self.scaleWidth = 0
+        self.scaleHeight = 0
         if self.type == "log":
             self.image, self.rect = load_image("log.png", -1)
             self.rect.topleft = (470, 340)
+            self.originalImage = self.image
         elif self.type == "bear":
-            self.image, self.rect = load_image("bear.png", -1)
+            self.originalImage, self.rect = load_image("bear.png", -1)
+            self.image = pygame.transform.scale(self.originalImage,(int(self.originalImage.get_width() * 0.2),int(self.originalImage.get_height() * 0.2)))
+            self.rect = self.image.get_rect()
+            self.scaleWidth = (self.originalImage.get_width() - self.image.get_width()) / (self.distance/speed)
+            self.scaleHeight = (self.originalImage.get_height() - self.image.get_height()) / (self.distance/speed)
             self.rect.topleft = (200, 230)
             self.interpolator = Interpolator((400,230),(-200,500),self.distance/speed/60,60)
         else:
-            self.image, self.rect = load_image("summerTree.png", -1)
+            self.originalImage, self.rect = load_image("summerTree.png", -1)
             if randint(0,1):
                 self.type = "leftTree"
                 self.rect.topleft = (300, -100)
-                self.interpolator = Interpolator((300,0),(-100,300),self.distance/speed/60,60)
+                self.interpolator = Interpolator((400,100),(-100,300),self.distance/speed/60,60)
             else:
                 self.type = "rightTree"
                 self.rect.topleft = (500,-100)
-                self.interpolator = Interpolator((500,0),(1000,300),self.distance/speed/60,60)
+                self.interpolator = Interpolator((500,100),(1000,300),self.distance/speed/60,60)
+                self.image = pygame.transform.flip(self.originalImage,True,False)
+
+            self.image = pygame.transform.scale(self.originalImage,(int(self.originalImage.get_width() * 0.2),int(self.originalImage.get_height() * 0.2)))
+            self.rect = self.image.get_rect()
+            self.scaleWidth = (self.originalImage.get_width() - self.image.get_width()) / (self.distance/speed)
+            self.scaleHeight = (self.originalImage.get_height() - self.image.get_height()) / (self.distance/speed)
             
-        self.originalImage = self.image
 
     def updateDistance(self, speed):
         self.distance -= speed
@@ -970,20 +981,34 @@ class fishScratchFeverObstacle(pygame.sprite.Sprite):
             self.kill()
         
     def update(self):
-        scaleWidth = self.originalImage.get_width() - int(self.distance)
-        scaleHeight = self.originalImage.get_height() - (int(self.distance) / 2)
-        if scaleWidth < 0:
-            scaleWidth = 1
-        if scaleHeight < 0:
-            scaleHeight = 1
-        self.image = pygame.transform.scale(self.originalImage, (scaleWidth, scaleHeight))
         if self.type is "log":
             self.rect.centerx = 500
+            scaleWidth = self.originalImage.get_width() - int(self.distance)
+            scaleHeight = self.originalImage.get_height() - (int(self.distance) / 2)
+            if scaleWidth < 0:
+                scaleWidth = 1
+            if scaleHeight < 0:
+                scaleHeight = 1
+            self.image = pygame.transform.scale(self.originalImage, (scaleWidth, scaleHeight))
         else:
+            self.rect.width += self.scaleWidth
+            math.ceil(self.rect.width)
+            if self.rect.width > self.originalImage.get_width():
+                self.rect.width = self.originalImage.get_width()
+            self.rect.height += self.scaleHeight
+            math.ceil(self.rect.height)
+            if self.rect.height > self.originalImage.get_height():
+                self.rect.height = self.originalImage.get_height()
+            self.image = pygame.transform.scale(self.image,(int(self.rect.w),int(self.rect.h)))
             self.rect.center = self.interpolator.pos
             nextPos = self.interpolator.next()
             if nextPos == None:
                 self.kill()
+        #else:
+        #    self.rect.center = self.interpolator.pos
+        #    nextPos = self.interpolator.next()
+        #    if nextPos == None:
+        #        self.kill()
 
 class everFreePlayer(pygame.sprite.Sprite):
     def __init__(self):
