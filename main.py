@@ -143,11 +143,11 @@ class spreadBeaverGrid():
     def deadOnTheWater(self):
         x = self.pos[0]
         y = self.pos[1]
-        if self.grid[x+1][y].locked or not self.grid[x+1][y].hasDirection("EAST"):
-            if self.grid[x-1][y].locked or not self.grid[x-1][y].hasDirection("WEST"):
-                if self.grid[x][y+1].locked or not self.grid[x][y+1].hasDirection("NORTH"):
-                    if self.grid[x][y-1].locked or not self.grid[x][y-1].hasDirection("SOUTH"):
-                        return True
+    #    if self.grid[x+1][y].locked or not self.grid[x+1][y].hasDirection("EAST"):
+   #         if self.grid[x-1][y].locked or not self.grid[x-1][y].hasDirection("WEST"):
+  #              if self.grid[x][y+1].locked or not self.grid[x][y+1].hasDirection("NORTH"):
+ #                   if self.grid[x][y-1].locked or not self.grid[x][y-1].hasDirection("SOUTH"):
+#                        return True
         return False
 
     def update(self):
@@ -467,6 +467,37 @@ class rocketDivePowerUp(pygame.sprite.Sprite):
         self.rect.y -= speed
         if self.rect.bottom < 0:
             self.kill()
+
+class rocketDiveMissile(pygame.sprite.Sprite):
+    def __init__(self,loc):
+        pygame.sprite.Sprite.__init__(self)
+        self.image, self.rect = load_image('fly.png')
+        self.rect.topleft = loc
+        self.originalImage = self.image
+        self.velocity = [0,0]
+
+    def update(self,playerPos):
+        turnRate = 5 * math.pi / 180
+        objectDirection = [1,0]
+        targetVector = [playerPos[0] - self.rect.x,playerPos[1] - self.rect.y]
+        dotProduct = -1 * targetVector[1]
+        if dotProduct > 0:
+            tempx = math.cos(turnRate) * objectDirection[0] - math.sin(turnRate) * objectDirection[1]
+            tempy = math.cos(turnRate) * objectDirection[1] + math.sin(turnRate) * objectDirection[0]
+            objectDirection[0] = tempx
+            objectDirection[1] = tempy
+        elif dotProduct < 0:
+            tempx = math.cos(-turnRate) * objectDirection[0] - math.sin(-turnRate) * objectDirection[1]
+            tempy = math.cos(-turnRate) * objectDirection[1] + math.sin(-turnRate) * objectDirection[0]
+            objectDirection[0] = tempx
+            objectDirection[1] = tempy
+
+        self.image = pygame.transform.rotate(self.originalImage, math.degrees(math.atan2(objectDirection[1],objectDirection[0])))
+        self.velocity[0] += targetVector[0] / 2000
+        self.velocity[1] += targetVector[1] / 2000
+        self.rect.x += self.velocity[0]
+        self.rect.y += self.velocity[1]
+        print self.rect.topleft
         
 class leatherFacePlayer(pygame.sprite.Sprite):
     def __init__(self):
@@ -780,8 +811,8 @@ class doubtPlayer():
             self.offset[0] = 4400
         elif self.offset[0] < -5400:
             self.offset[0] = -5400
-        self.trueWidth -= 0.03
-        self.trueHeight -= 0.03
+        self.trueWidth -= 0.05
+        self.trueHeight -= 0.05
         self.sprite.rect.width = self.trueWidth
         self.sprite.rect.height = self.trueHeight
         self.sprite.image = pygame.transform.scale(self.sprite.image,(self.sprite.rect.width, self.sprite.rect.height))
@@ -796,7 +827,7 @@ class doubtEnemy(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.image, self.rect = load_image("tadpole.png", -1)
         self.originalImage = self.image
-        self.rect.center = (randint(-1000,2000),randint(-600,1200))
+        self.rect.center = (randint(-4000,4000),randint(-2500,2200))
         self.velocity = [0,0]
         self.acceleration = 0
 
@@ -942,8 +973,8 @@ class fishScratchFeverPlayer():
 class fishScratchFeverObstacle(pygame.sprite.Sprite):
     def __init__(self,speed):
         pygame.sprite.Sprite.__init__(self)
-        typeList = {0:"log",1:"bear",2:"food",3:"Dam"}
-        self.type = typeList[randint(0,3)]
+        typeList = {0:"log",1:"bear",2:"log",3:"bear",4:"Tree",5:"Tree"}
+        self.type = typeList[randint(0,5)]
         self.distance = 100
         self.scaleWidth = 0
         self.scaleHeight = 0
@@ -958,7 +989,7 @@ class fishScratchFeverObstacle(pygame.sprite.Sprite):
             self.scaleWidth = (self.originalImage.get_width() - self.image.get_width()) / (self.distance/speed)
             self.scaleHeight = (self.originalImage.get_height() - self.image.get_height()) / (self.distance/speed)
             self.rect.topleft = (200, 230)
-            self.interpolator = Interpolator((400,230),(-200,500),self.distance/speed/60,60)
+            self.interpolator = Interpolator((500,230),(-200,600),self.distance/speed/60,60)
         else:
             self.originalImage, self.rect = load_image("summerTree.png", -1)
             if randint(0,1):
@@ -1532,7 +1563,11 @@ class Meter():
 class cdHUD(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image,self.rect = load_image("cdHUD.png")
+        self.images = [1,1]
+        self.images[0],self.rect = load_image("cdHUDPause.png")
+        self.images[1], self.rect = load_image("cdHUD.png")
+        self.image = self.images[0]
+        self.whichImage= False
         self.rect.topleft = (0,600)
         self.trackDisplay = pygame.font.Font(None, 36)
         self.trackNumber = 1
@@ -1551,6 +1586,8 @@ class cdHUD(pygame.sprite.Sprite):
         elif self.backButton.collidepoint(pos):
             return "BACK"
         elif self.playButton.collidepoint(pos):
+            self.whichImage = not self.whichImage
+            self.image = self.images[self.whichImage]
             return "PLAY"
         elif self.forwardButton.collidepoint(pos):
             return "FORWARD"
@@ -1570,6 +1607,7 @@ def changeTrack(direction,gameData):
     if gameData['trackNumber'] == 1:
         gameData['player'] = rocketDivePlayer()
         gameData['spriteList'].add(gameData['player'])
+        gameData['missile'] = rocketDiveMissile((1000,300))
         gameData['distance'] = 1000
         gameData['frameCounter'] = 100
     # Change track to Leather Face
@@ -1619,7 +1657,7 @@ def changeTrack(direction,gameData):
     # Change track to Doubt '97
     elif gameData['trackNumber'] == 4:
         gameData['player'] = doubtPlayer()
-        for i in range(6):
+        for i in range(30):
             gameData['spriteList'].add(doubtEnemy())
         newBackground = pygame.Surface((10000,6130))
         newBackground = newBackground.convert()
@@ -1836,6 +1874,8 @@ def main():
                             break
                 meteors.update(speed)
                 meteors.draw(screen)
+                gameData['missile'].update(gameData['player'].rect.center)
+                screen.blit(gameData['missile'].image,gameData['missile'].rect.topleft)
                 if gameData['distance'] <= 0:
                     meteors.empty()
                     allsprites.empty()
@@ -2081,6 +2121,13 @@ def main():
                         endMessage = "You win"
                     elif pauseTimer == 0:
                         changeTrack("FORWARD",gameData)
+                elif gameData['grid'].goal.rect.y * 5 < 600 - gameData['grid'].goal.rect.y:
+                    if pauseTimer == -1:
+                        pauseTimer = 40
+                        paused = True
+                        endMessage = "You'll never make it now"
+                    elif pauseTimer == 0:
+                        changeTrack("FORWARD",gameData)
             # ----- Track 9 Hurry Go Round -----
             elif gameData['trackNumber'] == 9:
                 allsprites = pygame.sprite.Group()
@@ -2097,6 +2144,13 @@ def main():
                     gameData['flipped'] = not gameData['flipped']
                     gameData['player'].footPrintTimer = 20
                     gameData['seasonCounter'] += 0.3
+                    if gameData['seasonCounter'] > 125:
+                        if pauseTimer == -1:
+                            pauseTimer = 40
+                            paused = True
+                            endMessage = "You made it!"
+                        elif pauseTimer == 0:
+                            changeTrack("FORWARD",gameData)
                 gameData['spriteList'].update()
                 for i in gameData['spriteList'].sprites():
                     if type(i) is hurryGoRoundPlayer:
