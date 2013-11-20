@@ -203,8 +203,16 @@ class spreadBeaverGrid():
                     
         if self.grid[self.pos[0]][self.pos[1]].locked == "UNLOCK":
             self.unlockGrid(self.grid[self.pos[0]][self.pos[1]].color)
+
+        if self.pos == [1,15]:
+            self.clearGrid()
+            for i in xrange(30):
+                self.grid[25][i] = spreadBeaverNode(["NORTH","SOUTH"], False, "WHITE")
+            self.pos = [25,6]
+            self.goalPos = [25,5]
+            self.grid[25][26] = spreadBeaverNode(["NORTH","SOUTH"],True,"BLUE")
             
-        if self.pos == [25,5]:
+        if self.pos == [25,5] or self.pos == [48,29]:
             self.clearGrid()
             self.horizontalGridLine([0,15],[50,15],"WHITE")
             self.verticalGridLine([15,8],[15,15],"WHITE")
@@ -213,11 +221,14 @@ class spreadBeaverGrid():
             self.grid[15][8] = spreadBeaverNode(["EAST","SOUTH"],False,"WHTIE")
             self.grid[40][15] = spreadBeaverNode(["WEST","EAST"],True,"BLUE")
             self.grid[39][8] = spreadBeaverNode(["WEST"],"UNLOCK","BLUE")
-            self.pos = [2,15]
+            if self.pos == [25,5]:
+                self.pos = [2,15]
+            else:
+                self.pos = [44,15]
             self.goalPos = [45,15]
             print "Passed level 1"
             
-        elif self.pos == [45,15]:
+        elif self.pos == [45,15] or self.pos == [49,26]:
             self.clearGrid()
             self.verticalGridLine([48,30],[48,20],"WHITE")
             self.horizontalGridLine([0,20],[48,20],"WHITE")
@@ -234,11 +245,14 @@ class spreadBeaverGrid():
             self.horizontalGridLine([10,25],[30,25],"WHITE")
             self.grid[30][25] = spreadBeaverNode(["WEST","NORTH"],False,"WHITE")
             self.grid[10][25] = spreadBeaverNode(["EAST"],"UNLOCK","RED")
-            self.pos = [48,28]
+            if self.pos == [45,15]:
+                self.pos = [48,28]
+            else:
+                self.pos = [6,20]
             self.goalPos = [5,20]
             print "Passed level 2"
 
-        elif self.pos == [5,20]:
+        elif self.pos == [5,20] or self.pos == [4,25]:
             self.clearGrid()
             self.horizontalGridLine([24,26],[50,26],"WHITE")
             self.verticalGridLine([24,0],[24,26],"WHITE")
@@ -256,11 +270,14 @@ class spreadBeaverGrid():
             self.grid[24][5] = spreadBeaverNode(["NORTH","SOUTH"],True,"GREEN")
             self.grid[24][7] = spreadBeaverNode(["NORTH","SOUTH"],True,"PURPLE")
             self.grid[24][8] = spreadBeaverNode(["NORTH","SOUTH"],True,"BLUE")
-            self.pos = [48,26]
+            if self.pos == [5,20]:
+                self.pos = [48,26]
+            else:
+                self.pos = [24,3]
             self.goalPos = [24,2]
             print "passed level 3"
 
-        elif self.pos == [24,2]:
+        elif self.pos == [24,2] or self.pos == [47,27]:
             self.clearGrid()
             self.horizontalGridLine([0,25],[50,25],"WHITE")
             self.verticalGridLine([10,25],[10,17],"WHITE")
@@ -289,7 +306,10 @@ class spreadBeaverGrid():
             self.grid[38][25] = spreadBeaverNode(["EAST","WEST"],True,"GREEN")
             self.grid[40][25] = spreadBeaverNode(["EAST","WEST"],True,"BLUE")
             self.grid[43][25] = spreadBeaverNode(["EAST","WEST"],True,"PURPLE")
-            self.pos = [5,25]
+            if self.pos == [24,2]:
+                self.pos = [5,25]
+            else:
+                self.pos = [44,25]
             self.goalPos = [45,25]
             print "passed level 4"
 
@@ -475,29 +495,36 @@ class rocketDiveMissile(pygame.sprite.Sprite):
         self.rect.topleft = loc
         self.originalImage = self.image
         self.velocity = [0,0]
+        self.frameTimer = 5
 
     def update(self,playerPos):
-        turnRate = 5 * math.pi / 180
-        objectDirection = [1,0]
-        targetVector = [playerPos[0] - self.rect.x,playerPos[1] - self.rect.y]
-        dotProduct = -1 * targetVector[1]
-        if dotProduct > 0:
-            tempx = math.cos(turnRate) * objectDirection[0] - math.sin(turnRate) * objectDirection[1]
-            tempy = math.cos(turnRate) * objectDirection[1] + math.sin(turnRate) * objectDirection[0]
-            objectDirection[0] = tempx
-            objectDirection[1] = tempy
-        elif dotProduct < 0:
-            tempx = math.cos(-turnRate) * objectDirection[0] - math.sin(-turnRate) * objectDirection[1]
-            tempy = math.cos(-turnRate) * objectDirection[1] + math.sin(-turnRate) * objectDirection[0]
-            objectDirection[0] = tempx
-            objectDirection[1] = tempy
+        if self.frameTimer == 0:
+            turnRate = 5 * math.pi / 180
+            objectDirection = [1,0]
+            targetVector = [playerPos[0] - self.rect.x,playerPos[1] - self.rect.y]
+            dotProduct = -1 * targetVector[1]
+            if dotProduct > 0:
+                tempx = math.cos(turnRate) * objectDirection[0] - math.sin(turnRate) * objectDirection[1]
+                tempy = math.cos(turnRate) * objectDirection[1] + math.sin(turnRate) * objectDirection[0]
+                objectDirection[0] = tempx
+                objectDirection[1] = tempy
+            elif dotProduct < 0:
+                tempx = math.cos(-turnRate) * objectDirection[0] - math.sin(-turnRate) * objectDirection[1]
+                tempy = math.cos(-turnRate) * objectDirection[1] + math.sin(-turnRate) * objectDirection[0]
+                objectDirection[0] = tempx
+                objectDirection[1] = tempy
 
-        self.image = pygame.transform.rotate(self.originalImage, math.degrees(math.atan2(objectDirection[1],objectDirection[0])))
-        self.velocity[0] += targetVector[0] / 2000
-        self.velocity[1] += targetVector[1] / 2000
-        self.rect.x += self.velocity[0]
-        self.rect.y += self.velocity[1]
-        print self.rect.topleft
+            self.image = pygame.transform.rotate(self.originalImage, math.degrees(math.atan2(objectDirection[1],objectDirection[0])))
+            self.velocity[0] += targetVector[0] / 2000
+            self.velocity[1] += targetVector[1] / 2000
+            self.rect.x += self.velocity[0]
+            self.rect.y += self.velocity[1]
+            self.frameTimer = 5
+            print self.rect.topleft
+        else:
+            self.rect.x += self.velocity[0]
+            self.rect.y += self.velocity[1]
+            self.frameTimer -= 1
         
 class leatherFacePlayer(pygame.sprite.Sprite):
     def __init__(self):
