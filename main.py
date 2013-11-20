@@ -693,7 +693,7 @@ class pinkSpiderPlayer(pygame.sprite.Sprite):
                     self.velocity[3] -= 2
             self.velocity[1] = (self.velocity[2] + self.velocity[3]) * -1
             if self.opacity > 0:
-                self.velocity[1] -= self.opacity / 20
+                self.velocity[1] -= self.opacity
                 self.opacity -= 5
             balance = self.velocity[2] - self.velocity[3]
             self.image = pygame.transform.rotate(self.originalImage, 5 * balance)
@@ -716,6 +716,7 @@ class pinkSpiderPlayer(pygame.sprite.Sprite):
         self.originalImage = self.image
         self.state = "flying"
         self.velocity = [self.velocity[0],self.velocity[1], 0, 0]
+        self.opacity = 80
 
 class pinkSpiderFly(pygame.sprite.Sprite):
     def __init__(self, bugType):
