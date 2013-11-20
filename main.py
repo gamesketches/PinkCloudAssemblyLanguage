@@ -691,8 +691,10 @@ class pinkSpiderPlayer(pygame.sprite.Sprite):
                     self.velocity[2] -= 2
                 if self.velocity[3] > -5:
                     self.velocity[3] -= 2
-
             self.velocity[1] = (self.velocity[2] + self.velocity[3]) * -1
+            if self.opacity > 0:
+                self.velocity[1] -= self.opacity / 20
+                self.opacity -= 5
             balance = self.velocity[2] - self.velocity[3]
             self.image = pygame.transform.rotate(self.originalImage, 5 * balance)
             self.velocity[0] = balance * 2
@@ -2001,7 +2003,7 @@ def main():
                 gameData['sideScrollingSurface'].blit(gameData['backGround'], (0,0))
                 frameTimer -= 1
                 if frameTimer == 0:
-                    if randint(0,5) == 1:
+                    if randint(0,5) <= 1:
                         gameData['spriteList'].add(pinkSpiderFly("butterfly"))
                     else:
                         gameData['spriteList'].add(pinkSpiderFly("fly"))
