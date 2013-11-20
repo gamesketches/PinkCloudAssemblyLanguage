@@ -694,7 +694,7 @@ class pinkSpiderPlayer(pygame.sprite.Sprite):
             self.velocity[1] = (self.velocity[2] + self.velocity[3]) * -1
             if self.opacity > 0:
                 self.velocity[1] -= self.opacity
-                self.opacity -= 5
+                self.opacity -= 4
             balance = self.velocity[2] - self.velocity[3]
             self.image = pygame.transform.rotate(self.originalImage, 5 * balance)
             self.velocity[0] = balance * 2
@@ -1459,7 +1459,7 @@ class hurryGoRoundObstacle(pygame.sprite.Sprite):
             self.frameCounter = -1
         elif time > 25 and time <= 50:
             self.image, self.rect = load_image("leatherFaceTarget.png",-1)
-            self.frameCounter = 70
+            self.frameCounter = 30
             self.image = pygame.transform.flip(self.image, True,False)
         elif time > 50 and time <= 75:
             self.image, self.rect = load_image("turkey.png", -1)
@@ -1469,15 +1469,18 @@ class hurryGoRoundObstacle(pygame.sprite.Sprite):
             self.frameCounter = -1
         elif time > 100 and time <= 125:
             self.image, self.rect = load_image("rabbit.png",-1)
-            self.frameCounter = 70
+            self.frameCounter = 10
         else:
             self.image,self.rect = load_image("leatherFaceTarget.png",-1)
-            self.frameCounter = 70
+            self.frameCounter = 30
+        self.speed = time / 3
+        if self.speed < 5:
+            self.speed = 5
         self.rect.x = 1100
         self.rect.bottom = 600
 
     def update(self):
-        self.rect.x -= 5
+        self.rect.x -= self.speed
         if self.frameCounter > -1:
             self.frameCounter -= 1
             if self.frameCounter == 0:
@@ -1485,7 +1488,7 @@ class hurryGoRoundObstacle(pygame.sprite.Sprite):
                     self.rect.bottom = 500
                 else:
                     self.rect.bottom = 600
-                self.frameCounter = 60
+                self.frameCounter = 30
 
         if self.rect.right < 0:
             self.kill()
