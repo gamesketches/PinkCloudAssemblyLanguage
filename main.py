@@ -2069,7 +2069,7 @@ def main():
                 screen.blit(gameData['player'].sprite.image, (500,300))
                 for i in gameData['spriteList'].sprites():
                     screen.blit(i.image, (i.rect.x - offset[0], i.rect.y + offset[1]))
-                    if i.rect.colliderect(gameData['player'].sprite.rect):
+                    if pygame.Rect(i.rect.x - offset[0],i.rect.y + offset[1], i.rect.w,i.rect.h).colliderect(pygame.Rect(500,300,gameData['player'].trueWidth,gameData['player'].trueHeight)):
                         i.kill()
                         gameData['player'].eat()
                 if gameData['player'].sprite.rect.width < 5:
