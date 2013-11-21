@@ -494,15 +494,15 @@ class rocketDiveMissile(pygame.sprite.Sprite):
         self.image, self.rect = load_image('fly.png')
         self.rect.topleft = loc
         self.originalImage = self.image
-        self.velocity = [0,0]
+        self.velocity = [1,0]
         self.frameTimer = 5
 
     def update(self,playerPos):
         if self.frameTimer == 0:
             turnRate = 5 * math.pi / 180
-            objectDirection = [1,0]
+            objectDirection = self.velocity
             targetVector = [playerPos[0] - self.rect.x,playerPos[1] - self.rect.y]
-            dotProduct = -1 * targetVector[1]
+            dotProduct = self.velocity[1] * targetVector[0] - self.velocity[0] * targetVector[1]
             if dotProduct > 0:
                 tempx = math.cos(turnRate) * objectDirection[0] - math.sin(turnRate) * objectDirection[1]
                 tempy = math.cos(turnRate) * objectDirection[1] + math.sin(turnRate) * objectDirection[0]
@@ -513,14 +513,12 @@ class rocketDiveMissile(pygame.sprite.Sprite):
                 tempy = math.cos(-turnRate) * objectDirection[1] + math.sin(-turnRate) * objectDirection[0]
                 objectDirection[0] = tempx
                 objectDirection[1] = tempy
-
-            self.image = pygame.transform.rotate(self.originalImage, math.degrees(math.atan2(objectDirection[1],objectDirection[0])))
-            self.velocity[0] += targetVector[0] / 2000
-            self.velocity[1] += targetVector[1] / 2000
+            self.image = pygame.transform.rotate(self.originalImage, math.degrees(math.atan2(objectDirection[1],objectDirection[0]) * -1))
+            self.velocity[0] = targetVector[0] / 200
+            self.velocity[1] = targetVector[1] / 200
             self.rect.x += self.velocity[0]
             self.rect.y += self.velocity[1]
-            self.frameTimer = 5
-            print self.rect.topleft
+            self.frameTimer = 2
         else:
             self.rect.x += self.velocity[0]
             self.rect.y += self.velocity[1]
@@ -1909,6 +1907,13 @@ def main():
                 meteors.draw(screen)
                 gameData['missile'].update(gameData['player'].rect.center)
                 screen.blit(gameData['missile'].image,gameData['missile'].rect.topleft)
+                if gameData['missile'].rect.colliderect(gameData['player'].rect):                        
+                    if pauseTimer == -1:                
+                        pauseTimer = 40
+                        paused = True
+                        endMessage = "Owned :("
+                    elif pauseTimer == 0:
+                        changeTrack("FORWARD",gameData)
                 if gameData['distance'] <= 0:
                     meteors.empty()
                     allsprites.empty()
@@ -1955,7 +1960,6 @@ def main():
                                 screen.blit(i.hideSurface,i.hideBox.topleft)
                         elif type(i) == leatherFaceTarget:
                             if i.rect.colliderect(gameData['player'].rect):
-                            
                                 if pauseTimer == -1:
                                     pauseTimer = 40
                                     paused = True
