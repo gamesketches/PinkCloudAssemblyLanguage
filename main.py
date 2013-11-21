@@ -1567,6 +1567,20 @@ class pinkCloudAssemblyStairs(pygame.sprite.Sprite):
         if self.rect.y > 1000:
             self.kill()
 
+class pinkCloudAssemblyObject(pygame.sprite.Sprite):
+    def __init__(self,image):
+        pygame.sprite.Sprite.__init__(self)
+        self.image, self.rect = load_image(image,-1)
+        self.image = pygame.transform.rotate(self.image, randint(0,360))
+        if randint(0,1):
+            self.rect.x = randint(0,400)
+        else:
+            self.rect.x = randint(600,1000)
+        self.rect.y = randint(1000,5000) * -1
+
+    def update(self,movement):
+        self.rect.y += movement
+
 class Meter():
     def __init__(self,dimensions,barColor,frameColor,startingAmount, maxAmount):
         self.frame = pygame.Surface((dimensions[2],dimensions[3]))
@@ -1790,7 +1804,7 @@ def changeTrack(direction,gameData):
         gameData['player'] = pinkCloudAssemblyPlayer()
         gameData['stairCaseList'] = pygame.sprite.Group(pinkCloudAssemblyStairs((500,500)),pinkCloudAssemblyStairs((500,300)),pinkCloudAssemblyStairs((500,100)))
         gameData['stairCaseList'] = pygame.sprite.Group(pinkCloudAssemblyStairs((500,-100)))
-        gameData['spriteList'].add(gameData['player'])
+        gameData['spriteList'].add(gameData['player'], pinkCloudAssemblyObject('fly.png'))
     # Set game back to beginning
     elif gameData['trackNumber'] == 10:
         gameData['trackNumber'] = 0
@@ -2225,6 +2239,10 @@ def main():
                     gameData['stairCaseList'].add(pinkCloudAssemblyStairs((500,-199)))
                 if not belowScreen:
                     gameData['stairCaseList'].add(pinkCloudAssemblyStairs((500,600)))
+                for i in gameData['spriteList'].sprites():
+                    if type(i) is pinkCloudAssemblyObject:
+                        i.update(gameData['player'].velocity)
+                        screen.blit(i.image,i.rect.topleft)
                 screen.blit(gameData['player'].image,(500,300))
             allsprites.update()
             allsprites.draw(screen)
