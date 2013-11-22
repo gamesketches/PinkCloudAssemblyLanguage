@@ -491,7 +491,7 @@ class rocketDivePowerUp(pygame.sprite.Sprite):
 class rocketDiveMissile(pygame.sprite.Sprite):
     def __init__(self,loc):
         pygame.sprite.Sprite.__init__(self)
-        self.image, self.rect = load_image('fly.png')
+        self.image, self.rect = load_image('missile.png', -1)
         self.rect.topleft = loc
         self.originalImage = self.image
         self.velocity = [1,0]
@@ -515,7 +515,17 @@ class rocketDiveMissile(pygame.sprite.Sprite):
                 objectDirection[1] = tempy
             self.image = pygame.transform.rotate(self.originalImage, math.degrees(math.atan2(objectDirection[1],objectDirection[0]) * -1))
             self.velocity[0] = targetVector[0] / 200
+            if abs(self.velocity[0]) < 3 and self.velocity[0] != 0:
+                if self.velocity[0] > 0:
+                    self.velocity[0] = 3
+                else:
+                    self.velocity[0] = -3
             self.velocity[1] = targetVector[1] / 200
+            if abs(self.velocity[1]) < 3 and self.velocity[1] != 0:
+                if self.velocity[1] > 0:
+                    self.velocity[1] = 3
+                else:
+                    self.velocity[1] = -3
             self.rect.x += self.velocity[0]
             self.rect.y += self.velocity[1]
             self.frameTimer = 2
