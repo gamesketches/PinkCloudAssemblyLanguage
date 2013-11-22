@@ -1804,7 +1804,8 @@ def changeTrack(direction,gameData):
         gameData['player'] = pinkCloudAssemblyPlayer()
         gameData['stairCaseList'] = pygame.sprite.Group(pinkCloudAssemblyStairs((500,500)),pinkCloudAssemblyStairs((500,300)),pinkCloudAssemblyStairs((500,100)))
         gameData['stairCaseList'] = pygame.sprite.Group(pinkCloudAssemblyStairs((500,-100)))
-        gameData['spriteList'].add(gameData['player'], pinkCloudAssemblyObject('fly.png'))
+        gameData['spriteList'].add(gameData['player'], pinkCloudAssemblyObject('fly.png'), pinkCloudAssemblyObject('bear.png'),pinkCloudAssemblyObject('hideLeatherFace.png'))
+        gameData['spriteList'].add(pinkCloudAssemblyObject('salmon.png'),pinkCloudAssemblyObject('tadpole.png'),pinkCloudAssemblyObject('butterfly.png'))
     # Set game back to beginning
     elif gameData['trackNumber'] == 10:
         gameData['trackNumber'] = 0
