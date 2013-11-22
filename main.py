@@ -1448,6 +1448,7 @@ class hurryGoRoundPlayer(pygame.sprite.Sprite):
 class hurryGoRoundObstacle(pygame.sprite.Sprite):
     def __init__(self, time):
         pygame.sprite.Sprite.__init__(self)
+        self.safeRect = None
         if time <= 25:
             self.image,self.rect = load_image("doubtFrog.png",-1)
             self.image = pygame.transform.rotate(self.image, -90)
@@ -1465,6 +1466,7 @@ class hurryGoRoundObstacle(pygame.sprite.Sprite):
         elif time > 75 and time <= 100:
             self.image, self.rect = load_image("snowman.png",-1)
             self.frameCounter = -1
+            self.safeRect = pygame.Rect(1100,516,100,84)
         elif time > 100 and time <= 125:
             self.image, self.rect = load_image("rabbit.png",-1)
             self.frameCounter = 10
@@ -1476,9 +1478,14 @@ class hurryGoRoundObstacle(pygame.sprite.Sprite):
             self.speed = 5
         self.rect.x = 1100
         self.rect.bottom = 600
+        if self.safeRect:
+            self.rect.h = 116
+            self.rect.y = 400
 
     def update(self):
         self.rect.x -= self.speed
+        if self.safeRect:
+            self.safeRect.x = self.rect.x
         if self.frameCounter > -1:
             self.frameCounter -= 1
             if self.frameCounter == 0:
@@ -1493,6 +1500,11 @@ class hurryGoRoundObstacle(pygame.sprite.Sprite):
 
     def draw(self,screen):
         screen.blit(self.image,(self.rect.x,self.rect.y))
+
+    def fallOver(self):
+        self.image = pygame.transform.rotate(self.image, 90)
+        self.safeRect = None
+        self.rect.x -= 100
 
 class hurryGoRoundFootprint(pygame.sprite.Sprite):
     def __init__(self,position,flipped):
@@ -2144,12 +2156,17 @@ def main():
                 gameData['lava'].update()
                 gameData['player'].update()
                 if gameData['player'].rect.colliderect(gameData['goal']):
-                    if pauseTimer == -1:
-                        pauseTimer = 40
-                        paused = True
-                        endMessage = "Ever Free"
-                    elif pauseTimer == 0:
-                        changeTrack("FORWARD",gameData)
+                    gameData['goal'].rect.y -= 5
+                    gameData['player'].rect.center = gameData['goal'].rect.center
+                    gameData['player'].velocity[1] = -1
+                    gameData['player'].slope[1] = 5
+                    if gameData['goal'].rect.top <= 0:                            
+                        if pauseTimer == -1:
+                            pauseTimer = 40
+                            paused = True
+                            endMessage = "Ever Free"
+                        elif pauseTimer == 0:
+                            changeTrack("FORWARD",gameData)
                 if gameData['player'].rect.colliderect(gameData['lava'].rect):
                     if pauseTimer == -1:
                         pauseTimer = 40
@@ -2208,10 +2225,14 @@ def main():
                     if type(i) is hurryGoRoundPlayer:
                         i.draw(screen)
                     else:
-                        if type(i) is hurryGoRoundObstacle and gameData['player'].rect.colliderect(i.rect):
-                            gameData['player'].offset += 10
-                            gameData['player'].rect.x += gameData['player'].offset
-                            i.kill()
+                        if type(i) is hurryGoRoundObstacle:
+                            if gameData['player'].rect.colliderect(i.rect):
+                                gameData['player'].offset += 10
+                                gameData['player'].rect.x += gameData['player'].offset
+                                i.kill()
+                            elif i.safeRect:
+                                if gameData['player'].rect.colliderect(i.safeRect):
+                                    i.fallOver()
                         i.draw(screen)
                 if gameData['player'].rect.x >= 1000:
                     if pauseTimer == -1:
