@@ -1520,12 +1520,17 @@ class hurryGoRoundFootprint(pygame.sprite.Sprite):
     def __init__(self,position,flipped):
         pygame.sprite.Sprite.__init__(self)
         self.image, self.rect = load_image("footPrint.png", -1)
+        self.flowerImage, temp = load_image("flower.png",-1)
         self.image = pygame.transform.flip(self.image,False,flipped)
         self.rect.midbottom = position
+        self.flowerSize = 0
 
     def draw(self,screen):
+        self.flowerSize += 1
         self.rect.x -= 5
         screen.blit(self.image,(self.rect.x, self.rect.y))
+        if self.flowerSize > 100:
+            screen.blit(self.flowerImage.subsurface((0,0),(49,45 + (self.flowerSize / 4))),(self.rect.x,self.rect.bottom - (45 + (self.flowerSize/4))))
         if self.rect.right < 0:
             self.kill()
 
@@ -1790,7 +1795,6 @@ def changeTrack(direction,gameData):
         gameData['surfaces'].append(everFreeSurface([5,0],(0,1920),1,200,[True,False]))
         gameData['surfaces'].append(everFreeSurface([12,3],(600,2000),1,600,[True,False]))
         gameData['surfaces'].append(everFreeSurface([12,-3],(1500,2000),1,600,[True,False]))
-        #gameData['goal'] = pygame.Rect(0,0,100,450)
         gameData['goal'] = pygame.sprite.Sprite()
         gameData['goal'].image,gameData['goal'].rect = load_image('wings.png',-1)
         gameData['lava'] = everFreeLava((-100,3000,2000,1))
