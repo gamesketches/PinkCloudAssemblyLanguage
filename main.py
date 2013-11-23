@@ -1550,9 +1550,11 @@ class hurryGoRoundTree(pygame.sprite.Sprite):
         elif time <= 75:
             #self.image, self.rect = load_image("bareTree.png",-1)
             self.image = images[3]
-        else:
+        elif time <= 100:
             #self.image, self.rect = load_image("snowyTree.png",-1)
             self.image = images[4]
+        else:
+            self.image = images[5]
         self.rect = self.image.get_rect()
         self.image = pygame.transform.flip(self.image, randint(0,1),False)
         self.rect.x = 1100
@@ -1819,12 +1821,13 @@ def changeTrack(direction,gameData):
         gameData['flipped'] = False
         gameData['frameCounter'] = 100
         gameData['seasonCounter'] = 0.0
-        gameData['treeImages'] = [0,0,0,0,0]
+        gameData['treeImages'] = [0,0,0,0,0,0]
         gameData['treeImages'][0],temp = load_image("summerTree.png",-1)
         gameData['treeImages'][1],temp = load_image("fallTree.png",-1)
         gameData['treeImages'][2],temp = load_image("fallTreeRed.png",-1)
         gameData['treeImages'][3],temp = load_image("bareTree.png",-1)
         gameData['treeImages'][4],temp = load_image("snowyTree.png",-1)
+        gameData['treeImages'][5],temp = load_image("springTree.png",-1)
     # Change Track to Pink Cloud Assembly
     elif gameData['trackNumber'] == 9:
         gameData['player'] = pinkCloudAssemblyPlayer()
