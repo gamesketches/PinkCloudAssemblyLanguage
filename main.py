@@ -2246,18 +2246,16 @@ def main():
                             changeTrack("FORWARD",gameData)
                 gameData['spriteList'].update()
                 for i in gameData['spriteList'].sprites():
-                    if type(i) is hurryGoRoundPlayer:
-                        i.draw(screen)
-                    else:
-                        if type(i) is hurryGoRoundObstacle:
-                            if gameData['player'].rect.colliderect(i.rect):
-                                gameData['player'].offset += 10
-                                gameData['player'].rect.x += gameData['player'].offset
-                                i.kill()
-                            elif i.safeRect:
-                                if gameData['player'].rect.colliderect(i.safeRect):
-                                    i.fallOver()
-                        i.draw(screen)
+                    if type(i) is hurryGoRoundObstacle:
+                        if gameData['player'].rect.colliderect(i.rect):
+                            gameData['player'].offset += 10
+                            gameData['player'].rect.x += gameData['player'].offset
+                            i.kill()
+                        elif i.safeRect:
+                            if gameData['player'].rect.colliderect(i.safeRect):
+                                i.fallOver()
+                    i.draw(screen)
+                gameData['player'].draw(screen)
                 if gameData['player'].rect.x >= 1000:
                     if pauseTimer == -1:
                         pauseTimer = 40
