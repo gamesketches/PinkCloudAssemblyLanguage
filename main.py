@@ -143,11 +143,11 @@ class spreadBeaverGrid():
     def deadOnTheWater(self):
         x = self.pos[0]
         y = self.pos[1]
-    #    if self.grid[x+1][y].locked or not self.grid[x+1][y].hasDirection("EAST"):
-   #         if self.grid[x-1][y].locked or not self.grid[x-1][y].hasDirection("WEST"):
-  #              if self.grid[x][y+1].locked or not self.grid[x][y+1].hasDirection("NORTH"):
- #                   if self.grid[x][y-1].locked or not self.grid[x][y-1].hasDirection("SOUTH"):
-#                        return True
+        if self.grid[x+1][y].locked or not self.grid[x+1][y].hasDirection("EAST"):
+            if self.grid[x-1][y].locked or not self.grid[x-1][y].hasDirection("WEST"):
+                if self.grid[x][y+1].locked or not self.grid[x][y+1].hasDirection("NORTH"):
+                    if self.grid[x][y-1].locked or not self.grid[x][y-1].hasDirection("SOUTH"):
+                        return True
         return False
 
     def update(self):
@@ -513,19 +513,25 @@ class rocketDiveMissile(pygame.sprite.Sprite):
                 tempy = math.cos(-turnRate) * objectDirection[1] + math.sin(-turnRate) * objectDirection[0]
                 objectDirection[0] = tempx
                 objectDirection[1] = tempy
+            else:
+                self.velocity = targetVector
             self.image = pygame.transform.rotate(self.originalImage, math.degrees(math.atan2(objectDirection[1],objectDirection[0]) * -1))
-            self.velocity[0] = targetVector[0] / 200
+            self.velocity[0] = targetVector[0] / 200.0
             if abs(self.velocity[0]) < 3 and self.velocity[0] != 0:
                 if self.velocity[0] > 0:
-                    self.velocity[0] = 3
+                    self.rect.x += 3
                 else:
-                    self.velocity[0] = -3
-            self.velocity[1] = targetVector[1] / 200
+                    self.rect.x -= 3
+            else:
+                self.rect.x += self.velocity[0]
+            self.velocity[1] = targetVector[1] / 200.0
             if abs(self.velocity[1]) < 3 and self.velocity[1] != 0:
                 if self.velocity[1] > 0:
-                    self.velocity[1] = 3
+                    self.rect.y += 3
                 else:
-                    self.velocity[1] = -3
+                    self.rect.y -= 3
+            else:
+                self.rect.y += self.velocity[1]
             self.rect.x += self.velocity[0]
             self.rect.y += self.velocity[1]
             self.frameTimer = 2
@@ -1515,6 +1521,7 @@ class hurryGoRoundObstacle(pygame.sprite.Sprite):
         self.image = pygame.transform.rotate(self.image, 90)
         self.safeRect = None
         self.rect.x -= 100
+        self.rect.bottom = 600
 
 class hurryGoRoundFootprint(pygame.sprite.Sprite):
     def __init__(self,position,flipped):
