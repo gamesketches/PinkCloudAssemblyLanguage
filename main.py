@@ -606,7 +606,7 @@ class leatherFaceTarget(pygame.sprite.Sprite):
             if self.rect.x <= 1000:                    
                 if self.facingRight:
                     self.switchTimer += 1
-                    if self.switchTimer == 35:
+                    if self.switchTimer == 30:
                         self.facingRight = False
                         self.switchTimer = 0
                         self.image = pygame.transform.flip(self.image, True, False)
@@ -621,12 +621,12 @@ class leatherFaceTarget(pygame.sprite.Sprite):
             if self.frameTimer == 0:
                 self.state = "standing"
             else:
-                self.rect.x += 5
+                self.rect.x += 12
         elif self.state is "surprised":
             self.frameTimer -= 1
             if self.frameTimer <= 0:
                 self.state = "running"
-                self.frameTimer = 50
+                self.frameTimer = 60
                 self.facingRight = True
                 self.image = pygame.transform.flip(self.image,True,False)
 
@@ -1702,9 +1702,11 @@ def changeTrack(direction,gameData):
         gameData['backGroundPos'] = 0
         gameData['player'] = leatherFacePlayer()
         gameData['target'] = leatherFaceTarget()
-        gameData['leatherFaceDownstairsObjects'] = pygame.sprite.OrderedUpdates(leatherFaceObject('door.png',(400,220),(400,220,100,250),"standing"))
-        gameData['leatherFaceDownstairsObjects'].add(leatherFaceObject('bookshelf.png',(800,170),(700,200,100,300),"standing"))
-        gameData['leatherFaceDownstairsObjects'].add(leatherFaceObject('stairs.png',(1500,250),(0,0,0,0),"stairs"),gameData['player'],gameData['target'])
+        gameData['leatherFaceDownstairsObjects'] = pygame.sprite.OrderedUpdates(leatherFaceObject('door.png',(1400,220),(1400,220,100,250),"standing"))
+        gameData['leatherFaceDownstairsObjects'].add(leatherFaceObject('sofa.png',(400,370),(300,400,400,100),"lyingDown"))
+        gameData['leatherFaceDownstairsObjects'].add(leatherFaceObject('hideSign.png',(1000,100),(0,0,0,0),"standing"))
+        gameData['leatherFaceDownstairsObjects'].add(leatherFaceObject('bookshelf.png',(1800,170),(1700,200,100,300),"standing"))
+        gameData['leatherFaceDownstairsObjects'].add(leatherFaceObject('stairs.png',(2500,250),(0,0,0,0),"stairs"),gameData['player'],gameData['target'])
         gameData['leatherFaceUpstairsObjects'] = pygame.sprite.OrderedUpdates(leatherFaceObject('refridgerator.png',(1000,270),(900,300,100,200),"standing"))
         gameData['leatherFaceUpstairsObjects'].add(leatherFaceObject('table.png',(500,370),(500,400,300,100),"lyingDown"))
         gameData['leatherFaceUpstairsObjects'].add(leatherFaceObject('window.png',(1500,300),(0,0,0,0),"window"))
@@ -1994,7 +1996,8 @@ def main():
                                     if gameData['spriteList'] is gameData['leatherFaceDownstairsObjects']:
                                         gameData['spriteList'] = gameData['leatherFaceUpstairsObjects']
                                         gameData['spriteList'].add(gameData['target'])
-                                        gameData['player'].rect.x -= 100
+                                        gameData['target'].rect.x -= 300
+                                        gameData['player'].rect.x -= 500
                                         gameData['frameCounter'] = 50
                                         gameData['backGroundPos'] = 0
                                     else:
@@ -2044,9 +2047,9 @@ def main():
                                         gameData['spriteList'].add(leatherFaceExclamationMark(gameData['target'].rect.topleft))
                                         frameTimer = 40
                     else:
-                        #i.rect.x -= 3
+                        i.rect.x -= gameData['player'].velocity
                         if type(i) == leatherFaceObject:
-                            #i.hideBox.x -= 3
+                            i.hideBox.x -= gameData['player'].velocity
                             screen.blit(i.hideSurface,i.hideBox.topleft)
                 if gameData['target'].rect.colliderect(gameData['player'].rect):
                     if pauseTimer == -1:
