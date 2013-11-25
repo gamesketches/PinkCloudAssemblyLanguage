@@ -564,11 +564,11 @@ class leatherFacePlayer(pygame.sprite.Sprite):
                 self.hiding = True
                 self.image = self.lyingDownImage
                 self.rect.y += 180
-                self.image.set_alpha(100)
+                self.image.set_alpha(200)
         elif keys[K_UP]:
             if not self.hiding:
                 self.hiding = True
-                self.image.set_alpha(100)
+                self.image.set_alpha(200)
         else:
             if self.hiding:
                 self.hiding = False
@@ -2010,6 +2010,9 @@ def main():
                                     break
                             else:
                                 screen.blit(i.hideSurface,i.hideBox.topleft)
+                                if gameData['player'].hiding:
+                                    if i.checkHidingSpot(gameData['player'].hidingPosture(),gameData['player'].rect):
+                                        gameData['player'].image.set_alpha(100)
                         elif type(i) == leatherFaceTarget:
                             if i.rect.colliderect(gameData['player'].rect):
                                 if pauseTimer == -1:
