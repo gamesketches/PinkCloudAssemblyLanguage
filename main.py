@@ -594,7 +594,7 @@ class leatherFaceTarget(pygame.sprite.Sprite):
         self.image, self.rect = load_image('leatherfaceTarget.png', -1)
         self.velocity = 0
         self.rect.y = 400
-        self.rect.x = 900
+        self.rect.x = 1100
         self.facingRight = True
         self.switchTimer = 0
         self.state = "standing"
@@ -603,18 +603,19 @@ class leatherFaceTarget(pygame.sprite.Sprite):
 
     def update(self):
         if self.state is "standing":
-            if self.facingRight:
-                self.switchTimer += 1
-                if self.switchTimer == 35:
-                    self.facingRight = False
-                    self.switchTimer = 0
-                    self.image = pygame.transform.flip(self.image, True, False)
-            else:
-                self.switchTimer += 1
-                if self.switchTimer == 10:
-                    self.facingRight = True
-                    self.switchTimer = 0
-                    self.image = pygame.transform.flip(self.image, True, False)
+            if self.rect.x <= 1000:                    
+                if self.facingRight:
+                    self.switchTimer += 1
+                    if self.switchTimer == 35:
+                        self.facingRight = False
+                        self.switchTimer = 0
+                        self.image = pygame.transform.flip(self.image, True, False)
+                else:
+                    self.switchTimer += 1
+                    if self.switchTimer == 10:
+                        self.facingRight = True
+                        self.switchTimer = 0
+                        self.image = pygame.transform.flip(self.image, True, False)
         elif self.state is "running":
             self.frameTimer -= 1
             if self.frameTimer == 0:
@@ -2260,7 +2261,7 @@ def main():
                     if pauseTimer == -1:
                         pauseTimer = 40
                         paused = True
-                        endMessage = "See you in the Spring"
+                        endMessage = "Let's meet in Spring"
                     elif pauseTimer == 0:
                         changeTrack("FORWARD",gameData)
             # ----- Track 10 Pink Cloud Assembly -----
