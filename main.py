@@ -2032,7 +2032,6 @@ def main():
                                     i.runAway()
                                     gameData['spriteList'].add(leatherFaceExclamationMark(gameData['target'].rect.topleft))
                                     frameTimer = 40
-                                    #break
                                 else:
                                     visible = True
                                     for j in gameData['leatherFaceObjects']:
@@ -2044,11 +2043,10 @@ def main():
                                         gameData['frameCounter'] = 90
                                         gameData['spriteList'].add(leatherFaceExclamationMark(gameData['target'].rect.topleft))
                                         frameTimer = 40
-                                        #break
                     else:
-                        i.rect.x -= 3
+                        #i.rect.x -= 3
                         if type(i) == leatherFaceObject:
-                            i.hideBox.x -= 3
+                            #i.hideBox.x -= 3
                             screen.blit(i.hideSurface,i.hideBox.topleft)
                 if gameData['target'].rect.colliderect(gameData['player'].rect):
                     if pauseTimer == -1:
