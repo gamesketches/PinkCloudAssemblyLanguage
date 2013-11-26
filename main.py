@@ -606,7 +606,7 @@ class leatherFaceTarget(pygame.sprite.Sprite):
             if self.rect.x <= 1000:                    
                 if self.facingRight:
                     self.switchTimer += 1
-                    if self.switchTimer == 30:
+                    if self.switchTimer == 35:
                         self.facingRight = False
                         self.switchTimer = 0
                         self.image = pygame.transform.flip(self.image, True, False)
@@ -621,7 +621,7 @@ class leatherFaceTarget(pygame.sprite.Sprite):
             if self.frameTimer == 0:
                 self.state = "standing"
             else:
-                self.rect.x += 12
+                self.rect.x += 10
         elif self.state is "surprised":
             self.frameTimer -= 1
             if self.frameTimer <= 0:
@@ -1704,6 +1704,7 @@ def changeTrack(direction,gameData):
         gameData['target'] = leatherFaceTarget()
         gameData['leatherFaceDownstairsObjects'] = pygame.sprite.OrderedUpdates(leatherFaceObject('door.png',(1400,220),(1400,220,100,250),"standing"))
         gameData['leatherFaceDownstairsObjects'].add(leatherFaceObject('sofa.png',(400,370),(300,400,400,100),"lyingDown"))
+        gameData['leatherFaceDownstairsObjects'].add(leatherFaceObject('table.png',(900,370),(900,400,300,100),"lyingDown"))
         gameData['leatherFaceDownstairsObjects'].add(leatherFaceObject('hideSign.png',(1000,100),(0,0,0,0),"standing"))
         gameData['leatherFaceDownstairsObjects'].add(leatherFaceObject('bookshelf.png',(1800,170),(1700,200,100,300),"standing"))
         gameData['leatherFaceDownstairsObjects'].add(leatherFaceObject('stairs.png',(2500,250),(0,0,0,0),"stairs"),gameData['player'],gameData['target'])
@@ -2002,7 +2003,7 @@ def main():
                                         gameData['backGroundPos'] = 0
                                     else:
                                         gameData['spriteList'] = gameData['leatherFaceDownstairsObjects']
-                                elif i.rect.colliderect(gameData['target'].rect):
+                                elif i.rect.left < gameData['target'].rect.right:
                                     gameData['target'].kill()
                                     gameData['target'].rect.x += 100
                             elif i.hidingType is "window":
@@ -2037,15 +2038,19 @@ def main():
                                     frameTimer = 40
                                 else:
                                     visible = True
-                                    for j in gameData['leatherFaceObjects']:
-                                        if j.checkHidingSpot(gameData['player'].hidingPosture(),gameData['player'].rect):
-                                            visible = False
-                                            break
+                                    for j in gameData['spriteList']:
+                                        if type(j) == leatherFaceObject:
+                                            if j.checkHidingSpot(gameData['player'].hidingPosture(),gameData['player'].rect):
+                                                visible = False
+                                                break
                                     if visible:
                                         i.runAway()
                                         gameData['frameCounter'] = 90
                                         gameData['spriteList'].add(leatherFaceExclamationMark(gameData['target'].rect.topleft))
                                         frameTimer = 40
+                        elif type(i) == leatherFacePlayer:
+                            if i.rect.centerx > 500:
+                                i.rect.centerx = 500
                     else:
                         i.rect.x -= gameData['player'].velocity
                         if type(i) == leatherFaceObject:
