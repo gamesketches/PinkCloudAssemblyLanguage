@@ -1741,6 +1741,7 @@ def changeTrack(direction,gameData):
         gameData['bounces'] = 0
     # Change track to Doubt '97
     elif gameData['trackNumber'] == 4:
+        gameData['music'] = load_sound("doubtRiff.wav")
         gameData['player'] = doubtPlayer()
         for i in range(30):
             gameData['spriteList'].add(doubtEnemy())
@@ -1860,6 +1861,7 @@ def main():
     screen = pygame.display.set_mode((1000, 650))
     pygame.display.set_caption('Pink Cloud Assembly Language')
     pygame.mouse.set_visible(1)
+    pygame.mixer.init()
 
     #Create the background
     background = pygame.Surface(screen.get_size())
@@ -1998,7 +2000,7 @@ def main():
                                         gameData['spriteList'] = gameData['leatherFaceUpstairsObjects']
                                         gameData['spriteList'].add(gameData['target'])
                                         gameData['target'].rect.x -= 300
-                                        gameData['player'].rect.x -= 500
+                                        gameData['player'].rect.x -= 200
                                         gameData['frameCounter'] = 50
                                         gameData['backGroundPos'] = 0
                                     else:
@@ -2008,10 +2010,16 @@ def main():
                                     gameData['target'].rect.x += 100
                             elif i.hidingType is "window":
                                 if i.rect.x < gameData['target'].rect.right:
-                                    changeTrack("FORWARD", gameData)
-                                    frameTimer = 50
-                                    gameData['frameCounter'] = 90
-                                    break
+                                    if pauseTimer == -1:
+                                        pauseTimer = 40
+                                        paused = True
+                                        endMessage = "The cat escaped!"
+                                        break
+                                    elif pauseTimer == 0:
+                                        changeTrack("FORWARD",gameData)
+                                        frameTimer = 50
+                                        gameData['frameCounter'] = 90
+                                        break
                             else:
                                 screen.blit(i.hideSurface,i.hideBox.topleft)
                                 if gameData['player'].hiding:
@@ -2137,6 +2145,7 @@ def main():
                     if pygame.Rect(i.rect.x - offset[0],i.rect.y + offset[1], i.rect.w,i.rect.h).colliderect(pygame.Rect(500,300,gameData['player'].trueWidth,gameData['player'].trueHeight)):
                         i.kill()
                         gameData['player'].eat()
+                        gameData['music'].play()
                 if gameData['player'].sprite.rect.width < 5:
                     if pauseTimer == -1:
                         pauseTimer = 40
