@@ -1676,6 +1676,7 @@ class cdHUD(pygame.sprite.Sprite):
 
 def changeTrack(direction,gameData):
     gameData['spriteList'].empty()
+    gameData['music'].stop()
     if direction is "BACK":
         if gameData['trackFrameCounter'] > 0:
             gameData['trackNumber'] -= 2
@@ -1687,6 +1688,8 @@ def changeTrack(direction,gameData):
             gameData['trackNumber'] = 10
     # Change track to Rocket Dive
     if gameData['trackNumber'] == 1:
+        gameData['music'] = load_sound("rocketDive.wav")
+        gameData['music'].play(-1)
         gameData['player'] = rocketDivePlayer()
         gameData['spriteList'].add(gameData['player'])
         gameData['missile'] = rocketDiveMissile((1000,300))
@@ -1694,6 +1697,8 @@ def changeTrack(direction,gameData):
         gameData['frameCounter'] = 100
     # Change track to Leather Face
     if gameData['trackNumber'] == 2:
+        gameData['music'] = load_sound('leatherFace.wav')
+        gameData['music'].play(-1)
         newBackground = pygame.Surface((1500,600))
         newBackground = newBackground.convert()
         newBackground.fill((0,0,0))
@@ -1718,6 +1723,8 @@ def changeTrack(direction,gameData):
         gameData['frameCounter'] = 0
     # Change track to Pink Spider
     elif gameData['trackNumber'] == 3:
+        gameData['music'] = load_sound("pinkSpider.wav")
+        gameData['music'].play(-1)
         sideScrollingSurface = pygame.Surface((2000,1800))
         sideScrollingSurface = sideScrollingSurface.convert()
         sideScrollingSurface.fill((0,0,0))
@@ -1884,8 +1891,9 @@ def main():
     speed = 5
     trackNumber = 1
     allsprites = pygame.sprite.OrderedUpdates()
-    gameData = {'grid': spreadBeaverGrid(),'player': None,'trackNumber':trackNumber,'spriteList':allsprites,'background':background, 'trackFrameCounter':0}
+    gameData = {'grid': spreadBeaverGrid(),'player': None,'trackNumber':trackNumber,'spriteList':allsprites,'background':background, 'trackFrameCounter':0,'music':load_sound("spreadBeaver.wav")}
     distanceTracker = pygame.font.Font(None, 36)
+    gameData['music'].play(-1)
     
     going = True
     while going:
