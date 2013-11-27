@@ -681,7 +681,7 @@ class pinkSpiderPlayer(pygame.sprite.Sprite):
     def update(self):
         keys = pygame.key.get_pressed()
         if self.state == "grounded":
-            self.opacity += 2
+            self.opacity += 1.5
             if keys[K_LEFT]:
                 self.velocity[0] = -3
             elif keys[K_RIGHT]:
@@ -693,7 +693,7 @@ class pinkSpiderPlayer(pygame.sprite.Sprite):
             else:
                 self.velocity[0] = 0
                 self.velocity[1] = 0
-            self.image.set_alpha(255 - (self.opacity / 10))
+            self.image.set_alpha(255 - int(self.opacity / 10))
         else:
             if keys[K_LEFT]:
                 self.velocity[2] = self.leftWingStrength
@@ -1521,7 +1521,7 @@ class hurryGoRoundObstacle(pygame.sprite.Sprite):
     def fallOver(self):
         self.image = pygame.transform.rotate(self.image, 90)
         self.safeRect = None
-        self.rect.x -= 100
+        self.rect.x -= 200
         self.rect.bottom = 600
 
 class hurryGoRoundFootprint(pygame.sprite.Sprite):
