@@ -1829,6 +1829,8 @@ def changeTrack(direction,gameData):
         gameData['backGround'] = newBackground
     # Change track to Breeding
     elif gameData['trackNumber'] == 7:
+        gameData['music'] = load_sound("breeding.wav")
+        gameData['music'].play(-1)
         gameData['grid'] = breedingGrid()
         gameData['grid'].columns[0].changeHeight(4)
         gameData['grid'].columns[1].changeHeight(3)
