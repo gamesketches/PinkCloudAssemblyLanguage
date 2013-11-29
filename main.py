@@ -1783,7 +1783,9 @@ def changeTrack(direction,gameData):
         gameData['backGround'] = newBackground
         gameData['frameCounter'] = 0
     # Change track to Fish Scratch Fever    
-    elif gameData['trackNumber'] == 5: 
+    elif gameData['trackNumber'] == 5:
+        gameData['music'] = load_sound("fishScratchFever.wav")
+        gameData['music'].play(-1)
         newBackground = pygame.Surface((1000,600))
         newBackground = newBackground.convert()
         newBackground.fill((0,0,0))
