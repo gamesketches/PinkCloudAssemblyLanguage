@@ -1796,6 +1796,8 @@ def changeTrack(direction,gameData):
         gameData['targetDistance'] = 3000
     # Change track to Ever Free
     elif gameData['trackNumber'] == 6:
+        gameData['music'] = load_sound("everFree.wav")
+        gameData['music'].play(-1)
         gameData['player'] = everFreePlayer()
         gameData['player'].rect.center = (1800,1900)
         gameData['sideScrollingSurface'] = pygame.Surface((3000,3000))
