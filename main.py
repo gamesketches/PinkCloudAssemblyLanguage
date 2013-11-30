@@ -1841,6 +1841,8 @@ def changeTrack(direction,gameData):
         gameData['backGround'].fill((0,0,0))
     # Change track to Hurry Go Round
     elif gameData['trackNumber'] == 8:
+        gameData['music'] = load_sound("hurryGoRound.wav")
+        gameData['music'].play(-1)
         gameData['player'] = hurryGoRoundPlayer()
         gameData['spriteList'].add(gameData['player'],hurryGoRoundObstacle(0.0))
         gameData['flipped'] = False
@@ -1855,6 +1857,8 @@ def changeTrack(direction,gameData):
         gameData['treeImages'][5],temp = load_image("springTree.png",-1)
     # Change Track to Pink Cloud Assembly
     elif gameData['trackNumber'] == 9:
+        gameData['music'] = load_sound("pinkCloudAssembly.wav")
+        gameData['musicPlayed'] = False
         gameData['player'] = pinkCloudAssemblyPlayer()
         gameData['stairCaseList'] = pygame.sprite.Group(pinkCloudAssemblyStairs((500,500)),pinkCloudAssemblyStairs((500,300)),pinkCloudAssemblyStairs((500,100)))
         gameData['stairCaseList'] = pygame.sprite.Group(pinkCloudAssemblyStairs((500,-100)))
@@ -2303,6 +2307,9 @@ def main():
                 gameData['player'].update()
                 if gameData['player'].distance > 1000000:
                     changeTrack("FORWARD",gameData)
+                if gameData['player'].distance > 1000 and not gameData['musicPlayed']:
+                    gameData['music'].play()
+                    gameData['musicPlayed'] = True
                 aboveScreen = False
                 belowScreen = False
                 for i in gameData['stairCaseList'].sprites():
