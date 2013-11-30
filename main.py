@@ -2,13 +2,113 @@ import pygame, sys, os, math
 from pygame.locals import *
 from random import randint
 from random import choice
-from interpolator import *
+#from interpolator import *
 
 if not pygame.font: print 'Warning, fonts disabled'
 if not pygame.mixer: print 'Warning, sound disabled'
 
 main_dir = os.path.split(os.path.abspath(sys.argv[0]))[0]
 data_dir = os.path.join(main_dir, 'data')
+
+class Interpolator( object ):
+ 
+  def __init__(
+    self,
+    start   = None,
+    stop    = None,
+    seconds = None,
+    fps     = None,
+    shape   = 1.0,
+    middle  = 0.5
+    ):
+    self._sec    = -1
+    self._length =  0
+ 
+    if start is None: start     = (0, 0)
+    if stop is None:  self.stop = start
+ 
+    else:
+      if (seconds is None) or (fps is None):
+        raise ValueError( "You must specify both 'seconds' and 'fps'" )
+      if shape <= 0.0:
+        raise ValueError( "The 'shape' argument must have value > 0.0" )
+      if not (0.0 <= middle <= 1.0):
+        raise ValueError( "The 'middle' argument must be in range [0.0, 1.0]" )
+ 
+      self.stop    = stop
+      self.diff    = [ b -a for a, b in zip( start, stop ) ]
+      self.inc     = 1.0 / fps
+      self.step    = [ a *self.inc /seconds for a in self.diff ]
+      self._pos    = start
+      self._sec    = seconds
+      self.seconds = seconds
+      self.shape   = shape
+      self.mid     = middle
+      self.maxs    = [ max( a, b ) for a, b in zip( start, stop ) ]
+      self.mins    = [ min( a, b ) for a, b in zip( start, stop ) ]
+      self._length = None
+ 
+  def next( self ):
+
+    def d( a, b, c ):
+      if b == 0.0: return c
+      else:        return a /b
+ 
+    if self._sec >= 0.0:
+ 
+      if self.shape == 1.0: factor = 1.0
+      else:
+        percent = 1.0 -(self._sec /self.seconds)  # percent complete
+ 
+        if percent < 0.95:  
+          if percent > self.mid: k = d( (1.0 -percent), (1.0 -self.mid), 1.0 )
+          else:                  k = d(       percent,        self.mid,  0.0 )
+ 
+          if k in [0.0, 1.0]: factor =      k                    *self.shape
+          else:               factor = pow( k, self.shape -1.0 ) *self.shape
+ 
+        else:
+          # The final 5% of the line is calculated linearly to avoid any
+          # 'jump' or 'snap' artifacts caused by FPU arithmetic errors.  
+          if self.mid is not None:
+            self.diff = [ b -a for a, b in zip( self._pos, self.stop ) ]
+            self.step = [ a *self.inc /self._sec for a in self.diff ]
+            self.mid  = None
+          factor = 1.0
+ 
+      self._pos = tuple(
+        [ min( max(
+ 
+            a +(step *factor),
+ 
+          mina ), maxa )
+          for a, step, mina, maxa in
+          zip( self._pos, self.step, self.mins, self.maxs )
+          ]
+        )
+ 
+      self._sec -= self.inc
+      return self._pos
+ 
+    else:
+      self._pos = self.stop
+      return None
+ 
+  def _get_pos( self ):
+    return self._pos
+ 
+  def _get_length( self ):
+    from math import sqrt
+ 
+    if self._length is None:
+      sum = 0
+      for a in self.diff: sum += a *a
+      self._length = sqrt( sum )
+    return self._length
+ 
+  #---------------------------------------------------------------------------
+  pos    = property( _get_pos,    doc='The location of the current vector. Read-only.' )
+  length = property( _get_length, doc='The length of the line. Read-only.' )
 
 def load_image(name, colorkey=None):
     fullname = os.path.join(data_dir, name)
@@ -1651,7 +1751,7 @@ class cdHUD(pygame.sprite.Sprite):
         self.image = self.images[0]
         self.whichImage= False
         self.rect.topleft = (0,600)
-        self.trackDisplay = pygame.font.Font(None, 36)
+        self.trackDisplay = pygame.font.Font("data/coolvetica.ttf", 36)
         self.trackNumber = 1
         self.stopButton = pygame.Rect(405,605,42,40)
         self.backButton = pygame.Rect(467,610,28,29)
@@ -1660,7 +1760,7 @@ class cdHUD(pygame.sprite.Sprite):
 
     def draw(self,screen):
         screen.blit(self.image,self.rect.topleft)
-        screen.blit(self.trackDisplay.render(str(self.trackNumber), 1, (191,218,2)), (630,610))
+        screen.blit(self.trackDisplay.render(str(self.trackNumber), 1, (191,218,2)), (635,605))
 
     def interpretInput(self,pos):
         if self.stopButton.collidepoint(pos):
@@ -1902,7 +2002,7 @@ def main():
     trackNumber = 1
     allsprites = pygame.sprite.OrderedUpdates()
     gameData = {'grid': spreadBeaverGrid(),'player': None,'trackNumber':trackNumber,'spriteList':allsprites,'background':background, 'trackFrameCounter':0,'music':load_sound("spreadBeaver.wav")}
-    distanceTracker = pygame.font.Font(None, 36)
+    distanceTracker = pygame.font.Font("data/coolvetica.ttf", 36)
     gameData['music'].play(-1)
     
     going = True
