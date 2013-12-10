@@ -8,7 +8,7 @@ if not pygame.font: print 'Warning, fonts disabled'
 if not pygame.mixer: print 'Warning, sound disabled'
 
 main_dir = os.path.split(os.path.abspath(sys.argv[0]))[0]
-data_dir = os.path.join(main_dir, 'data')
+data_dir = os.path.join(main_dir, 'build', 'exe.win-amd64-2.7', 'data')
 
 class Interpolator( object ):
  
@@ -1751,7 +1751,7 @@ class cdHUD(pygame.sprite.Sprite):
         self.image = self.images[0]
         self.whichImage= False
         self.rect.topleft = (0,600)
-        self.trackDisplay = pygame.font.Font("data/coolvetica.ttf", 36)
+        self.trackDisplay = pygame.font.Font(os.path.join(data_dir, 'coolvetica.ttf'), 36)
         self.trackNumber = 1
         self.stopButton = pygame.Rect(405,605,42,40)
         self.backButton = pygame.Rect(467,610,28,29)
@@ -2002,7 +2002,7 @@ def main():
     trackNumber = 1
     allsprites = pygame.sprite.OrderedUpdates()
     gameData = {'grid': spreadBeaverGrid(),'player': None,'trackNumber':trackNumber,'spriteList':allsprites,'background':background, 'trackFrameCounter':0,'music':load_sound("spreadBeaver.wav")}
-    distanceTracker = pygame.font.Font("data/coolvetica.ttf", 36)
+    distanceTracker = pygame.font.Font(os.path.join(data_dir,'coolvetica.ttf'), 36)
     gameData['music'].play(-1)
     
     going = True
